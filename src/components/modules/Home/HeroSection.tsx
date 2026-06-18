@@ -1,93 +1,76 @@
-import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, CalendarCheck, ChefHat, Utensils } from "lucide-react"
+import { CalendarDays, Flame, Utensils } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { featuredDishes, homeServiceStats } from "@/lib/home.constant"
+import { homeServiceStats } from "@/lib/home.constant"
 
 const HeroSection = () => {
   return (
-    <section className="border-b bg-[linear-gradient(180deg,var(--color-primary-soft),transparent)]">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:py-20">
-        <div className="flex flex-col justify-center">
-          <div className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border bg-background px-3 py-1 text-xs font-bold uppercase tracking-wide text-primary">
-            <ChefHat className="size-4" />
-            Restaurant website and management system
-          </div>
-          <h1 className="max-w-3xl text-4xl font-black leading-tight text-foreground sm:text-5xl lg:text-6xl">
-            <span className="text-primary">আহার</span> brings Bengali dining and restaurant operations into one system.
+    <section className="relative overflow-hidden py-12 md:py-20 lg:py-28">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-4 sm:px-6 md:grid-cols-12 lg:px-8">
+        <div className="space-y-6 text-center md:col-span-7 md:text-left">
+          <span className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-accent sm:text-sm">
+            <Flame className="size-4 text-primary" />
+            Authentic Bengal Flavors & Royalty
+          </span>
+
+          <h1 className="font-bengali text-4xl font-black leading-tight text-foreground sm:text-5xl lg:text-6xl">
+            ঐতিহ্য ও স্বাদের অপূর্ব মেলবন্ধন <br />
+            <span className="text-primary">আহার</span> রেস্টুরেন্ট
           </h1>
-          <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg">
-            A customer-facing food ordering experience with reservations, secure checkout, order tracking, and a focused
-            admin dashboard for daily restaurant operations.
+
+          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-muted-foreground md:mx-0">
+            Explore traditional recipes passed down through generations. From slow-cooked Kacchi Biryani to exquisite
+            deshi delicacies, Ahar promises a premium fine-dining experience right in the heart of Bangladesh.
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button asChild size="lg" className="h-11 px-5">
+          <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row md:justify-start">
+            <Button
+              asChild
+              size="lg"
+              className="h-14 w-full rounded-full border border-accent/50 px-8 text-base font-bold shadow-xl shadow-primary/30 transition hover:-translate-y-0.5 sm:w-auto"
+            >
               <Link href="/menu">
                 <Utensils />
-                Order Online
+                Order Online Now
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="h-11 px-5">
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="h-14 w-full rounded-full border-border bg-white px-8 text-base font-bold text-foreground shadow-md transition hover:bg-muted sm:w-auto"
+            >
               <Link href="/reservation">
-                <CalendarCheck />
-                Book a Table
+                <CalendarDays />
+                Reserve Table
               </Link>
             </Button>
           </div>
 
-          <div className="mt-9 grid max-w-xl grid-cols-2 gap-3 sm:grid-cols-3">
-            {homeServiceStats.map((stat) => {
-              const Icon = stat.icon
-
-              return (
-                <div key={stat.title} className="rounded-md border bg-card p-4">
-                  <Icon className="mb-3 size-5 text-primary" />
-                  <p className="text-sm font-bold">{stat.title}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{stat.description}</p>
-                </div>
-              )
-            })}
+          <div className="grid grid-cols-3 gap-4 border-t border-border/50 pt-6">
+            {homeServiceStats.map((stat) => (
+              <div key={stat.title}>
+                <h2 className="font-bengali text-2xl font-extrabold text-primary">{stat.value}</h2>
+                <p className="mt-1 text-xs text-muted-foreground">{stat.description}</p>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="relative min-h-[420px] overflow-hidden rounded-lg border bg-card shadow-sm">
-          <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between border-b bg-background/90 px-5 py-4 backdrop-blur">
-            <Image
-              src="/brand/ahar-with-text.png"
-              alt="Ahar"
-              width={160}
-              height={70}
-              className="h-12 w-auto object-contain"
-              priority
-            />
-            <span className="rounded-full bg-success-soft px-3 py-1 text-xs font-bold text-success">
-              Live orders active
-            </span>
-          </div>
-          <div className="grid h-full min-h-[420px] content-end gap-3 bg-[radial-gradient(circle_at_top_right,var(--color-warning-soft),transparent_34%),linear-gradient(135deg,var(--color-card),var(--color-primary-soft))] p-5 pt-24">
-            {featuredDishes.map((dish) => (
-              <article key={dish.name} className="rounded-md border bg-background/92 p-4 shadow-sm backdrop-blur">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-wide text-primary">{dish.category}</p>
-                    <h2 className="mt-1 text-lg font-black">{dish.name}</h2>
-                  </div>
-                  <span className="rounded-full bg-primary-soft px-3 py-1 text-xs font-bold text-primary">
-                    {dish.badge}
-                  </span>
-                </div>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{dish.description}</p>
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-xl font-black text-primary">{dish.price}</span>
-                  <Button size="sm" variant="outline">
-                    Add
-                    <ArrowRight />
-                  </Button>
-                </div>
-              </article>
-            ))}
+        <div className="relative flex justify-center md:col-span-5">
+          <div className="absolute inset-0 -z-10 scale-90 rounded-full bg-gradient-to-tr from-accent/10 to-primary/5 blur-2xl" />
+          <div className="animate-float relative flex size-80 items-center justify-center sm:size-96">
+            <div className="absolute inset-0 rounded-full border-[18px] border-accent/10" aria-hidden="true" />
+            <div className="absolute inset-8 rounded-full border border-accent/30" aria-hidden="true" />
+            <div className="relative flex size-64 flex-col items-center justify-center overflow-hidden rounded-full border-4 border-accent bg-white p-4 text-center shadow-2xl sm:size-76">
+              <span className="mb-2 text-7xl drop-shadow-lg sm:text-8xl">🍛</span>
+              <span className="rounded-full border border-accent bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
+                Signature Dish
+              </span>
+              <h3 className="mt-2 text-base font-bold text-foreground sm:text-lg">Kacchi Biryani Feast</h3>
+              <p className="text-[11px] text-muted-foreground">Premium fragrant rice with tender mutton</p>
+            </div>
           </div>
         </div>
       </div>

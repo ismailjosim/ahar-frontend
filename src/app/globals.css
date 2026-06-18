@@ -5,31 +5,31 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --canvas: oklch(98% 0.018 78);
+  --canvas: #fffdf9;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card: #ffffff;
+  --card-foreground: #2c1810;
 
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --popover: #ffffff;
+  --popover-foreground: #2c1810;
 
   /* Ahar Bengal Red */
-  --primary: oklch(48% 0.19 28);
-  --primary-foreground: oklch(99% 0.01 78);
-  --primary-hover: oklch(43% 0.18 28);
-  --primary-soft: oklch(96% 0.035 35);
+  --primary: #b22222;
+  --primary-foreground: #ffffff;
+  --primary-hover: #991b1b;
+  --primary-soft: #fdecec;
 
-  /* Dark Slate */
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  /* Demo Cream */
+  --secondary: #fff8f0;
+  --secondary-foreground: #2c1810;
 
   /* Surface */
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted: #f8f2e8;
+  --muted-foreground: #6f6258;
 
   /* Premium Gold */
-  --accent: oklch(72% 0.15 78);
-  --accent-foreground: oklch(22% 0.04 60);
+  --accent: #d4a017;
+  --accent-foreground: #2c1810;
 
   /* Success */
   --success: oklch(72% 0.18 155);
@@ -37,9 +37,9 @@
   --success-foreground: oklch(99% 0 0);
 
   /* Warning */
-  --warning: oklch(78% 0.16 67);
-  --warning-soft: oklch(96% 0.045 78);
-  --warning-foreground: oklch(30% 0.03 75);
+  --warning: #e09f3e;
+  --warning-soft: #fbf5e6;
+  --warning-foreground: #6b4e16;
 
   /* Focus */
   --focus: oklch(55% 0.18 28);
@@ -53,15 +53,15 @@
 
   --destructive: oklch(0.577 0.245 27.325);
 
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
+  --border: #e8d5c4;
+  --input: #e8d5c4;
   --ring: oklch(0.708 0 0);
 
   --radius: 0.625rem;
 
-  --background: oklch(99% 0.01 78);
+  --background: #fffdf9;
 
-  --foreground: oklch(0.145 0 0);
+  --foreground: #2c1810;
 
   --chart-1: oklch(56% 0.18 28);
 
@@ -238,6 +238,10 @@
     @apply bg-background text-foreground;
   }
 
+  body {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath d='M40 0l40 40-40 40L0 40z' fill='%23d4a017' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
+  }
+
   h1,
   h2,
   h3,
@@ -251,5 +255,36 @@
 
   .font-bengali {
     font-family: var(--font-hind-siliguri), var(--font-manrope), Arial, Helvetica, sans-serif !important;
+  }
+
+  ::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #fff8f0;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #d4a017;
+    border-radius: 999px;
+  }
+}
+
+@layer utilities {
+  .animate-float {
+    animation: floating 4s ease-in-out infinite;
+  }
+
+  @keyframes floating {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
   }
 }

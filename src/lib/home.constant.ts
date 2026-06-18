@@ -1,6 +1,4 @@
-import { Clock3, MapPin, Menu, PackageCheck, ShoppingBag, Star } from "lucide-react"
-
-import type { DashboardStat, FeaturedDish, HomeServiceStat, NavItem, OrderStep } from "@/types/home.interface"
+import type { DashboardStat, FeaturedDish, HomeServiceStat, NavItem, OrderStep, Review } from "@/types/home.interface"
 
 export const publicNavItems: NavItem[] = [
   { label: "Home", href: "/" },
@@ -16,6 +14,8 @@ export const featuredDishes: FeaturedDish[] = [
     price: "৳420",
     description: "Fragrant chinigura rice, tender mutton, potato, and house spice blend.",
     badge: "Best Seller",
+    emoji: "🍛",
+    rating: "4.9",
   },
   {
     name: "Shorshe Ilish",
@@ -23,6 +23,8 @@ export const featuredDishes: FeaturedDish[] = [
     price: "৳520",
     description: "Hilsa cooked in mustard, green chili, and slow-steamed Bengali gravy.",
     badge: "Signature",
+    emoji: "🐟",
+    rating: "4.8",
   },
   {
     name: "Chicken Roast Combo",
@@ -30,42 +32,53 @@ export const featuredDishes: FeaturedDish[] = [
     price: "৳360",
     description: "Classic roast chicken with polao, salad, borhani, and dessert.",
     badge: "Popular",
+    emoji: "🍗",
+    rating: "4.7",
+  },
+  {
+    name: "Borhani & Firni Set",
+    category: "Dessert",
+    price: "৳180",
+    description: "A classic sweet and tangy finish for royal Bengali meals.",
+    badge: "Combo",
+    emoji: "🥤",
+    rating: "4.8",
   },
 ]
 
 export const homeServiceStats: HomeServiceStat[] = [
   {
-    title: "Open Daily",
-    description: "10:00 AM - 11:00 PM",
-    icon: Clock3,
+    title: "হালাল",
+    value: "১০০%",
+    description: "Halal Certified Ingredients",
   },
   {
-    title: "Dhaka Service",
-    description: "Delivery and pickup",
-    icon: MapPin,
+    title: "Delivery",
+    value: "45 Mins",
+    description: "Fastest Home Delivery",
   },
   {
-    title: "4.9 Rating",
-    description: "Customer favorites",
-    icon: Star,
+    title: "Rating",
+    value: "4.9 Star",
+    description: "From 5000+ Foodies",
   },
 ]
 
 export const orderSteps: OrderStep[] = [
   {
-    title: "Browse Menu",
-    text: "Explore categories, featured dishes, add-ons, and real-time availability.",
-    icon: Menu,
+    title: "Select Your Food",
+    text: "Browse our categorized premium dishes and customize your variants.",
+    tone: "gold",
   },
   {
-    title: "Build Cart",
-    text: "Select variants, adjust quantity, apply coupons, and review delivery totals.",
-    icon: ShoppingBag,
+    title: "Secure Online Payment",
+    text: "Pay using bKash, Nagad, Cards or cash on delivery securely through checkout.",
+    tone: "red",
   },
   {
-    title: "Track Live",
-    text: "Follow every order from placed to preparing, ready, dispatched, and delivered.",
-    icon: PackageCheck,
+    title: "Hot Delivery",
+    text: "Track your order in real-time until our kitchen prepares and delivers it hot.",
+    tone: "green",
   },
 ]
 
@@ -77,3 +90,24 @@ export const dashboardStats: DashboardStat[] = [
 ]
 
 export const liveOrderPreview = ["#AH-8762 Preparing", "#AH-8763 Pending", "#AH-8764 Out for delivery"]
+
+export const guestReviews: Review[] = [
+  {
+    name: "Zubair Hasan",
+    role: "Verified Food Lover",
+    initials: "ZH",
+    text: "The Mutton Kacchi Biryani from Ahar is absolutely royal. The aroma is genuine and delivery was excellent.",
+  },
+  {
+    name: "Nusrat Amin",
+    role: "Reservation Guest",
+    initials: "NA",
+    text: "Super responsive reservation system and beautiful table arrangement. Perfect for family dinner.",
+  },
+  {
+    name: "Sajjad Islam",
+    role: "Regular Customer",
+    initials: "SI",
+    text: "The combo offers are great value, and tracking the order made the whole experience smooth.",
+  },
+]
