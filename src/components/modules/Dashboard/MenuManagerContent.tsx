@@ -77,6 +77,9 @@ export default function MenuManagerContent() {
       setEditing(null)
       setForm({})
       setIsEditorOpen(false)
+    } else {
+      const body = await res.json().catch(() => null)
+      alert(body?.error || body?.message || "Unable to save menu item")
     }
   }
 

@@ -39,7 +39,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${manrope.variable} ${hindSiliguri.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col font-sans">
+      <body className="flex min-h-full flex-col font-sans" suppressHydrationWarning>
         <NextThemeProvider>{children}</NextThemeProvider>
       </body>
     </html>

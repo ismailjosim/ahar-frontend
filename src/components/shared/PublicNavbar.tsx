@@ -2,15 +2,23 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Gauge, ShoppingBag } from "lucide-react"
+import { Gauge, LogOut, ShoppingBag, UserRound } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { publicNavItems } from "@/lib/home.constant"
 import ThemeToggler from "@/components/shared/ThemeToggler"
+import { authClient } from "@/lib/auth-client"
 
 const PublicNavbar = () => {
   const pathname = usePathname()
+  const { data: session, isPending } = authClient.useSession()
+  const user = session?.user
+
+  async function handleSignOut() {
+    await authClient.signOut()
+    window.location.href = "/auth/login"
+  }
 
   const isActiveRoute = (href: string) => {
     if (href === "/") {
@@ -52,17 +60,19 @@ const PublicNavbar = () => {
               {item.label}
             </Link>
           ))}
-          <Link
-            href="/dashboard"
-            aria-current={isActiveRoute("/dashboard") ? "page" : undefined}
-            className={cn(
-              "relative flex cursor-pointer items-center gap-1 py-2 text-accent transition duration-200 after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:scale-x-0 after:rounded-full after:bg-primary after:transition-transform after:duration-200 hover:text-primary hover:after:scale-x-100",
-              isActiveRoute("/dashboard") && "text-primary after:scale-x-100",
-            )}
-          >
-            <Gauge className="size-4" />
-            Dashboard
-          </Link>
+          {user && (
+            <Link
+              href="/dashboard"
+              aria-current={isActiveRoute("/dashboard") ? "page" : undefined}
+              className={cn(
+                "relative flex cursor-pointer items-center gap-1 py-2 text-accent transition duration-200 after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:scale-x-0 after:rounded-full after:bg-primary after:transition-transform after:duration-200 hover:text-primary hover:after:scale-x-100",
+                isActiveRoute("/dashboard") && "text-primary after:scale-x-100",
+              )}
+            >
+              <Gauge className="size-4" />
+              Dashboard
+            </Link>
+          )}
         </nav>
 
         <div className="flex items-center gap-3">
@@ -80,12 +90,41 @@ const PublicNavbar = () => {
               </span>
             </Link>
           </Button>
-          <Button
-            asChild
-            className="motion-scale-hover hidden rounded-full border border-accent/40 px-5 text-xs font-bold shadow-md shadow-primary/10 sm:inline-flex"
-          >
-            <Link href="/login">Sign In</Link>
-          </Button>
+          {user ? (
+            <>
+              <Button
+                asChild
+                variant="outline"
+                className="motion-scale-hover hidden h-10 rounded-full border-border bg-card px-3 text-xs font-bold text-foreground hover:bg-muted sm:inline-flex"
+              >
+                <Link href="/dashboard" aria-label="Open dashboard">
+                  <span className="flex size-6 items-center justify-center rounded-full bg-primary-soft text-primary">
+                    <UserRound className="size-4" />
+                  </span>
+                  <span className="max-w-28 truncate">{user.name || user.email}</span>
+                </Link>
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={handleSignOut}
+                className="motion-scale-hover size-10 rounded-full border-border bg-card text-primary hover:bg-muted"
+                aria-label="Sign out"
+              >
+                <LogOut className="size-4" />
+              </Button>
+            </>
+          ) : (
+            <Button
+              asChild
+              disabled={isPending}
+              className="motion-scale-hover hidden rounded-full border border-accent/40 px-5 text-xs font-bold shadow-md shadow-primary/10 sm:inline-flex"
+            >
+              <Link href="/auth/login">Sign In</Link>
+            </Button>
+          )}
         </div>
       </div>
     </header>

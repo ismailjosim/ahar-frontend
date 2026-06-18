@@ -39,22 +39,30 @@ async function requestBackend<T>(path: string, init: RequestInit = {}): Promise<
     headers.set("Content-Type", "application/json")
   }
 
-  const response = await fetch(`${getBackendBaseUrl()}${path}`, {
-    ...init,
-    headers,
-    cache: "no-store",
-  })
-  const body = (await response.json().catch(() => ({}))) as BackendBody<T>
+  try {
+    const response = await fetch(`${getBackendBaseUrl()}${path}`, {
+      ...init,
+      headers,
+      cache: "no-store",
+    })
+    const body = (await response.json().catch(() => ({}))) as BackendBody<T>
 
-  if (!response.ok) {
+    if (!response.ok) {
+      return {
+        success: false,
+        message: body.message || "Backend request failed",
+        error: body.error || body,
+      }
+    }
+
+    return body
+  } catch (error) {
     return {
       success: false,
-      message: body.message || "Backend request failed",
-      error: body.error || body,
+      message: "Unable to reach backend API",
+      error,
     }
   }
-
-  return body
 }
 
 export async function proxyList<T>(path: string, req: Request) {
