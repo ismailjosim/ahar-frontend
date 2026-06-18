@@ -35,7 +35,7 @@ export default function InventoryManagerContent() {
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div className="col-span-2">
-          <div className="rounded-lg border border-[#F3E5D8] bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
+          <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 dark:border-slate-700 dark:bg-slate-800">
             <h3 className="font-bengali text-lg font-bold">Inventory Items</h3>
             {loading ? (
               <div className="p-6 text-center">Loading...</div>
@@ -78,16 +78,16 @@ export default function InventoryManagerContent() {
           </div>
         </div>
 
-        <aside className="rounded-lg border border-[#F3E5D8] bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
+        <aside className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 dark:border-slate-700 dark:bg-slate-800">
           <h4 className="font-bengali text-md font-bold">Low Stock Alerts</h4>
           <div className="mt-3 space-y-2">
-            {low.length === 0 ? (
+              {low.length === 0 ? (
               <div className="text-sm text-gray-500">No low stock items</div>
             ) : (
               low.map((l, idx) => (
                 <div
                   key={idx}
-                  className={`rounded p-2 ${l.severity === "critical" ? "bg-red-50 text-red-700" : "bg-amber-50 text-amber-700"}`}
+                  className={`rounded p-2 ${l.severity === "critical" ? "bg-[var(--destructive)]/10 text-[var(--destructive)]" : "bg-[var(--warning)]/10 text-[var(--warning-foreground)]"}`}
                 >
                   <div className="font-bold">{l.item}</div>
                   <div className="text-xs">{l.stock}</div>

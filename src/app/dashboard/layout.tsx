@@ -9,7 +9,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   return (
-    <div className="flex min-h-screen bg-[#FFFDF9] dark:bg-slate-950">
+    <div className="flex min-h-screen bg-[var(--canvas)]">
       {/* Fixed Sidebar - doesn't scroll */}
       <AdminSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 

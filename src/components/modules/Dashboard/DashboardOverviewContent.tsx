@@ -1,6 +1,6 @@
 "use client"
 
-import { WalletCards, ShoppingBag, CalendarCheck, ClipboardList, Bell, TrendingUp, Filter } from "lucide-react"
+import { Bell, TrendingUp } from "lucide-react"
 import type { DashboardStatCard, AdminOrderRow, AdminReservationRow, LowStockItem } from "@/types/dashboard.interface"
 
 interface DashboardOverviewContentProps {
@@ -12,35 +12,38 @@ interface DashboardOverviewContentProps {
 
 function StatCard({ stat }: { stat: DashboardStatCard }) {
   const toneStyles = {
-    primary: "bg-orange-50 text-[#B22222] dark:bg-orange-950 dark:text-orange-400",
-    accent: "bg-red-50 text-[#B22222] dark:bg-red-950 dark:text-red-400",
-    success: "bg-green-50 text-green-600 dark:bg-green-950 dark:text-green-400",
-    warning: "bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400",
+    primary: "bg-secondary/30 text-primary",
+    accent: "bg-primary-soft text-primary",
+    success: "bg-success text-success-foreground",
+    warning: "bg-warning-soft text-warning-foreground",
   }
 
   const Icon = stat.icon
 
   return (
-    <div className="rounded-2xl border border-[#F3E5D8] bg-white p-5 transition-all duration-300 hover:border-[#B22222]/40 hover:shadow-lg dark:border-slate-700 dark:bg-slate-800">
+    <div className="rounded-2xl border border-border bg-card p-5 text-card-foreground transition-all duration-300 hover:border-primary/40 hover:shadow-lg">
       <div className="flex items-start justify-between">
         <div className={`rounded-xl p-3 ${toneStyles[stat.tone]}`}>
-          <Icon className="h-6 w-6" />
+          <Icon className="size-6" />
         </div>
+
         {stat.tone === "accent" && (
           <span className="rounded-full bg-red-50 px-2 py-0.5 text-xs font-bold text-red-600 dark:bg-red-950 dark:text-red-400">
             লাইভ
           </span>
         )}
+
         {stat.tone === "warning" && (
-          <span className="rounded-full bg-amber-50/50 px-2 py-0.5 font-bengali text-xs font-bold text-amber-600 dark:bg-amber-950 dark:text-amber-400">
+          <span className="rounded-full bg-amber-50 px-2 py-0.5 font-bengali text-xs font-bold text-amber-600 dark:bg-amber-950 dark:text-amber-400">
             আজকে
           </span>
         )}
       </div>
+
       <div className="mt-4">
-        <p className="font-bengali text-xs font-medium text-gray-400">{stat.label}</p>
-        <h3 className="mt-1 text-2xl font-bold text-gray-800 dark:text-white">{stat.value}</h3>
-        <p className="font-bengali mt-1 text-[10px] text-gray-400">{stat.helper}</p>
+        <p className="font-bengali text-xs font-medium text-muted-foreground">{stat.label}</p>
+        <h3 className="mt-1 text-2xl font-bold text-foreground">{stat.value}</h3>
+        <p className="mt-1 font-bengali text-[10px] text-muted-foreground">{stat.helper}</p>
       </div>
     </div>
   )
@@ -53,110 +56,104 @@ export default function DashboardOverviewContent({
   lowStockItems,
 }: DashboardOverviewContentProps) {
   return (
-    <div className="space-y-6">
-      {/* Stats Grid */}
+    <div className="space-y-6 text-foreground">
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
         {stats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
         ))}
       </div>
 
-      {/* Charts Row */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Revenue Chart */}
-        <div className="rounded-2xl border border-[#F3E5D8] bg-white p-6 dark:border-slate-700 dark:bg-slate-800 lg:col-span-2">
+        <div className="rounded-2xl border border-border bg-card p-6 text-card-foreground lg:col-span-2">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h3 className="font-bengali text-lg font-bold text-gray-800 dark:text-white">
-                বিক্রয় ও রাজস্ব বিশ্লেষণ
-              </h3>
-              <p className="font-bengali text-xs text-gray-400">সাপ্তাহিক রিয়েল-টাইম আয়ের গ্রাফ চিত্র</p>
+              <h3 className="font-bengali text-lg font-bold">বিক্রয় ও রাজস্ব বিশ্লেষণ</h3>
+              <p className="font-bengali text-xs text-muted-foreground">সাপ্তাহিক রিয়েল-টাইম আয়ের গ্রাফ চিত্র</p>
             </div>
-            <div className="flex items-center gap-1 self-start rounded-lg border border-[#F3E5D8] bg-[#FFF8F0] p-1 sm:self-auto dark:border-slate-700 dark:bg-slate-700">
-              <button className="rounded-md bg-white px-3 py-1 font-bengali text-xs font-medium text-[#B22222] shadow-sm dark:bg-slate-800 dark:text-[#D4A017]">
+
+            <div className="flex items-center gap-1 self-start rounded-lg border border-border bg-muted p-1 sm:self-auto">
+              <button className="rounded-md bg-card px-3 py-1 font-bengali text-xs font-medium text-primary shadow-sm">
                 সপ্তাহ
               </button>
-              <button className="rounded-md px-3 py-1 font-bengali text-xs font-medium text-gray-600 hover:text-[#B22222] dark:text-gray-400 dark:hover:text-[#D4A017]">
+              <button className="rounded-md px-3 py-1 font-bengali text-xs font-medium text-muted-foreground transition hover:text-primary">
                 মাসিক
               </button>
             </div>
           </div>
-          <div className="flex h-80 items-center justify-center rounded-lg bg-gradient-to-br from-[#FFF8F0] to-white text-gray-400 dark:from-slate-700 dark:to-slate-800">
+
+          <div className="flex h-80 items-center justify-center rounded-lg bg-linear-to-br from-muted to-card text-muted-foreground">
             <div className="text-center">
-              <TrendingUp className="mx-auto h-12 w-12 text-gray-300 dark:text-slate-600" />
+              <TrendingUp className="mx-auto size-12 opacity-40" />
               <p className="mt-2 font-bengali text-sm">চার্ট প্লেসহোল্ডার</p>
-              <p className="font-bengali text-xs text-gray-300">Chart.js ইন্টিগ্রেশন হবে</p>
+              <p className="font-bengali text-xs opacity-70">Chart.js ইন্টিগ্রেশন হবে</p>
             </div>
           </div>
         </div>
 
-        {/* Popular Items */}
-        <div className="rounded-2xl border border-[#F3E5D8] bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+        <div className="rounded-2xl border border-border bg-card p-6 text-card-foreground">
           <div className="mb-6">
-            <h3 className="font-bengali text-lg font-bold text-gray-800 dark:text-white">সবচেয়ে জনপ্রিয় খাবার</h3>
-            <p className="font-bengali text-xs text-gray-400">চলতি সপ্তাহের সর্বোচ্চ অর্ডার করা আইটেম</p>
+            <h3 className="font-bengali text-lg font-bold">সবচেয়ে জনপ্রিয় খাবার</h3>
+            <p className="font-bengali text-xs text-muted-foreground">চলতি সপ্তাহের সর্বোচ্চ অর্ডার করা আইটেম</p>
           </div>
-          <div className="flex h-64 items-center justify-center rounded-lg bg-gradient-to-br from-[#FFF8F0] to-white text-gray-400 dark:from-slate-700 dark:to-slate-800">
+
+          <div className="flex h-64 items-center justify-center rounded-lg bg-linear-to-br from-muted to-card text-muted-foreground">
             <div className="text-center">
-              <TrendingUp className="mx-auto h-12 w-12 text-gray-300 dark:text-slate-600" />
+              <TrendingUp className="mx-auto size-12 opacity-40" />
               <p className="mt-2 font-bengali text-sm">পাই চার্ট</p>
-              <p className="font-bengali text-xs text-gray-300">সবচেয়ে জনপ্রিয় আইটেম</p>
+              <p className="font-bengali text-xs opacity-70">সবচেয়ে জনপ্রিয় আইটেম</p>
             </div>
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
+
+          <div className="mt-4 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#B22222]"></span>
+              <span className="size-2 rounded-full bg-primary" />
               <span>কাচ্চি বিরিয়ানি (35%)</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#D4A017]"></span>
+              <span className="size-2 rounded-full bg-secondary" />
               <span>সর্ষে ইলিশ (25%)</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#1F2937]"></span>
+              <span className="size-2 rounded-full bg-foreground" />
               <span>চুইঝাল খাসি (20%)</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#34D399]"></span>
+              <span className="size-2 rounded-full bg-success" />
               <span>ভাপা পিঠা (20%)</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Live Orders Table */}
-      <div className="overflow-hidden rounded-2xl border border-[#F3E5D8] bg-white dark:border-slate-700 dark:bg-slate-800">
-        <div className="flex flex-col gap-4 border-b border-[#F3E5D8] p-6 sm:flex-row sm:items-center sm:justify-between dark:border-slate-700">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card text-card-foreground">
+        <div className="flex flex-col gap-4 border-b border-border p-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <span className="inline-flex h-3 w-3 animate-pulse rounded-full bg-red-400"></span>
+            <span className="inline-flex size-3 animate-pulse rounded-full bg-primary" />
             <div>
-              <h3 className="font-bengali text-lg font-bold text-gray-800 dark:text-white">লাইভ অর্ডার ট্র্যাকার</h3>
-              <p className="font-bengali text-xs text-gray-400">গ্রাহকের রিয়েল-টাইম অর্ডার স্থিতি</p>
+              <h3 className="font-bengali text-lg font-bold">লাইভ অর্ডার ট্র্যাকার</h3>
+              <p className="font-bengali text-xs text-muted-foreground">গ্রাহকের রিয়েল-টাইম অর্ডার স্থিতি</p>
             </div>
           </div>
 
-          {/* Filter buttons */}
           <div className="flex flex-wrap items-center gap-2">
-            <button className="rounded-lg bg-[#B22222] px-3 py-1.5 font-bengali text-xs font-semibold text-white">
+            <button className="rounded-lg bg-primary px-3 py-1.5 font-bengali text-xs font-semibold text-primary-foreground">
               সব
             </button>
-            <button className="rounded-lg bg-[#FFF8F0] px-3 py-1.5 font-bengali text-xs font-semibold text-gray-600 hover:bg-red-50 dark:bg-slate-700 dark:text-gray-400">
-              অপেক্ষারত
-            </button>
-            <button className="rounded-lg bg-[#FFF8F0] px-3 py-1.5 font-bengali text-xs font-semibold text-gray-600 hover:bg-red-50 dark:bg-slate-700 dark:text-gray-400">
-              প্রস্তুত হচ্ছে
-            </button>
-            <button className="rounded-lg bg-[#FFF8F0] px-3 py-1.5 font-bengali text-xs font-semibold text-gray-600 hover:bg-red-50 dark:bg-slate-700 dark:text-gray-400">
-              সম্পন্ন
-            </button>
+            {["অপেক্ষারত", "প্রস্তুত হচ্ছে", "সম্পন্ন"].map((label) => (
+              <button
+                key={label}
+                className="rounded-lg bg-muted px-3 py-1.5 font-bengali text-xs font-semibold text-muted-foreground transition hover:bg-primary-soft hover:text-primary"
+              >
+                {label}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Orders Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-[#F3E5D8] bg-[#FFF8F0]/60 font-bengali text-xs font-semibold uppercase text-gray-500 dark:border-slate-700 dark:bg-slate-700 dark:text-gray-400">
+              <tr className="border-b border-border bg-muted/60 font-bengali text-xs font-semibold uppercase text-muted-foreground">
                 <th className="px-6 py-4 text-center">অর্ডার আইডি</th>
                 <th className="px-6 py-4">গ্রাহক ও ফোন</th>
                 <th className="px-6 py-4">আইটেম সমুহ</th>
@@ -165,17 +162,18 @@ export default function DashboardOverviewContent({
                 <th className="px-6 py-4 text-center">স্ট্যাটাস</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#F3E5D8] text-sm dark:divide-slate-700">
+
+            <tbody className="divide-y divide-border text-sm">
               {recentOrders.map((order) => (
-                <tr key={order.id} className="transition hover:bg-[#FFF8F0]/40 dark:hover:bg-slate-700">
-                  <td className="px-6 py-4 text-center font-semibold text-gray-800 dark:text-white">{order.id}</td>
+                <tr key={order.id} className="transition hover:bg-muted/40">
+                  <td className="px-6 py-4 text-center font-semibold">{order.id}</td>
                   <td className="px-6 py-4">
-                    <div className="font-bengali font-semibold text-gray-800 dark:text-white">{order.customer}</div>
-                    <div className="font-bengali text-xs text-gray-400">{order.phone}</div>
+                    <div className="font-bengali font-semibold">{order.customer}</div>
+                    <div className="font-bengali text-xs text-muted-foreground">{order.phone}</div>
                   </td>
-                  <td className="px-6 py-4 text-xs text-gray-600 dark:text-gray-300">{order.items}</td>
-                  <td className="px-6 py-4 text-xs font-semibold text-gray-600 dark:text-gray-300">{order.method}</td>
-                  <td className="px-6 py-4 text-right font-semibold text-gray-800 dark:text-white">৳{order.total}</td>
+                  <td className="px-6 py-4 text-xs text-muted-foreground">{order.items}</td>
+                  <td className="px-6 py-4 text-xs font-semibold text-muted-foreground">{order.method}</td>
+                  <td className="px-6 py-4 text-right font-semibold">৳{order.total}</td>
                   <td className="px-6 py-4 text-center">
                     <span
                       className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
@@ -185,7 +183,7 @@ export default function DashboardOverviewContent({
                             ? "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400"
                             : order.status === "Ready"
                               ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400"
-                              : "bg-gray-50 text-gray-700 dark:bg-gray-900 dark:text-gray-400"
+                              : "bg-muted text-muted-foreground"
                       }`}
                     >
                       {order.status === "Pending"
@@ -204,18 +202,16 @@ export default function DashboardOverviewContent({
         </div>
       </div>
 
-      {/* Reservations & Low Stock Grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Reservations */}
-        <div className="overflow-hidden rounded-2xl border border-[#F3E5D8] bg-white dark:border-slate-700 dark:bg-slate-800">
-          <div className="border-b border-[#F3E5D8] p-6 dark:border-slate-700">
-            <h3 className="font-bengali text-lg font-bold text-gray-800 dark:text-white">আসন্ন রিজার্ভেশন</h3>
-            <p className="font-bengali text-xs text-gray-400">টেবিল বুকিং ম্যানেজমেন্ট</p>
+        <div className="overflow-hidden rounded-2xl border border-border bg-card">
+          <div className="border-b border-border p-6">
+            <h3 className="font-bengali text-lg font-bold">আসন্ন রিজার্ভেশন</h3>
+            <p className="font-bengali text-xs text-muted-foreground">টেবিল বুকিং ম্যানেজমেন্ট</p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-[#F3E5D8] bg-[#FFF8F0]/60 font-bengali text-xs font-semibold uppercase text-gray-500 dark:border-slate-700 dark:bg-slate-700 dark:text-gray-400">
+                <tr className="border-b border-border bg-muted/60 font-bengali text-xs font-semibold uppercase text-muted-foreground">
                   <th className="px-6 py-4">আইডি</th>
                   <th className="px-6 py-4">গ্রাহক</th>
                   <th className="px-6 py-4">সময়</th>
@@ -223,18 +219,16 @@ export default function DashboardOverviewContent({
                   <th className="px-6 py-4">স্ট্যাটাস</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#F3E5D8] dark:divide-slate-700">
+              <tbody className="divide-y divide-border">
                 {reservations.map((res) => (
-                  <tr key={res.id} className="transition hover:bg-[#FFF8F0]/40 dark:hover:bg-slate-700">
-                    <td className="px-6 py-4 font-semibold text-gray-800 dark:text-white">{res.id}</td>
+                  <tr key={res.id} className="transition hover:bg-muted/40">
+                    <td className="px-6 py-4 font-semibold">{res.id}</td>
                     <td className="px-6 py-4">
-                      <div className="font-bengali font-semibold text-gray-800 dark:text-white">{res.customer}</div>
-                      <div className="text-xs text-gray-400">{res.phone}</div>
+                      <div className="font-bengali font-semibold">{res.customer}</div>
+                      <div className="text-xs text-muted-foreground">{res.phone}</div>
                     </td>
-                    <td className="px-6 py-4 font-bengali text-xs text-gray-600 dark:text-gray-300">{res.time}</td>
-                    <td className="px-6 py-4 font-bengali text-xs font-semibold text-gray-600 dark:text-gray-300">
-                      {res.table}
-                    </td>
+                    <td className="px-6 py-4 font-bengali text-xs text-muted-foreground">{res.time}</td>
+                    <td className="px-6 py-4 font-bengali text-xs font-semibold text-muted-foreground">{res.table}</td>
                     <td className="px-6 py-4">
                       <span
                         className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
@@ -253,14 +247,13 @@ export default function DashboardOverviewContent({
           </div>
         </div>
 
-        {/* Low Stock Items */}
-        <div className="overflow-hidden rounded-2xl border border-[#F3E5D8] bg-white dark:border-slate-700 dark:bg-slate-800">
-          <div className="border-b border-[#F3E5D8] p-6 dark:border-slate-700">
+        <div className="overflow-hidden rounded-2xl border border-border bg-card">
+          <div className="border-b border-border p-6">
             <div className="flex items-center gap-2">
-              <Bell className="h-5 w-5 text-[#B22222] dark:text-[#D4A017]" />
+              <Bell className="size-5 text-primary" />
               <div>
-                <h3 className="font-bengali text-lg font-bold text-gray-800 dark:text-white">নিম্ন স্টক সতর্কতা</h3>
-                <p className="font-bengali text-xs text-gray-400">রিফিল প্রয়োজনীয় আইটেম</p>
+                <h3 className="font-bengali text-lg font-bold">নিম্ন স্টক সতর্কতা</h3>
+                <p className="font-bengali text-xs text-muted-foreground">রিফিল প্রয়োজনীয় আইটেম</p>
               </div>
             </div>
           </div>
@@ -276,8 +269,8 @@ export default function DashboardOverviewContent({
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="font-bengali font-semibold text-gray-800 dark:text-white">{item.item}</p>
-                    <p className="font-bengali text-xs text-gray-600 dark:text-gray-400">{item.category}</p>
+                    <p className="font-bengali font-semibold">{item.item}</p>
+                    <p className="font-bengali text-xs text-muted-foreground">{item.category}</p>
                   </div>
                   <span
                     className={`inline-block rounded px-2 py-1 font-bengali text-xs font-bold ${
