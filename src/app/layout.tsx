@@ -36,6 +36,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={`${manrope.variable} ${hindSiliguri.variable} ${geistMono.variable} h-full antialiased`}
     >

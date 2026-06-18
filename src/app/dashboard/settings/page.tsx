@@ -1,4 +1,4 @@
-"use client"
+import SettingsManagerContent from "@/components/modules/Dashboard/SettingsManagerContent"
 
 export default function SettingsPage() {
   return (
@@ -8,11 +8,7 @@ export default function SettingsPage() {
         <p className="font-bengali mt-2 text-muted-foreground">রেস্তোরাঁর সেটিংস এবং সাধারণ কনফিগারেশন সমন্বয় করুন</p>
       </div>
 
-      <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
-        <p className="text-sm text-muted-foreground">
-          Settings UI placeholder — add company details, taxes, and integrations here.
-        </p>
-      </div>
+      <SettingsManagerContent />
     </div>
   )
 }

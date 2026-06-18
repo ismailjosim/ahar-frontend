@@ -9,7 +9,7 @@ const orders: AdminOrderRow[] = [
     items: "Royal Kacchi x 2, Borhani x 2",
     method: "bKash",
     total: 1060,
-    status: "Pending",
+    status: "Placed",
     type: "Delivery",
   },
   {
@@ -19,7 +19,7 @@ const orders: AdminOrderRow[] = [
     items: "Shorshe Ilish x 1, Plain Rice x 2",
     method: "COD",
     total: 820,
-    status: "Preparing",
+    status: "Accepted",
     type: "Pickup",
   },
   {
@@ -39,7 +39,7 @@ const orders: AdminOrderRow[] = [
     items: "Beef Tehari x 2, Firni x 2",
     method: "Nagad",
     total: 760,
-    status: "Completed",
+    status: "Delivered",
     type: "Delivery",
   },
 ]
@@ -78,8 +78,8 @@ export function updateOrderStatus(id: string, status: AdminOrderRow["status"]) {
   if (idx === -1) return null
   orders[idx] = { ...orders[idx], status }
   const updated = orders[idx]
-  // If order marked completed, adjust inventory
-  if (status === "Completed") {
+  // If order marked delivered, adjust inventory
+  if (status === "Delivered") {
     try {
       adjustStockFromOrderItems(updated.items)
     } catch (e) {

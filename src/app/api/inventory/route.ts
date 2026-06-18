@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { listInventory } from "@/lib/inventory.store"
+import { createInventoryItem, listInventory } from "@/lib/inventory.store"
 
 export async function GET(req: Request) {
   const url = new URL(req.url)
@@ -8,4 +8,13 @@ export async function GET(req: Request) {
 
   const result = listInventory({ page, pageSize })
   return NextResponse.json(result)
+}
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json()
+    return NextResponse.json(createInventoryItem(body), { status: 201 })
+  } catch {
+    return NextResponse.json({ error: "Invalid body" }, { status: 400 })
+  }
 }

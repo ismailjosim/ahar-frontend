@@ -1,6 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import DashboardModal from "@/components/modules/Dashboard/DashboardModal"
+import { notifyDashboard } from "@/components/modules/Dashboard/DashboardNotificationToasts"
 import type { AdminReservationRow } from "@/types/dashboard.interface"
 
 export default function ReservationsManagerContent() {
@@ -11,6 +13,7 @@ export default function ReservationsManagerContent() {
   const [total, setTotal] = useState(0)
   const [editing, setEditing] = useState<AdminReservationRow | null>(null)
   const [form, setForm] = useState<Partial<AdminReservationRow>>({})
+  const [isEditorOpen, setIsEditorOpen] = useState(false)
 
   async function fetchList() {
     setLoading(true)
@@ -28,11 +31,13 @@ export default function ReservationsManagerContent() {
   function openCreate() {
     setEditing(null)
     setForm({ customer: "", phone: "", guests: 2, time: "Today, 7:00 PM", table: "T-01", status: "Pending" })
+    setIsEditorOpen(true)
   }
 
   function openEdit(r: AdminReservationRow) {
     setEditing(r)
     setForm(r)
+    setIsEditorOpen(true)
   }
 
   async function submit() {
@@ -47,6 +52,7 @@ export default function ReservationsManagerContent() {
         fetchList()
         setEditing(null)
         setForm({})
+        setIsEditorOpen(false)
       }
     } else {
       const res = await fetch(`/api/reservations`, {
@@ -57,6 +63,7 @@ export default function ReservationsManagerContent() {
       if (res.ok) {
         fetchList()
         setForm({})
+        setIsEditorOpen(false)
       }
     }
   }
@@ -64,7 +71,10 @@ export default function ReservationsManagerContent() {
   async function remove(id: string) {
     if (!confirm("Delete reservation?")) return
     const res = await fetch(`/api/reservations/${id}`, { method: "DELETE" })
-    if (res.ok) fetchList()
+    if (res.ok) {
+      fetchList()
+      notifyDashboard(`Reservation ${id} approved`, "success")
+    }
   }
 
   async function approve(id: string) {
@@ -166,58 +176,67 @@ export default function ReservationsManagerContent() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-4 dark:border-slate-700 dark:bg-slate-800">
-        <h4 className="font-bengali font-bold">{editing ? "Edit Reservation" : "Create Reservation"}</h4>
-        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <input
-            placeholder="Customer"
-            value={form.customer || ""}
-            onChange={(e) => setForm((s) => ({ ...s, customer: e.target.value }))}
-            className="rounded border px-3 py-2"
-          />
-          <input
-            placeholder="Phone"
-            value={form.phone || ""}
-            onChange={(e) => setForm((s) => ({ ...s, phone: e.target.value }))}
-            className="rounded border px-3 py-2"
-          />
-          <input
-            type="number"
-            placeholder="Guests"
-            value={form.guests ?? 2}
-            onChange={(e) => setForm((s) => ({ ...s, guests: Number(e.target.value) }))}
-            className="rounded border px-3 py-2"
-          />
-        </div>
-        <div className="mt-3 grid grid-cols-1 gap-3">
-          <input
-            placeholder="Time (e.g., Today, 8:00 PM)"
-            value={form.time || ""}
-            onChange={(e) => setForm((s) => ({ ...s, time: e.target.value }))}
-            className="rounded border px-3 py-2"
-          />
-          <input
-            placeholder="Table (e.g., T-01)"
-            value={form.table || ""}
-            onChange={(e) => setForm((s) => ({ ...s, table: e.target.value }))}
-            className="rounded border px-3 py-2 max-w-xs"
-          />
-        </div>
-        <div className="mt-3 flex items-center gap-2">
-          <button onClick={submit} className="rounded-md bg-primary px-3 py-2 text-white">
-            Save
-          </button>
-          <button
-            onClick={() => {
-              setEditing(null)
-              setForm({})
-            }}
-            className="rounded-md border px-3 py-2"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
+      {isEditorOpen && (
+        <DashboardModal
+          title={editing ? "Edit Reservation" : "Create Reservation"}
+          onClose={() => {
+            setEditing(null)
+            setForm({})
+            setIsEditorOpen(false)
+          }}
+        >
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <input
+              placeholder="Customer"
+              value={form.customer || ""}
+              onChange={(e) => setForm((s) => ({ ...s, customer: e.target.value }))}
+              className="rounded border px-3 py-2"
+            />
+            <input
+              placeholder="Phone"
+              value={form.phone || ""}
+              onChange={(e) => setForm((s) => ({ ...s, phone: e.target.value }))}
+              className="rounded border px-3 py-2"
+            />
+            <input
+              type="number"
+              placeholder="Guests"
+              value={form.guests ?? 2}
+              onChange={(e) => setForm((s) => ({ ...s, guests: Number(e.target.value) }))}
+              className="rounded border px-3 py-2"
+            />
+          </div>
+          <div className="mt-3 grid grid-cols-1 gap-3">
+            <input
+              placeholder="Time (e.g., Today, 8:00 PM)"
+              value={form.time || ""}
+              onChange={(e) => setForm((s) => ({ ...s, time: e.target.value }))}
+              className="rounded border px-3 py-2"
+            />
+            <input
+              placeholder="Table (e.g., T-01)"
+              value={form.table || ""}
+              onChange={(e) => setForm((s) => ({ ...s, table: e.target.value }))}
+              className="rounded border px-3 py-2 max-w-xs"
+            />
+          </div>
+          <div className="mt-3 flex items-center gap-2">
+            <button onClick={submit} className="rounded-md bg-primary px-3 py-2 text-white">
+              Save
+            </button>
+            <button
+              onClick={() => {
+                setEditing(null)
+                setForm({})
+                setIsEditorOpen(false)
+              }}
+              className="rounded-md border px-3 py-2"
+            >
+              Cancel
+            </button>
+          </div>
+        </DashboardModal>
+      )}
     </div>
   )
 }

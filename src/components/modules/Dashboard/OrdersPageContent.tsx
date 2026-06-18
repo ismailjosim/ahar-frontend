@@ -1,13 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { notifyDashboard } from "@/components/modules/Dashboard/DashboardNotificationToasts"
+import { orderStatusLabels, orderStatusSequence } from "@/lib/order.constant"
 import type { AdminOrderRow } from "@/types/dashboard.interface"
 
 interface OrdersPageContentProps {
   orders?: AdminOrderRow[]
 }
-
-const STATUS_SEQUENCE: AdminOrderRow["status"][] = ["Pending", "Preparing", "Ready", "Completed"]
 
 export default function OrdersPageContent({ orders: initial }: OrdersPageContentProps) {
   const [orders, setOrders] = useState<AdminOrderRow[]>(initial || [])
@@ -41,8 +41,9 @@ export default function OrdersPageContent({ orders: initial }: OrdersPageContent
   async function updateStatus(id: string) {
     const o = orders.find((x) => x.id === id)
     if (!o) return
-    const idx = STATUS_SEQUENCE.indexOf(o.status)
-    const next = STATUS_SEQUENCE[Math.min(idx + 1, STATUS_SEQUENCE.length - 1)]
+    if (o.status === "Cancelled" || o.status === "Delivered") return
+    const idx = orderStatusSequence.indexOf(o.status)
+    const next = orderStatusSequence[Math.min(idx + 1, orderStatusSequence.length - 1)]
     const res = await fetch(`/api/orders/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -51,10 +52,9 @@ export default function OrdersPageContent({ orders: initial }: OrdersPageContent
     if (res.ok) {
       const updated: AdminOrderRow = await res.json()
       setOrders((prev) => prev.map((p) => (p.id === id ? updated : p)))
-      // quick notification
-      alert(`Order ${id} updated to ${updated.status}`)
+      notifyDashboard(`Order ${id} updated to ${updated.status}`, "success")
     } else {
-      alert("Failed to update order")
+      notifyDashboard("Failed to update order", "warning")
     }
   }
 
@@ -92,10 +92,12 @@ export default function OrdersPageContent({ orders: initial }: OrdersPageContent
             onChange={(e) => setStatusFilter(e.target.value)}
           >
             <option value="">All</option>
-            <option value="Pending">Pending</option>
-            <option value="Preparing">Preparing</option>
-            <option value="Ready">Ready</option>
-            <option value="Completed">Completed</option>
+            {orderStatusSequence.map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
+            <option value="Cancelled">Cancelled</option>
           </select>
           <button
             className="rounded-md bg-primary px-3 py-1 text-xs font-semibold text-white"
@@ -149,22 +151,22 @@ export default function OrdersPageContent({ orders: initial }: OrdersPageContent
                   <td className="px-6 py-4 text-center">
                     <span
                       className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
-                        order.status === "Pending"
+                        order.status === "Placed"
                           ? "bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-400"
-                          : order.status === "Preparing"
+                          : order.status === "Accepted"
                             ? "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400"
-                            : order.status === "Ready"
-                              ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400"
-                              : "bg-gray-50 text-gray-700 dark:bg-gray-900 dark:text-gray-400"
+                            : order.status === "Preparing"
+                              ? "bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-400"
+                              : order.status === "Ready"
+                                ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400"
+                                : order.status === "Out for Delivery"
+                                  ? "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400"
+                                  : order.status === "Cancelled"
+                                    ? "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400"
+                                    : "bg-gray-50 text-gray-700 dark:bg-gray-900 dark:text-gray-400"
                       }`}
                     >
-                      {order.status === "Pending"
-                        ? "অপেক্ষারত"
-                        : order.status === "Preparing"
-                          ? "প্রস্তুত হচ্ছে"
-                          : order.status === "Ready"
-                            ? "প্রস্তুত"
-                            : "সম্পন্ন"}
+                      {orderStatusLabels[order.status]}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center">
@@ -177,6 +179,7 @@ export default function OrdersPageContent({ orders: initial }: OrdersPageContent
                       </button>
                       <button
                         onClick={() => updateStatus(order.id)}
+                        disabled={order.status === "Delivered" || order.status === "Cancelled"}
                         className="rounded-md bg-[var(--secondary)] px-3 py-1 text-xs font-semibold text-gray-600 hover:bg-[var(--primary-soft)] dark:bg-slate-700 dark:text-gray-300"
                       >
                         Update

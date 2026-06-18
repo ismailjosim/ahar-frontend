@@ -27,7 +27,7 @@ export interface AdminOrderRow {
   items: string
   method: string
   total: number
-  status: "Pending" | "Preparing" | "Ready" | "Completed"
+  status: "Placed" | "Accepted" | "Preparing" | "Ready" | "Out for Delivery" | "Delivered" | "Cancelled"
   type: "Delivery" | "Pickup" | "Dine-In"
 }
 

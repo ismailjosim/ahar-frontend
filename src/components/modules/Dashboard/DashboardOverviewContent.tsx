@@ -1,6 +1,7 @@
 "use client"
 
 import { Bell, TrendingUp } from "lucide-react"
+import { orderStatusLabels } from "@/lib/order.constant"
 import type { DashboardStatCard, AdminOrderRow, AdminReservationRow, LowStockItem } from "@/types/dashboard.interface"
 
 interface DashboardOverviewContentProps {
@@ -177,22 +178,22 @@ export default function DashboardOverviewContent({
                   <td className="px-6 py-4 text-center">
                     <span
                       className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
-                        order.status === "Pending"
+                        order.status === "Placed"
                           ? "bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-400"
-                          : order.status === "Preparing"
+                          : order.status === "Accepted"
                             ? "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400"
-                            : order.status === "Ready"
-                              ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400"
-                              : "bg-muted text-muted-foreground"
+                            : order.status === "Preparing"
+                              ? "bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-400"
+                              : order.status === "Ready"
+                                ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400"
+                                : order.status === "Out for Delivery"
+                                  ? "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400"
+                                  : order.status === "Cancelled"
+                                    ? "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400"
+                                    : "bg-muted text-muted-foreground"
                       }`}
                     >
-                      {order.status === "Pending"
-                        ? "অপেক্ষারত"
-                        : order.status === "Preparing"
-                          ? "প্রস্তুত হচ্ছে"
-                          : order.status === "Ready"
-                            ? "প্রস্তুত"
-                            : "সম্পন্ন"}
+                      {orderStatusLabels[order.status]}
                     </span>
                   </td>
                 </tr>

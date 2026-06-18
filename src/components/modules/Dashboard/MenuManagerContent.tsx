@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import type { MenuItem } from "@/types/menu.interface"
+import DashboardModal from "@/components/modules/Dashboard/DashboardModal"
+import type { MenuAddOn, MenuItem, MenuVariant } from "@/types/menu.interface"
 import { menuCategories } from "@/lib/menu.constant"
 
 export default function MenuManagerContent() {
@@ -12,6 +13,7 @@ export default function MenuManagerContent() {
   const [total, setTotal] = useState(0)
   const [editing, setEditing] = useState<MenuItem | null>(null)
   const [form, setForm] = useState<Partial<MenuItem>>({})
+  const [isEditorOpen, setIsEditorOpen] = useState(false)
 
   async function fetchList() {
     setLoading(true)
@@ -37,17 +39,27 @@ export default function MenuManagerContent() {
       category: "All Dishes",
       price: 0,
       emoji: "🍽",
+      rating: 4.5,
+      prepTime: "25 min",
+      tags: [],
+      variants: [],
+      addOns: [],
+      isFeatured: false,
+      isSpicy: false,
       isAvailable: true,
     })
+    setIsEditorOpen(true)
   }
 
   function openEdit(item: MenuItem) {
     setEditing(item)
     setForm({ ...item })
+    setIsEditorOpen(true)
   }
 
   async function submit() {
     if (!form.name) return alert("Name is required")
+    if (Number(form.price || 0) <= 0) return alert("Price must be greater than 0")
 
     const url = editing ? `/api/menu/${editing.id}` : `/api/menu`
     const method = editing ? "PATCH" : "POST"
@@ -62,6 +74,7 @@ export default function MenuManagerContent() {
       await fetchList()
       setEditing(null)
       setForm({})
+      setIsEditorOpen(false)
     }
   }
 
@@ -174,85 +187,190 @@ export default function MenuManagerContent() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-4 text-card-foreground">
-        <h4 className="font-bengali font-bold">{editing ? "Edit Item" : "Create Item"}</h4>
-
-        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <input
-            placeholder="Name"
-            value={form.name || ""}
-            onChange={(e) => setForm((s) => ({ ...s, name: e.target.value }))}
-            className={inputClass}
-          />
-
-          <select
-            value={form.category || "All Dishes"}
-            onChange={(e) => setForm((s) => ({ ...s, category: e.target.value }))}
-            className={inputClass}
-          >
-            {menuCategories.map((c) => (
-              <option key={c.slug} value={c.name}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-
-          <input
-            type="number"
-            placeholder="Price"
-            value={form.price ?? 0}
-            onChange={(e) => setForm((s) => ({ ...s, price: Number(e.target.value) }))}
-            className={inputClass}
-          />
-        </div>
-
-        <div className="mt-3 grid grid-cols-1 gap-3">
-          <input
-            placeholder="Emoji"
-            value={form.emoji || ""}
-            onChange={(e) => setForm((s) => ({ ...s, emoji: e.target.value }))}
-            className={`${inputClass} max-w-xs`}
-          />
-
-          <textarea
-            placeholder="Description"
-            value={form.description || ""}
-            onChange={(e) => setForm((s) => ({ ...s, description: e.target.value }))}
-            className={`${inputClass} min-h-24 resize-y`}
-          />
-
-          <label className="inline-flex items-center gap-2 text-sm">
+      {isEditorOpen && (
+        <DashboardModal
+          title={editing ? "Edit Item" : "Create Item"}
+          onClose={() => {
+            setEditing(null)
+            setForm({})
+            setIsEditorOpen(false)
+          }}
+          widthClass="max-w-4xl"
+        >
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <input
-              type="checkbox"
-              checked={!!form.isAvailable}
-              onChange={(e) =>
-                setForm((s) => ({
-                  ...s,
-                  isAvailable: e.target.checked,
-                }))
-              }
-              className="size-4 accent-primary"
+              placeholder="Name"
+              value={form.name || ""}
+              onChange={(e) => setForm((s) => ({ ...s, name: e.target.value }))}
+              className={inputClass}
             />
-            Available
-          </label>
-        </div>
 
-        <div className="mt-3 flex items-center gap-2">
-          <button onClick={submit} className={buttonClass}>
-            Save
-          </button>
+            <select
+              value={form.category || "All Dishes"}
+              onChange={(e) => setForm((s) => ({ ...s, category: e.target.value }))}
+              className={inputClass}
+            >
+              {menuCategories.map((c) => (
+                <option key={c.slug} value={c.name}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
 
-          <button
-            onClick={() => {
-              setEditing(null)
-              setForm({})
-            }}
-            className={outlineButtonClass}
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
+            <input
+              type="number"
+              placeholder="Price"
+              value={form.price ?? 0}
+              onChange={(e) => setForm((s) => ({ ...s, price: Number(e.target.value) }))}
+              className={inputClass}
+            />
+
+            <input
+              placeholder="Preparation time"
+              value={form.prepTime || ""}
+              onChange={(e) => setForm((s) => ({ ...s, prepTime: e.target.value }))}
+              className={inputClass}
+            />
+
+            <input
+              type="number"
+              step="0.1"
+              placeholder="Rating"
+              value={form.rating ?? 4.5}
+              onChange={(e) => setForm((s) => ({ ...s, rating: Number(e.target.value) }))}
+              className={inputClass}
+            />
+          </div>
+
+          <div className="mt-3 grid grid-cols-1 gap-3">
+            <input
+              placeholder="Emoji"
+              value={form.emoji || ""}
+              onChange={(e) => setForm((s) => ({ ...s, emoji: e.target.value }))}
+              className={`${inputClass} max-w-xs`}
+            />
+
+            <textarea
+              placeholder="Description"
+              value={form.description || ""}
+              onChange={(e) => setForm((s) => ({ ...s, description: e.target.value }))}
+              className={`${inputClass} min-h-24 resize-y`}
+            />
+
+            <input
+              placeholder="Tags, comma separated"
+              value={(form.tags || []).join(", ")}
+              onChange={(e) => setForm((s) => ({ ...s, tags: parseList(e.target.value) }))}
+              className={inputClass}
+            />
+
+            <input
+              placeholder="Variants: Regular:0, Large:120"
+              value={formatVariants(form.variants || [])}
+              onChange={(e) => setForm((s) => ({ ...s, variants: parseVariants(e.target.value) }))}
+              className={inputClass}
+            />
+
+            <input
+              placeholder="Add-ons: Extra Beef:90, Borhani:80"
+              value={formatAddOns(form.addOns || [])}
+              onChange={(e) => setForm((s) => ({ ...s, addOns: parseAddOns(e.target.value) }))}
+              className={inputClass}
+            />
+
+            <label className="inline-flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={!!form.isFeatured}
+                onChange={(e) =>
+                  setForm((s) => ({
+                    ...s,
+                    isFeatured: e.target.checked,
+                  }))
+                }
+                className="size-4 accent-primary"
+              />
+              Featured
+            </label>
+
+            <label className="inline-flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={!!form.isSpicy}
+                onChange={(e) =>
+                  setForm((s) => ({
+                    ...s,
+                    isSpicy: e.target.checked,
+                  }))
+                }
+                className="size-4 accent-primary"
+              />
+              Spicy
+            </label>
+
+            <label className="inline-flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={!!form.isAvailable}
+                onChange={(e) =>
+                  setForm((s) => ({
+                    ...s,
+                    isAvailable: e.target.checked,
+                  }))
+                }
+                className="size-4 accent-primary"
+              />
+              Available
+            </label>
+          </div>
+
+          <div className="mt-3 flex items-center gap-2">
+            <button onClick={submit} className={buttonClass}>
+              Save
+            </button>
+
+            <button
+              onClick={() => {
+                setEditing(null)
+                setForm({})
+                setIsEditorOpen(false)
+              }}
+              className={outlineButtonClass}
+            >
+              Cancel
+            </button>
+          </div>
+        </DashboardModal>
+      )}
     </div>
   )
+}
+
+function parseList(value: string) {
+  return value
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
+function parseVariants(value: string): MenuVariant[] {
+  return parseList(value).map((item) => {
+    const [name, markup = "0"] = item.split(":")
+    return { name: name.trim(), markup: Number(markup) || 0 }
+  })
+}
+
+function parseAddOns(value: string): MenuAddOn[] {
+  return parseList(value).map((item) => {
+    const [name, price = "0"] = item.split(":")
+    return { name: name.trim(), price: Number(price) || 0 }
+  })
+}
+
+function formatVariants(variants: MenuVariant[]) {
+  return variants.map((variant) => `${variant.name}:${variant.markup}`).join(", ")
+}
+
+function formatAddOns(addOns: MenuAddOn[]) {
+  return addOns.map((addOn) => `${addOn.name}:${addOn.price}`).join(", ")
 }

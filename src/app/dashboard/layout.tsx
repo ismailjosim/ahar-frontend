@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import AdminSidebar from "@/components/modules/Dashboard/AdminSidebar"
+import DashboardNotificationToasts from "@/components/modules/Dashboard/DashboardNotificationToasts"
 import AdminTopbar from "@/components/modules/Dashboard/AdminTopbar"
 import { dashboardNotifications } from "@/lib/dashboard.constant"
 
@@ -15,6 +16,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Main Content Area with left padding for desktop sidebar */}
       <div className="flex flex-1 flex-col overflow-hidden md:pl-72">
+        <DashboardNotificationToasts />
         {/* Topbar */}
         <AdminTopbar onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} notifications={dashboardNotifications} />
 

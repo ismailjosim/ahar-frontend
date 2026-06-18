@@ -132,7 +132,7 @@ export const recentAdminOrders: AdminOrderRow[] = [
     items: "Royal Kacchi x 2, Borhani x 2",
     method: "bKash",
     total: 1060,
-    status: "Pending",
+    status: "Placed",
     type: "Delivery",
   },
   {
@@ -142,7 +142,7 @@ export const recentAdminOrders: AdminOrderRow[] = [
     items: "Shorshe Ilish x 1, Plain Rice x 2",
     method: "COD",
     total: 820,
-    status: "Preparing",
+    status: "Accepted",
     type: "Pickup",
   },
   {
@@ -162,7 +162,7 @@ export const recentAdminOrders: AdminOrderRow[] = [
     items: "Beef Tehari x 2, Firni x 2",
     method: "Nagad",
     total: 760,
-    status: "Completed",
+    status: "Delivered",
     type: "Delivery",
   },
 ]
