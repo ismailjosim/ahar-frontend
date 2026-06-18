@@ -5,37 +5,9 @@ import Link from "next/link"
 import { ArrowRight, BadgePercent, Minus, Plus, ShoppingBag, Trash2, Utensils } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import {
-  cartCouponPlaceholder,
-  cartDeliveryCharge,
-  cartDiscountRate,
-  cartVatRate,
-  demoCartItems,
-} from "@/lib/cart.constant"
-import type { CartLineItem, CartTotals } from "@/types/cart.interface"
-
-const formatCurrency = (amount: number) => `৳${amount}`
-
-const calculateLineTotal = (item: CartLineItem) => {
-  const addOnTotal = item.addOns.reduce((total, addOn) => total + addOn.price, 0)
-
-  return (item.unitPrice + addOnTotal) * item.quantity
-}
-
-const calculateCartTotals = (items: CartLineItem[]): CartTotals => {
-  const subtotal = items.reduce((total, item) => total + calculateLineTotal(item), 0)
-  const discount = Math.round(subtotal * cartDiscountRate)
-  const vat = Math.round(subtotal * cartVatRate)
-  const deliveryCharge = subtotal > 0 ? cartDeliveryCharge : 0
-
-  return {
-    subtotal,
-    discount,
-    vat,
-    deliveryCharge,
-    total: subtotal - discount + vat + deliveryCharge,
-  }
-}
+import { cartCouponPlaceholder, demoCartItems } from "@/lib/cart.constant"
+import { calculateCartTotals, calculateLineTotal, formatCurrency } from "@/lib/cart.utils"
+import type { CartLineItem } from "@/types/cart.interface"
 
 const CartPageContent = () => {
   const [cartItems, setCartItems] = useState<CartLineItem[]>(demoCartItems)
