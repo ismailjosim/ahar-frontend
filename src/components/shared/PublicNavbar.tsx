@@ -97,9 +97,12 @@ const PublicNavbar = () => {
                 variant="outline"
                 className="motion-scale-hover hidden h-10 rounded-full border-border bg-card px-3 text-xs font-bold text-foreground hover:bg-muted sm:inline-flex"
               >
-                <Link href="/dashboard" aria-label="Open dashboard">
-                  <span className="flex size-6 items-center justify-center rounded-full bg-primary-soft text-primary">
-                    <UserRound className="size-4" />
+                <Link href="/profile" aria-label="Open profile">
+                  <span
+                    className="flex size-6 items-center justify-center rounded-full bg-primary-soft bg-cover bg-center text-primary"
+                    style={user.image ? { backgroundImage: `url("${user.image}")` } : undefined}
+                  >
+                    {!user.image && <UserRound className="size-4" />}
                   </span>
                   <span className="max-w-28 truncate">{user.name || user.email}</span>
                 </Link>

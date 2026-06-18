@@ -115,18 +115,6 @@ export default function AdminTopbar({ onMenuClick, notifications = [] }: AdminTo
             </div>
           )}
         </div>
-
-        <div className="flex items-center gap-2 border-l border-border pl-4">
-          <div className="flex size-9 items-center justify-center rounded-full border-2 border-secondary bg-linear-to-br from-primary to-primary-hover font-bold text-primary-foreground">
-            শ
-          </div>
-
-          <div className="hidden text-left md:block">
-            <span className="font-bengali block text-xs font-bold text-foreground">শুভ্রাংশু এস.</span>
-
-            <span className="text-[10px] font-semibold tracking-wide text-secondary">ম্যানেজার</span>
-          </div>
-        </div>
       </div>
     </header>
   )

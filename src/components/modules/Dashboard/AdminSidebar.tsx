@@ -2,7 +2,22 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Gauge, CookingPot, Utensils, Table2, CreditCard, PackageSearch, BarChart3, Settings, X } from "lucide-react"
+import {
+  Gauge,
+  CookingPot,
+  Utensils,
+  Table2,
+  CreditCard,
+  PackageSearch,
+  BarChart3,
+  Settings,
+  X,
+  LogOut,
+  UserRound,
+} from "lucide-react"
+
+import ThemeToggler from "@/components/shared/ThemeToggler"
+import { authClient } from "@/lib/auth-client"
 
 const navItems = [
   { href: "/dashboard", label: "ড্যাশবোর্ড (Dashboard)", icon: Gauge, badge: null },
@@ -23,6 +38,13 @@ interface AdminSidebarProps {
 
 export default function AdminSidebar({ isOpen = true, onClose }: AdminSidebarProps) {
   const pathname = usePathname()
+  const { data: session } = authClient.useSession()
+  const user = session?.user
+
+  async function handleSignOut() {
+    await authClient.signOut()
+    window.location.href = "/auth/login"
+  }
 
   return (
     <>
@@ -122,16 +144,38 @@ export default function AdminSidebar({ isOpen = true, onClose }: AdminSidebarPro
           })}
         </nav>
 
-        <div className="border-t border-border bg-card p-4">
-          <div className="flex items-center gap-3 rounded-xl border border-border bg-secondary/20 p-2.5">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-secondary/30 bg-linear-to-br from-primary to-primary-hover font-bengali font-bold text-primary-foreground">
-              শ
-            </div>
+        <div className="space-y-3 border-t border-border bg-card p-4">
+          <Link
+            href="/profile"
+            onClick={onClose}
+            className="flex items-center gap-3 rounded-xl border border-border bg-secondary/20 p-2.5 transition hover:bg-muted"
+          >
+            <span
+              className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-secondary/30 bg-primary bg-cover bg-center font-bengali font-bold text-primary-foreground"
+              style={user?.image ? { backgroundImage: `url("${user.image}")` } : undefined}
+            >
+              {!user?.image && <UserRound className="size-5" aria-hidden="true" />}
+            </span>
 
-            <div className="min-w-0 overflow-hidden">
-              <h4 className="truncate font-bengali text-sm font-semibold text-foreground">শুভ্রাংশু শেখর</h4>
-              <p className="truncate text-xs font-semibold text-secondary">Executive Chef / Admin</p>
-            </div>
+            <span className="min-w-0 overflow-hidden text-left">
+              <span className="block truncate text-sm font-semibold text-foreground">{user?.name || "Profile"}</span>
+              <span className="block truncate text-xs font-semibold text-muted-foreground">
+                {user?.email || "Signed in"}
+              </span>
+            </span>
+          </Link>
+
+          <div className="flex items-center justify-between gap-2">
+            <ThemeToggler />
+
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-background px-3 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-primary"
+            >
+              <LogOut className="size-4" aria-hidden="true" />
+              Logout
+            </button>
           </div>
         </div>
       </aside>
