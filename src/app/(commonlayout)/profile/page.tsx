@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { FormEvent, useState } from "react"
-import { ImageIcon, Loader2, Save, UserRound } from "lucide-react"
+import { ImageIcon, Loader2, Phone, Save, UserRound } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { authClient } from "@/lib/auth-client"
@@ -38,6 +38,7 @@ export default function ProfilePage() {
 function ProfileEditor({ user, refetch }: { user: ProfileUser; refetch: () => Promise<void> }) {
   const [name, setName] = useState(user.name || "")
   const [image, setImage] = useState(user.image || "")
+  const [phone, setPhone] = useState(user.phone || "")
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   const [isSaving, setIsSaving] = useState(false)
@@ -58,6 +59,7 @@ function ProfileEditor({ user, refetch }: { user: ProfileUser; refetch: () => Pr
       const { error: updateError } = await authClient.updateUser({
         name: name.trim(),
         image: image.trim() || null,
+        phone: phone.trim() || null,
       })
 
       if (updateError) {
@@ -99,7 +101,7 @@ function ProfileEditor({ user, refetch }: { user: ProfileUser; refetch: () => Pr
         <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
           <div className="mb-6">
             <h2 className="font-bengali text-2xl font-bold">Profile settings</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Update your display name and profile image URL.</p>
+            <p className="mt-1 text-sm text-muted-foreground">Update your display name, phone and profile image URL.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -114,6 +116,21 @@ function ProfileEditor({ user, refetch }: { user: ProfileUser; refetch: () => Pr
                   className="h-10 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                   placeholder="Your name"
                   required
+                />
+              </span>
+            </label>
+
+            <label className="block space-y-2 text-sm font-medium">
+              <span>Phone</span>
+              <span className="flex items-center gap-2 rounded-md border border-input bg-background px-3 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+                <Phone className="size-4 text-muted-foreground" aria-hidden="true" />
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(event) => setPhone(event.target.value)}
+                  autoComplete="tel"
+                  className="h-10 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                  placeholder="+880 1XXX-XXXXXX"
                 />
               </span>
             </label>
