@@ -1,0 +1,228 @@
+import {
+  BarChart3,
+  Bell,
+  CalendarCheck,
+  ChartPie,
+  CreditCard,
+  ClipboardList,
+  CookingPot,
+  Gauge,
+  PackageSearch,
+  Settings,
+  ShoppingBag,
+  Table2,
+  Utensils,
+  WalletCards,
+} from "lucide-react"
+
+import type {
+  AdminNavItem,
+  AdminOrderRow,
+  AdminReservationRow,
+  DashboardStatCard,
+  LowStockItem,
+  RevenuePoint,
+} from "@/types/dashboard.interface"
+
+export const adminNavItems: AdminNavItem[] = [
+  {
+    href: "/dashboard",
+    label: "ড্যাশবোর্ড (Dashboard)",
+    icon: Gauge,
+  },
+  {
+    href: "/dashboard/orders",
+    label: "অর্ডার সমূহ (Orders)",
+    badge: "৪",
+    icon: CookingPot,
+  },
+  {
+    href: "/dashboard/menu",
+    label: "মেনু ম্যানেজার (Menu)",
+    icon: Utensils,
+  },
+  {
+    href: "/dashboard/reservations",
+    label: "রিজার্ভেশন (Reservations)",
+    badge: "৩",
+    icon: Table2,
+  },
+  {
+    href: "/dashboard/payments",
+    label: "পেমেন্ট (Payments)",
+    icon: CreditCard,
+  },
+  {
+    href: "/dashboard/inventory",
+    label: "ইনভেন্টরি (Inventory)",
+    icon: PackageSearch,
+  },
+  {
+    href: "/dashboard/reports",
+    label: "রিপোর্টস (Reports)",
+    icon: BarChart3,
+  },
+  {
+    href: "/dashboard/settings",
+    label: "সেটিংস (Settings)",
+    icon: Settings,
+  },
+]
+
+export const dashboardStats: DashboardStatCard[] = [
+  {
+    label: "আজকের মোট বিক্রি",
+    value: "৳42,750",
+    helper: "গতকাল ছিল: ৳38,250",
+    icon: WalletCards,
+    tone: "primary",
+  },
+  {
+    label: "নতুন লাইভ অর্ডার",
+    value: "04",
+    helper: "১টি অপেক্ষারত",
+    icon: ShoppingBag,
+    tone: "accent",
+  },
+  {
+    label: "টেবিল রিজার্ভেশন",
+    value: "03",
+    helper: "মোট বুকিং: ১২",
+    icon: CalendarCheck,
+    tone: "success",
+  },
+  {
+    label: "সক্রিয় মেনু আইটেম",
+    value: "56",
+    helper: "স্টক আউট: ০৪",
+    icon: ClipboardList,
+    tone: "warning",
+  },
+  {
+    label: "লো স্টক সতর্কতা",
+    value: "05",
+    helper: "২টি জরুরি রিফিল দরকার",
+    icon: Bell,
+    tone: "primary",
+  },
+]
+
+export const revenuePoints: RevenuePoint[] = [
+  { day: "Mon", amount: 28000 },
+  { day: "Tue", amount: 34000 },
+  { day: "Wed", amount: 31000 },
+  { day: "Thu", amount: 42750 },
+  { day: "Fri", amount: 39000 },
+  { day: "Sat", amount: 47000 },
+  { day: "Sun", amount: 52000 },
+]
+
+export const popularAdminItems = [
+  { name: "Royal Mutton Kacchi", orders: 38, share: 88 },
+  { name: "Shorshe Ilish", orders: 24, share: 68 },
+  { name: "Chicken Roast Combo", orders: 21, share: 58 },
+]
+
+export const recentAdminOrders: AdminOrderRow[] = [
+  {
+    id: "1024",
+    customer: "তাহসিন চৌধুরী",
+    phone: "01755112233",
+    items: "Royal Kacchi x 2, Borhani x 2",
+    method: "bKash",
+    total: 1060,
+    status: "Pending",
+    type: "Delivery",
+  },
+  {
+    id: "1023",
+    customer: "নাদিয়া পারভীন",
+    phone: "01912998811",
+    items: "Shorshe Ilish x 1, Plain Rice x 2",
+    method: "COD",
+    total: 820,
+    status: "Preparing",
+    type: "Pickup",
+  },
+  {
+    id: "1022",
+    customer: "ড. শরিফুল ইসলাম",
+    phone: "01811445566",
+    items: "Chicken Roast Combo x 3",
+    method: "SSLCOMMERZ",
+    total: 1080,
+    status: "Ready",
+    type: "Dine-In",
+  },
+  {
+    id: "1021",
+    customer: "রাফি আহমেদ",
+    phone: "01617112233",
+    items: "Beef Tehari x 2, Firni x 2",
+    method: "Nagad",
+    total: 760,
+    status: "Completed",
+    type: "Delivery",
+  },
+]
+
+export const recentAdminReservations: AdminReservationRow[] = [
+  {
+    id: "R-210",
+    customer: "মাহিরা খান",
+    phone: "01722998811",
+    guests: 4,
+    time: "Today, 8:30 PM",
+    table: "T-06",
+    status: "Pending",
+  },
+  {
+    id: "R-209",
+    customer: "আরিফুল ইসলাম",
+    phone: "01888123456",
+    guests: 6,
+    time: "Today, 9:00 PM",
+    table: "Family Room",
+    status: "Approved",
+  },
+  {
+    id: "R-208",
+    customer: "সুমাইয়া রহমান",
+    phone: "01912121212",
+    guests: 2,
+    time: "Tomorrow, 7:45 PM",
+    table: "Window-02",
+    status: "Pending",
+  },
+]
+
+export const lowStockItems: LowStockItem[] = [
+  {
+    item: "Premium Basmati Rice",
+    category: "Kitchen Staple",
+    stock: "8 kg",
+    severity: "critical",
+  },
+  {
+    item: "Mustard Oil",
+    category: "Cooking Essentials",
+    stock: "5 bottles",
+    severity: "warning",
+  },
+  {
+    item: "Borhani Cups",
+    category: "Packaging",
+    stock: "42 pcs",
+    severity: "warning",
+  },
+]
+
+export const dashboardNotifications = [
+  "নতুন ৪টি লাইভ অর্ডার অপেক্ষায় আছে।",
+  "৩টি টেবিল রিজার্ভেশন যাচাই করা প্রয়োজন।",
+  "Premium Basmati Rice low stock alert.",
+]
+
+export const dashboardDateLabel = "১৮ জুন ২০২৬ • বৃহস্পতিবার"
+
+export const dashboardSectionIcon = ChartPie
