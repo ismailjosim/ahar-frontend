@@ -1,15 +1,17 @@
 import { NextResponse } from "next/server"
 import { getOrderById, updateOrderStatus } from "@/lib/orders.mock"
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const id = params.id
+type RouteContext = { params: Promise<{ id: string }> }
+
+export async function GET(req: Request, { params }: RouteContext) {
+  const { id } = await params
   const order = getOrderById(id)
   if (!order) return NextResponse.json({ error: "Not found" }, { status: 404 })
   return NextResponse.json(order)
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
-  const id = params.id
+export async function PATCH(req: Request, { params }: RouteContext) {
+  const { id } = await params
   try {
     const body = await req.json()
     const { status } = body

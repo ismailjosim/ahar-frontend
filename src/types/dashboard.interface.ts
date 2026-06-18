@@ -47,3 +47,10 @@ export interface LowStockItem {
   stock: string
   severity: "critical" | "warning"
 }
+
+export interface DashboardNotification {
+  id: string
+  type: "warning" | "success" | "info"
+  title: string
+  timestamp: string
+}

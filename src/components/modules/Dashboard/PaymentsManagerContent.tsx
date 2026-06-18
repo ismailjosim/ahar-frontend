@@ -39,17 +39,17 @@ export default function PaymentsManagerContent() {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="font-bengali text-lg font-bold">Transactions</h3>
-          <p className="text-sm text-gray-500">View and manage payment transactions</p>
+          <p className="text-sm text-muted-foreground">View and manage payment transactions</p>
         </div>
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-4 dark:border-slate-700 dark:bg-slate-800">
+      <div className="overflow-hidden rounded-lg border border-border bg-card p-4 text-card-foreground">
         {loading ? (
           <div className="p-6 text-center">Loading...</div>
         ) : (
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b text-xs font-semibold text-gray-500">
+              <tr className="border-b border-border text-xs font-semibold text-muted-foreground">
                 <th className="px-4 py-3">ID</th>
                 <th className="px-4 py-3">Order</th>
                 <th className="px-4 py-3">Method</th>
@@ -60,11 +60,11 @@ export default function PaymentsManagerContent() {
             </thead>
             <tbody>
               {items.map((p) => (
-                <tr key={p.id} className="border-b">
+                <tr key={p.id} className="border-b border-border last:border-0">
                   <td className="px-4 py-3 font-mono text-xs">{p.id}</td>
                   <td className="px-4 py-3">
                     {p.orderId || "-"}
-                    <div className="text-xs text-gray-400">{p.transactionId || ""}</div>
+                    <div className="text-xs text-muted-foreground">{p.transactionId || ""}</div>
                   </td>
                   <td className="px-4 py-3">{p.method}</td>
                   <td className="px-4 py-3 text-right">৳{p.amount}</td>
@@ -72,13 +72,16 @@ export default function PaymentsManagerContent() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       {p.status !== "Refunded" && (
-                        <button onClick={() => refund(p.id)} className="rounded px-2 py-1 text-xs bg-amber-100">
+                        <button
+                          onClick={() => refund(p.id)}
+                          className="rounded-md border border-warning/30 bg-warning-soft px-2.5 py-1 text-xs font-semibold text-warning-foreground transition hover:border-warning/60 hover:bg-warning focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/30 dark:hover:text-accent-foreground"
+                        >
                           Refund
                         </button>
                       )}
                       <button
                         onClick={() => alert(JSON.stringify(p, null, 2))}
-                        className="rounded px-2 py-1 text-xs border"
+                        className="rounded-md border border-border bg-card px-2.5 py-1 text-xs font-semibold text-card-foreground transition hover:border-primary/40 hover:bg-muted hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                       >
                         View
                       </button>
@@ -92,12 +95,12 @@ export default function PaymentsManagerContent() {
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="text-sm text-gray-600">Total: {total}</div>
+        <div className="text-sm text-muted-foreground">Total: {total}</div>
         <div className="flex items-center gap-2">
           <button
             disabled={page <= 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="rounded-md border px-3 py-1 text-sm"
+            className="rounded-md border border-border bg-card px-3 py-1 text-sm font-medium text-card-foreground transition hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
           >
             Prev
           </button>
@@ -105,7 +108,7 @@ export default function PaymentsManagerContent() {
           <button
             disabled={page * pageSize >= total}
             onClick={() => setPage((p) => p + 1)}
-            className="rounded-md border px-3 py-1 text-sm"
+            className="rounded-md border border-border bg-card px-3 py-1 text-sm font-medium text-card-foreground transition hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
           >
             Next
           </button>

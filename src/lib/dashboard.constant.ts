@@ -19,6 +19,7 @@ import type {
   AdminNavItem,
   AdminOrderRow,
   AdminReservationRow,
+  DashboardNotification,
   DashboardStatCard,
   LowStockItem,
   RevenuePoint,
@@ -217,10 +218,25 @@ export const lowStockItems: LowStockItem[] = [
   },
 ]
 
-export const dashboardNotifications = [
-  "নতুন ৪টি লাইভ অর্ডার অপেক্ষায় আছে।",
-  "৩টি টেবিল রিজার্ভেশন যাচাই করা প্রয়োজন।",
-  "Premium Basmati Rice low stock alert.",
+export const dashboardNotifications: DashboardNotification[] = [
+  {
+    id: "notif-live-orders",
+    type: "info",
+    title: "নতুন ৪টি লাইভ অর্ডার অপেক্ষায় আছে।",
+    timestamp: "এইমাত্র",
+  },
+  {
+    id: "notif-reservations",
+    type: "warning",
+    title: "৩টি টেবিল রিজার্ভেশন যাচাই করা প্রয়োজন।",
+    timestamp: "১০ মিনিট আগে",
+  },
+  {
+    id: "notif-low-stock-rice",
+    type: "warning",
+    title: "Premium Basmati Rice low stock alert.",
+    timestamp: "২৫ মিনিট আগে",
+  },
 ]
 
 export const dashboardDateLabel = "১৮ জুন ২০২৬ • বৃহস্পতিবার"
