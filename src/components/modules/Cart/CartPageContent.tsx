@@ -63,7 +63,7 @@ const CartPageContent = () => {
           <span className="text-primary">Cart</span>
         </nav>
 
-        <div className="relative overflow-hidden rounded-3xl border border-accent/40 bg-gradient-to-r from-primary via-primary-hover to-primary p-6 text-white shadow-xl sm:p-10">
+        <div className="relative overflow-hidden rounded-3xl border border-accent/40 bg-linear-to-r from-primary via-primary-hover to-primary p-6 text-white shadow-xl sm:p-10">
           <div className="absolute bottom-0 right-0 translate-x-10 translate-y-10 text-[170px] opacity-10">🛍</div>
           <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
@@ -95,7 +95,7 @@ const CartPageContent = () => {
                 className="motion-soft-hover rounded-3xl border border-border bg-card p-5 shadow-sm hover:shadow-lg"
               >
                 <div className="grid gap-5 sm:grid-cols-[120px_1fr]">
-                  <div className="flex h-32 items-center justify-center rounded-2xl bg-gradient-to-br from-accent/15 to-primary/10 text-6xl">
+                  <div className="flex h-32 items-center justify-center rounded-2xl bg-linear-to-br from-accent/15 to-primary/10 text-6xl">
                     {item.emoji}
                   </div>
 

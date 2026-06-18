@@ -84,13 +84,13 @@ export default function ReservationsManagerContent() {
           <p className="text-sm text-gray-500">Manage table bookings and confirmations</p>
         </div>
         <div>
-          <button onClick={openCreate} className="rounded-md bg-[var(--primary)] px-3 py-2 text-sm font-semibold text-white">
+          <button onClick={openCreate} className="rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white">
             New Reservation
           </button>
         </div>
       </div>
 
-      <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 dark:border-slate-700 dark:bg-slate-800">
+      <div className="rounded-lg border border-border bg-card p-4 dark:border-slate-700 dark:bg-slate-800">
         {loading ? (
           <div className="p-6 text-center">Loading...</div>
         ) : (
@@ -120,14 +120,20 @@ export default function ReservationsManagerContent() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       {r.status === "Pending" && (
-                        <button onClick={() => approve(r.id)} className="rounded px-2 py-1 text-xs bg-[var(--success)]/20 text-[var(--success-foreground)]">
+                        <button
+                          onClick={() => approve(r.id)}
+                          className="rounded px-2 py-1 text-xs bg-(--success)/20 text-success-foreground"
+                        >
                           Approve
                         </button>
                       )}
                       <button onClick={() => openEdit(r)} className="rounded px-2 py-1 text-xs border">
                         Edit
                       </button>
-                      <button onClick={() => remove(r.id)} className="rounded px-2 py-1 text-xs border text-[var(--destructive)]">
+                      <button
+                        onClick={() => remove(r.id)}
+                        className="rounded px-2 py-1 text-xs border text-destructive"
+                      >
                         Delete
                       </button>
                     </div>
@@ -160,7 +166,7 @@ export default function ReservationsManagerContent() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 dark:border-slate-700 dark:bg-slate-800">
+      <div className="rounded-lg border border-border bg-card p-4 dark:border-slate-700 dark:bg-slate-800">
         <h4 className="font-bengali font-bold">{editing ? "Edit Reservation" : "Create Reservation"}</h4>
         <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
           <input
@@ -198,7 +204,7 @@ export default function ReservationsManagerContent() {
           />
         </div>
         <div className="mt-3 flex items-center gap-2">
-          <button onClick={submit} className="rounded-md bg-[var(--primary)] px-3 py-2 text-white">
+          <button onClick={submit} className="rounded-md bg-primary px-3 py-2 text-white">
             Save
           </button>
           <button

@@ -86,7 +86,7 @@ const MenuCatalog = () => {
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <section className="motion-reveal motion-shimmer relative mb-10 overflow-hidden rounded-3xl border border-accent/40 bg-gradient-to-r from-primary via-primary-hover to-primary p-6 text-white shadow-xl sm:p-10">
+      <section className="motion-reveal motion-shimmer relative mb-10 overflow-hidden rounded-3xl border border-accent/40 bg-linear-to-r from-primary via-primary-hover to-primary p-6 text-white shadow-xl sm:p-10">
         <div className="absolute bottom-0 right-0 translate-x-10 translate-y-10 text-[180px] opacity-10 sm:text-[220px]">
           🍲
         </div>
@@ -205,7 +205,7 @@ const MenuCatalog = () => {
                     !item.isAvailable && "opacity-70",
                   )}
                 >
-                  <div className="relative flex h-44 items-center justify-center bg-gradient-to-br from-accent/15 to-primary/10">
+                  <div className="relative flex h-44 items-center justify-center bg-linear-to-br from-accent/15 to-primary/10">
                     <span className="text-7xl transition duration-300 group-hover:scale-110">{item.emoji}</span>
                     <div className="absolute left-3 top-3 flex flex-wrap gap-1">
                       {item.isFeatured && (

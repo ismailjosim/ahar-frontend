@@ -43,7 +43,7 @@ export default function PaymentsManagerContent() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 dark:border-slate-700 dark:bg-slate-800">
+      <div className="rounded-lg border border-border bg-card p-4 dark:border-slate-700 dark:bg-slate-800">
         {loading ? (
           <div className="p-6 text-center">Loading...</div>
         ) : (

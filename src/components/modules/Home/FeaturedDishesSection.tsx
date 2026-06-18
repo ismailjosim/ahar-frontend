@@ -27,7 +27,7 @@ const FeaturedDishesSection = () => {
               key={dish.name}
               className="motion-soft-hover group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm hover:shadow-lg"
             >
-              <div className="relative flex h-40 items-center justify-center bg-gradient-to-br from-accent/15 to-primary/10">
+              <div className="relative flex h-40 items-center justify-center bg-linear-to-br from-accent/15 to-primary/10">
                 <span className="text-7xl transition duration-300 group-hover:scale-110">{dish.emoji}</span>
                 <span className="absolute left-3 top-3 rounded-full border border-accent/40 bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
                   {dish.badge}
