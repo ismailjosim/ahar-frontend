@@ -2,8 +2,7 @@ import type { Metadata } from "next"
 import { Geist_Mono, Hind_Siliguri, Manrope } from "next/font/google"
 
 import NextThemeProvider from "@/providers/NextThemeProvider"
-
-import "./globals.css"
+import "./(commonlayout)/globals.css"
 
 const manrope = Manrope({
   variable: "--font-manrope",

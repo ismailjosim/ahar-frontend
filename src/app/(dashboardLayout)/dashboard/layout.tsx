@@ -10,17 +10,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   return (
-    <div className="flex min-h-screen bg-[var(--canvas)]">
+    <div className="flex min-h-screen bg-canvas">
       {/* Fixed Sidebar - doesn't scroll */}
       <AdminSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       {/* Main Content Area with left padding for desktop sidebar */}
       <div className="flex flex-1 flex-col overflow-hidden md:pl-72">
         <DashboardNotificationToasts />
-        {/* Topbar */}
         <AdminTopbar onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} notifications={dashboardNotifications} />
 
-        {/* Page Content - scrollable */}
         <main className="flex-1 overflow-y-auto">
           <div className="space-y-6 p-6 md:p-8">{children}</div>
         </main>

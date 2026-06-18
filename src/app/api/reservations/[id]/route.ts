@@ -1,30 +1,18 @@
-import { NextResponse } from "next/server"
-import { getReservationById, updateReservation, deleteReservation } from "@/lib/reservations.store"
+import { proxyData, proxyDelete, proxyMutation } from "@/lib/backend-api"
 
 type RouteContext = { params: Promise<{ id: string }> }
 
 export async function GET(req: Request, { params }: RouteContext) {
   const { id } = await params
-  const resv = getReservationById(id)
-  if (!resv) return NextResponse.json({ error: "Not found" }, { status: 404 })
-  return NextResponse.json(resv)
+  return proxyData(`/reservations/${id}`)
 }
 
 export async function PATCH(req: Request, { params }: RouteContext) {
   const { id } = await params
-  try {
-    const body = await req.json()
-    const updated = updateReservation(id, body)
-    if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 })
-    return NextResponse.json(updated)
-  } catch (e) {
-    return NextResponse.json({ error: "Invalid body" }, { status: 400 })
-  }
+  return proxyMutation(`/reservations/${id}`, req, "PATCH")
 }
 
 export async function DELETE(req: Request, { params }: RouteContext) {
   const { id } = await params
-  const ok = deleteReservation(id)
-  if (!ok) return NextResponse.json({ error: "Not found" }, { status: 404 })
-  return NextResponse.json({ success: true })
+  return proxyDelete(`/reservations/${id}`)
 }

@@ -82,7 +82,7 @@ export function updateOrderStatus(id: string, status: AdminOrderRow["status"]) {
   if (status === "Delivered") {
     try {
       adjustStockFromOrderItems(updated.items)
-    } catch (e) {
+    } catch {
       // swallow errors in mock
     }
   }

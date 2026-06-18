@@ -286,7 +286,7 @@ const MenuCatalog = () => {
             </span>
           </div>
 
-          <div className="max-h-[280px] space-y-4 overflow-y-auto pr-1">
+          <div className="max-h-70 space-y-4 overflow-y-auto pr-1">
             {cartItems.length > 0 ? (
               cartItems.map((item) => (
                 <div key={item.id} className="rounded-2xl border border-border bg-background p-3">

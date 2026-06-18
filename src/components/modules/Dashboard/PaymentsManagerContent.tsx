@@ -29,7 +29,9 @@ export default function PaymentsManagerContent() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchList()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, statusFilter])
 
   async function refund(id: string) {

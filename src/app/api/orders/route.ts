@@ -1,13 +1,9 @@
-import { NextResponse } from "next/server"
-import { listOrders } from "@/lib/orders.mock"
+import { proxyList, proxyMutation } from "@/lib/backend-api"
 
 export async function GET(req: Request) {
-  const url = new URL(req.url)
-  const page = parseInt(url.searchParams.get("page") || "1", 10)
-  const pageSize = parseInt(url.searchParams.get("pageSize") || "10", 10)
-  const status = url.searchParams.get("status") || undefined
-  const search = url.searchParams.get("search") || undefined
+  return proxyList("/orders", req)
+}
 
-  const result = listOrders({ page, pageSize, status: status || undefined, search: search || undefined })
-  return NextResponse.json(result)
+export async function POST(req: Request) {
+  return proxyMutation("/orders", req, "POST", 201)
 }
