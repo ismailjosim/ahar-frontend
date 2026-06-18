@@ -1,5 +1,8 @@
 import type { Metadata } from "next"
 import { Geist_Mono, Hind_Siliguri, Manrope } from "next/font/google"
+
+import NextThemeProvider from "@/providers/NextThemeProvider"
+
 import "./globals.css"
 
 const manrope = Manrope({
@@ -31,8 +34,14 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${manrope.variable} ${hindSiliguri.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col font-sans">{children}</body>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${manrope.variable} ${hindSiliguri.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="flex min-h-full flex-col font-sans">
+        <NextThemeProvider>{children}</NextThemeProvider>
+      </body>
     </html>
   )
 }

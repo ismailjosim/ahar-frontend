@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button"
 
 const SpecialComboSection = () => {
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-      <div className="relative overflow-hidden rounded-3xl border border-accent bg-gradient-to-br from-primary to-primary-hover p-8 text-white shadow-2xl md:p-12">
+    <section className="motion-reveal motion-reveal-delay-1 mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+      <div className="motion-shimmer relative overflow-hidden rounded-3xl border border-accent bg-gradient-to-br from-primary via-primary-hover to-primary p-8 text-white shadow-2xl md:p-12">
         <div className="absolute bottom-0 right-0 translate-x-12 translate-y-12 text-[220px] opacity-10 md:text-[300px]">
           🍲
         </div>
@@ -33,12 +33,12 @@ const SpecialComboSection = () => {
                 </span>
               </div>
             </div>
-            <Button className="rounded-full border border-white/20 bg-accent px-8 py-6 font-black text-foreground shadow-lg hover:bg-accent/90">
+            <Button className="motion-scale-hover rounded-full border border-white/20 bg-accent px-8 py-6 font-black text-foreground shadow-lg hover:bg-accent/90">
               <ShoppingCart />
               Add Combo to Cart
             </Button>
           </div>
-          <div className="flex justify-center text-[120px] md:col-span-5 sm:text-[160px]">🍗🍛🥤</div>
+          <div className="animate-float flex justify-center text-[120px] md:col-span-5 sm:text-[160px]">🍗🍛🥤</div>
         </div>
       </div>
     </section>

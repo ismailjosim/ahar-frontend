@@ -4,7 +4,7 @@ import { guestReviews } from "@/lib/home.constant"
 
 const ReviewsSection = () => {
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+    <section className="motion-reveal mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
       <div className="mb-12 text-center">
         <span className="text-xs font-bold uppercase tracking-wider text-accent">Guest Feedback</span>
         <h2 className="font-bengali mt-2 text-3xl font-black text-foreground">গ্রাহকদের মূল্যবান মতামত (Reviews)</h2>
@@ -12,7 +12,10 @@ const ReviewsSection = () => {
 
       <div className="grid gap-6 md:grid-cols-3">
         {guestReviews.map((review) => (
-          <article key={review.name} className="rounded-2xl border border-border bg-white p-6 shadow-sm">
+          <article
+            key={review.name}
+            className="motion-soft-hover rounded-2xl border border-border bg-card p-6 shadow-sm"
+          >
             <div className="mb-3 flex items-center gap-1 text-accent">
               {Array.from({ length: 5 }).map((_, index) => (
                 <Star key={index} className="size-4 fill-current" />

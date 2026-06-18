@@ -8,7 +8,7 @@ const toneClassName = {
 
 const OrderJourneySection = () => {
   return (
-    <section className="border-t border-border/30 bg-muted/20 py-12">
+    <section className="motion-reveal border-t border-border/30 bg-muted/20 py-12">
       <div className="mx-auto max-w-7xl space-y-12 px-4 text-center sm:px-6 lg:px-8">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-accent">Order Journey</span>
@@ -21,7 +21,7 @@ const OrderJourneySection = () => {
           {orderSteps.map((step, index) => (
             <article
               key={step.title}
-              className="rounded-2xl border border-border bg-white p-8 shadow-md transition hover:shadow-lg"
+              className="motion-soft-hover rounded-2xl border border-border bg-card p-8 shadow-md hover:shadow-lg"
             >
               <div
                 className={`mx-auto mb-4 flex size-16 items-center justify-center rounded-full border text-2xl font-bold ${

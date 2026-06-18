@@ -6,7 +6,7 @@ import { dashboardStats, liveOrderPreview } from "@/lib/home.constant"
 
 const ManagementPreviewSection = () => {
   return (
-    <section className="border-y border-border/30 bg-secondary/50">
+    <section className="motion-reveal border-y border-border/30 bg-secondary/50">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
         <div>
           <p className="text-xs font-black uppercase tracking-wide text-accent">Reservation & Admin Preview</p>
@@ -18,13 +18,13 @@ const ManagementPreviewSection = () => {
             This foundation keeps those screens in the roadmap while the public layout comes online first.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Button asChild className="rounded-full border border-accent/40 px-6">
+            <Button asChild className="motion-scale-hover rounded-full border border-accent/40 px-6">
               <Link href="/dashboard">
                 <BarChart3 />
                 Open Dashboard
               </Link>
             </Button>
-            <Button asChild variant="outline" className="rounded-full border-border bg-white px-6">
+            <Button asChild variant="outline" className="motion-scale-hover rounded-full border-border bg-card px-6">
               <Link href="/reservation">
                 Book Table
                 <ArrowRight />
@@ -33,10 +33,10 @@ const ManagementPreviewSection = () => {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
           <div className="grid gap-3 sm:grid-cols-4">
             {dashboardStats.map((stat) => (
-              <div key={stat.label} className="rounded-xl border border-border bg-background p-4">
+              <div key={stat.label} className="motion-soft-hover rounded-xl border border-border bg-background p-4">
                 <p className="text-2xl font-black text-primary">{stat.value}</p>
                 <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{stat.label}</p>
               </div>
@@ -50,7 +50,10 @@ const ManagementPreviewSection = () => {
               </div>
               <div className="space-y-3">
                 {liveOrderPreview.map((order) => (
-                  <div key={order} className="flex items-center justify-between rounded-xl bg-muted px-4 py-3 text-sm">
+                  <div
+                    key={order}
+                    className="motion-soft-hover flex items-center justify-between rounded-xl bg-muted px-4 py-3 text-sm"
+                  >
                     <span className="font-semibold">{order}</span>
                     <Button size="xs" variant="outline">
                       View
@@ -71,7 +74,10 @@ const ManagementPreviewSection = () => {
               </div>
               <div className="space-y-3">
                 {["Table 04 - 7:30 PM", "Family Booth - 8:15 PM", "Window Seat - 9:00 PM"].map((reservation) => (
-                  <div key={reservation} className="rounded-xl bg-muted px-4 py-3 text-sm font-semibold">
+                  <div
+                    key={reservation}
+                    className="motion-soft-hover rounded-xl bg-muted px-4 py-3 text-sm font-semibold"
+                  >
                     {reservation}
                   </div>
                 ))}

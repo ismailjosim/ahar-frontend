@@ -6,7 +6,7 @@ import { featuredDishes } from "@/lib/home.constant"
 
 const FeaturedDishesSection = () => {
   return (
-    <section className="border-y border-border/30 bg-muted/30 py-12">
+    <section className="motion-reveal border-y border-border/30 bg-muted/30 py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
@@ -25,15 +25,15 @@ const FeaturedDishesSection = () => {
           {featuredDishes.map((dish) => (
             <article
               key={dish.name}
-              className="group overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+              className="motion-soft-hover group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm hover:shadow-lg"
             >
               <div className="relative flex h-40 items-center justify-center bg-gradient-to-br from-accent/15 to-primary/10">
-                <span className="text-7xl transition group-hover:scale-110">{dish.emoji}</span>
+                <span className="text-7xl transition duration-300 group-hover:scale-110">{dish.emoji}</span>
                 <span className="absolute left-3 top-3 rounded-full border border-accent/40 bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
                   {dish.badge}
                 </span>
               </div>
-              <div className="p-5">
+              <div className="flex flex-1 flex-col p-5">
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-accent">{dish.category}</span>
                   <span className="flex items-center gap-1 text-xs font-bold text-accent">
@@ -42,10 +42,10 @@ const FeaturedDishesSection = () => {
                   </span>
                 </div>
                 <h3 className="font-bengali text-lg font-extrabold leading-snug text-foreground">{dish.name}</h3>
-                <p className="mt-2 min-h-12 text-sm leading-6 text-muted-foreground">{dish.description}</p>
-                <div className="mt-5 flex items-center justify-between">
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{dish.description}</p>
+                <div className="mt-auto flex items-center justify-between pt-5">
                   <span className="text-xl font-black text-primary">{dish.price}</span>
-                  <Button size="sm" className="rounded-full border border-accent/40">
+                  <Button size="sm" className="motion-scale-hover rounded-full border border-accent/40">
                     <Plus />
                     Add
                   </Button>

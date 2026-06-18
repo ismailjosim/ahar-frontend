@@ -2,7 +2,7 @@ import Link from "next/link"
 
 const PublicFooter = () => {
   return (
-    <footer className="border-t border-border bg-secondary py-12">
+    <footer className="motion-reveal border-t border-border bg-secondary py-12">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 md:grid-cols-[1.3fr_0.7fr_0.7fr_0.9fr] lg:px-8">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
@@ -19,17 +19,17 @@ const PublicFooter = () => {
           <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-primary">Quick Links</h2>
           <ul className="space-y-2 text-sm font-semibold text-muted-foreground">
             <li>
-              <Link href="/menu" className="hover:text-primary">
+              <Link href="/menu" className="cursor-pointer transition hover:text-primary">
                 Our Menu
               </Link>
             </li>
             <li>
-              <Link href="/reservation" className="hover:text-primary">
+              <Link href="/reservation" className="cursor-pointer transition hover:text-primary">
                 Reservations
               </Link>
             </li>
             <li>
-              <Link href="/order-tracking" className="hover:text-primary">
+              <Link href="/order-tracking" className="cursor-pointer transition hover:text-primary">
                 Track Order
               </Link>
             </li>
