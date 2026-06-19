@@ -3,7 +3,7 @@ import Link from "next/link"
 const PublicFooter = () => {
   return (
     <footer className="motion-reveal border-t border-border bg-secondary py-12">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 md:grid-cols-[1.3fr_0.7fr_0.7fr_0.9fr] lg:px-8">
+      <div className="container mx-auto grid gap-8 md:grid-cols-[1.3fr_0.7fr_0.7fr_0.9fr]">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-xl border border-accent bg-primary">
@@ -50,7 +50,7 @@ const PublicFooter = () => {
           </p>
         </div>
       </div>
-      <div className="mx-auto mt-10 max-w-7xl border-t border-border px-4 pt-6 text-sm font-semibold text-muted-foreground sm:px-6 lg:px-8">
+      <div className="mx-auto mt-10 border-t border-border pt-6 text-sm font-semibold text-muted-foreground text-center">
         &copy; 2026 আহার (Ahar) Restaurant Systems. All rights reserved.
       </div>
     </footer>
