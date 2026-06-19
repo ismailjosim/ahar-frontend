@@ -37,7 +37,7 @@ export default function ExperienceAharSection() {
       {/* Decorative */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 h-32 w-32 rounded-full bg-accent/10 blur-3xl" />
 
-      <div className="container mx-auto px-4 md:px-8 relative z-10">
+      <div className="container mx-auto relative z-10">
         {/* Heading Section */}
         <div className="max-w-3xl mx-auto text-center mb-14">
           <Badge

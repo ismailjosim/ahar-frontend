@@ -1,15 +1,19 @@
 import { orderSteps } from "@/lib/home.constant"
 
-const toneClassName = {
+// Safely type mapping configuration keys
+type StepTone = "gold" | "red" | "green"
+
+const toneClassName: Record<StepTone, string> = {
   gold: "border-accent/40 bg-accent/15 text-accent",
   red: "border-primary/40 bg-primary/15 text-primary",
-  green: "border-success/40 bg-success/15 text-success",
+  green: "border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
 }
 
 const OrderJourneySection = () => {
   return (
-    <section className="motion-reveal border-t border-border/30 bg-muted/20 py-12">
-      <div className="mx-auto max-w-7xl space-y-12 px-4 text-center sm:px-6 lg:px-8">
+    <section className="border-t border-border/30 bg-muted/20 py-12">
+      <div className="mx-auto container space-y-12 text-center">
+        {/* Section Heading */}
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-accent">Order Journey</span>
           <h2 className="font-bengali mt-2 text-3xl font-black text-foreground">
@@ -17,21 +21,25 @@ const OrderJourneySection = () => {
           </h2>
         </div>
 
+        {/* Steps Cards Layout Grid */}
         <div className="grid gap-8 md:grid-cols-3">
           {orderSteps.map((step, index) => (
             <article
               key={step.title}
-              className="motion-soft-hover rounded-2xl border border-border bg-card p-8 shadow-md hover:shadow-lg"
+              className="group rounded-2xl border border-border bg-card p-8 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
             >
+              {/* Ordered Number Indicator Bubble */}
               <div
-                className={`mx-auto mb-4 flex size-16 items-center justify-center rounded-full border text-2xl font-bold ${
-                  toneClassName[step.tone]
+                className={`mx-auto mb-6 flex size-16 items-center justify-center rounded-full border text-2xl font-black transition-transform duration-300 group-hover:scale-110 ${
+                  toneClassName[step.tone as StepTone] || toneClassName.gold
                 }`}
               >
                 {index + 1}
               </div>
-              <h3 className="mt-2 text-xl font-black">{step.title}</h3>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">{step.text}</p>
+
+              <h3 className="mt-2 text-xl font-black text-foreground tracking-tight">{step.title}</h3>
+
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{step.text}</p>
             </article>
           ))}
         </div>
