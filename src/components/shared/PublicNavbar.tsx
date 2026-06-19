@@ -2,9 +2,21 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Gauge, LogOut, ShoppingBag, UserRound } from "lucide-react"
+import { Gauge, LogOut, ShoppingBag, UserRound, LayoutDashboard, User, Menu } from "lucide-react"
 
+// shadcn ui components
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 import { cn } from "@/lib/utils"
 import { publicNavItems } from "@/lib/home.constant"
 import ThemeToggler from "@/components/shared/ThemeToggler"
@@ -24,28 +36,36 @@ const PublicNavbar = () => {
     if (href === "/") {
       return pathname === href
     }
-
     return pathname === href || pathname.startsWith(`${href}/`)
   }
 
   return (
-    <header className="motion-reveal sticky top-0 z-40 border-b border-border/50 bg-secondary/90 backdrop-blur-md transition-all duration-300">
+    <header className="sticky top-0 z-40 border-b border-border/50 bg-secondary/90 backdrop-blur-md transition-all duration-300">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="motion-scale-hover flex cursor-pointer items-center gap-3" aria-label="Ahar home">
-          <div className="flex size-12 items-center justify-center rounded-xl border border-accent bg-primary shadow-lg shadow-primary/20 transition-transform duration-300">
+        {/* Logo Brand */}
+        <Link
+          href="/"
+          className="flex cursor-pointer items-center gap-3 transition-transform duration-200 hover:scale-[1.02]"
+          aria-label="Ahar home"
+        >
+          <div className="flex size-12 items-center justify-center rounded-xl border border-accent bg-primary shadow-lg shadow-primary/20">
             <span className="font-bengali text-2xl font-bold text-accent">আ</span>
           </div>
           <div>
-            <p className="font-bengali flex items-center gap-1 text-2xl font-black tracking-wide text-primary">
+            <p className="font-bengali flex items-center gap-2 text-2xl font-black tracking-wide text-primary">
               আহার
-              <span className="rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 font-sans text-xs font-bold text-accent">
+              <Badge
+                variant="outline"
+                className="border-accent/30 bg-accent/10 font-sans text-[10px] font-bold text-accent px-2 py-0"
+              >
                 PREMIUM
-              </span>
+              </Badge>
             </p>
             <p className="text-xs tracking-wider text-foreground/60">Fine Dining & Catering</p>
           </div>
         </Link>
 
+        {/* Desktop Navigation Links (Hidden on Mobile) */}
         <nav className="hidden items-center gap-8 text-sm font-bold text-foreground/85 md:flex">
           {publicNavItems.map((item) => (
             <Link
@@ -75,59 +95,167 @@ const PublicNavbar = () => {
           )}
         </nav>
 
-        <div className="flex items-center gap-3">
+        {/* Action Controls Toolbar */}
+        <div className="flex items-center gap-2 sm:gap-3">
           <ThemeToggler />
+
+          {/* Cart Icon Button */}
           <Button
             asChild
             variant="outline"
             size="icon"
-            className="motion-scale-hover relative size-10 rounded-full border-border bg-card text-primary hover:bg-muted"
+            className="relative size-10 rounded-full border-border bg-card text-primary hover:bg-muted transition-transform active:scale-95"
           >
             <Link href="/cart" aria-label="Open cart">
-              <ShoppingBag />
-              <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full border border-accent bg-primary text-[10px] font-bold text-white">
+              <ShoppingBag className="size-5" />
+              <Badge className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full border border-accent bg-primary p-0 text-[10px] font-bold text-white hover:bg-primary">
                 0
-              </span>
+              </Badge>
             </Link>
           </Button>
-          {user ? (
-            <>
+
+          {/* DESKTOP ONLY: Authentication Displays */}
+          <div className="hidden md:flex items-center gap-3">
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="h-10 rounded-full border-border bg-card pl-1.5 pr-3 text-xs font-bold text-foreground hover:bg-muted gap-2 transition-all active:scale-95"
+                  >
+                    <Avatar className="size-7">
+                      <AvatarImage src={user.image ?? undefined} alt={user.name || "User profile"} />
+                      <AvatarFallback className="bg-primary/10 text-primary">
+                        <UserRound className="size-4" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="max-w-24 truncate">{user.name || user.email?.split("@")[0]}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 rounded-2xl p-2 mt-1">
+                  <DropdownMenuLabel className="font-normal px-2 py-1.5">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium text-foreground truncate">{user.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild className="rounded-xl cursor-pointer">
+                    <Link href="/profile" className="flex items-center gap-2 w-full">
+                      <User className="size-4 text-muted-foreground" /> My Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl cursor-pointer">
+                    <Link href="/dashboard" className="flex items-center gap-2 w-full">
+                      <LayoutDashboard className="size-4 text-muted-foreground" /> Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={handleSignOut}
+                    className="rounded-xl cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10 gap-2"
+                  >
+                    <LogOut className="size-4" /> Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
               <Button
                 asChild
-                variant="outline"
-                className="motion-scale-hover hidden h-10 rounded-full border-border bg-card px-3 text-xs font-bold text-foreground hover:bg-muted sm:inline-flex"
+                disabled={isPending}
+                className="rounded-full border border-accent/40 px-5 text-xs font-bold shadow-md shadow-primary/10 transition-transform active:scale-95"
               >
-                <Link href="/profile" aria-label="Open profile">
-                  <span
-                    className="flex size-6 items-center justify-center rounded-full bg-primary-soft bg-cover bg-center text-primary"
-                    style={user.image ? { backgroundImage: `url("${user.image}")` } : undefined}
-                  >
-                    {!user.image && <UserRound className="size-4" />}
-                  </span>
-                  <span className="max-w-28 truncate">{user.name || user.email}</span>
-                </Link>
+                <Link href="/auth/login">Sign In</Link>
               </Button>
+            )}
+          </div>
 
+          {/* MOBILE ONLY: Global Universal Dropdown Menu (Handles Logged-In & Logged-Out views seamlessly) */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button
-                type="button"
                 variant="outline"
                 size="icon"
-                onClick={handleSignOut}
-                className="motion-scale-hover size-10 rounded-full border-border bg-card text-primary hover:bg-muted"
-                aria-label="Sign out"
+                className="size-10 rounded-full border-border bg-card text-foreground hover:bg-muted md:hidden transition-transform active:scale-95"
+                aria-label="Toggle menu"
               >
-                <LogOut className="size-4" />
+                {user ? (
+                  <Avatar className="size-7">
+                    <AvatarImage src={user.image ?? undefined} alt={user.name || "User profile"} />
+                    <AvatarFallback className="bg-primary/10 text-primary">
+                      <UserRound className="size-4" />
+                    </AvatarFallback>
+                  </Avatar>
+                ) : (
+                  <Menu className="size-5" />
+                )}
               </Button>
-            </>
-          ) : (
-            <Button
-              asChild
-              disabled={isPending}
-              className="motion-scale-hover hidden rounded-full border border-accent/40 px-5 text-xs font-bold shadow-md shadow-primary/10 sm:inline-flex"
-            >
-              <Link href="/auth/login">Sign In</Link>
-            </Button>
-          )}
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end" className="w-56 rounded-2xl p-2 mt-1 md:hidden">
+              {user && (
+                <>
+                  <DropdownMenuLabel className="font-normal px-2 py-1.5">
+                    <div className="flex flex-col space-y-0.5">
+                      <p className="text-sm font-bold text-foreground truncate">{user.name}</p>
+                      <p className="text-[11px] text-muted-foreground truncate">{user.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+
+              <DropdownMenuLabel className="text-[10px] font-bold tracking-wider text-muted-foreground/70 px-2 py-1 uppercase">
+                Navigation
+              </DropdownMenuLabel>
+              {publicNavItems.map((item) => (
+                <DropdownMenuItem key={item.label} asChild className="rounded-xl cursor-pointer">
+                  <Link
+                    href={item.href}
+                    className={cn("w-full text-sm", isActiveRoute(item.href) && "text-primary font-bold bg-primary/5")}
+                  >
+                    {item.label}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+
+              <DropdownMenuSeparator />
+
+              {user ? (
+                <>
+                  <DropdownMenuLabel className="text-[10px] font-bold tracking-wider text-muted-foreground/70 px-2 py-1 uppercase">
+                    Account
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem asChild className="rounded-xl cursor-pointer">
+                    <Link href="/profile" className="flex items-center gap-2">
+                      <User className="size-4 text-muted-foreground" /> My Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl cursor-pointer">
+                    <Link href="/dashboard" className="flex items-center gap-2">
+                      <LayoutDashboard className="size-4 text-muted-foreground" /> Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={handleSignOut}
+                    className="rounded-xl cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10 gap-2"
+                  >
+                    <LogOut className="size-4" /> Sign Out
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <DropdownMenuItem
+                  asChild
+                  className="rounded-xl cursor-pointer focus:bg-primary focus:text-white bg-primary/10 text-primary font-semibold"
+                >
+                  <Link href="/auth/login" className="w-full text-center justify-center">
+                    Sign In
+                  </Link>
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
