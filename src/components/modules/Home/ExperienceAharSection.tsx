@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import interior from "@/assets/interior.jpg"
 import chef from "@/assets/chef-02.jpg"
 import family from "@/assets/family-02.jpg"
+import Link from "next/link"
 
 const experiences = [
   {
@@ -100,21 +101,29 @@ export default function ExperienceAharSection() {
 
         {/* Bottom Actions */}
         <div className="mt-14 flex flex-col sm:flex-row justify-center gap-4">
+          {/* First Button: View Gallery (Hero Section Style: Primary Filled) */}
           <Button
+            asChild
             size="lg"
-            className="rounded-xl px-8 py-6 gap-2 font-semibold text-base transition-transform active:scale-95"
+            className="py-6 w-full rounded-full border border-accent/50 px-8 text-base font-bold shadow-xl shadow-primary/30 sm:w-auto transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           >
-            <Images size={18} />
-            View Gallery
+            <Link href="/gallery">
+              <Images className="mr-2 size-5" />
+              View Gallery
+            </Link>
           </Button>
 
+          {/* Second Button: Visit Us (Hero Section Style: Premium Outline) */}
           <Button
-            variant="outline"
+            asChild
             size="lg"
-            className="rounded-xl px-8 py-6 gap-2 font-semibold text-base border-accent text-accent-foreground hover:bg-accent/10 transition-transform active:scale-95"
+            variant="outline"
+            className="py-6 w-full rounded-full border-border bg-card px-8 text-base font-bold text-foreground shadow-md hover:bg-muted sm:w-auto transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           >
-            <MapPin size={18} />
-            Visit Us
+            <Link href="/contact">
+              <MapPin className="mr-2 size-5 text-accent" />
+              Visit Us
+            </Link>
           </Button>
         </div>
       </div>
