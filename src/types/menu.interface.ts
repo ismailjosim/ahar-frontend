@@ -19,9 +19,10 @@ export interface MenuItem {
   description: string
   category: string
   price: number
-  emoji: string
+  emoji?: string
+  imageUrl?: string
   rating: number
-  prepTime: string
+  prepTime?: string
   isFeatured: boolean
   isSpicy: boolean
   isAvailable: boolean

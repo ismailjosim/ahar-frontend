@@ -1,11 +1,11 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { Clock3, FilterX, Search, ShoppingBag, SlidersHorizontal, Star } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { defaultMenuPriceLimit, menuCategories, menuItems } from "@/lib/menu.constant"
+import { defaultMenuPriceLimit, menuCategories } from "@/lib/menu.constant"
 import { cn } from "@/lib/utils"
 import type { MenuCartItem, MenuItem, MenuSortOption } from "@/types/menu.interface"
 
@@ -20,11 +20,37 @@ const MenuCatalog = () => {
   const [availableOnly, setAvailableOnly] = useState(false)
   const [priceLimit, setPriceLimit] = useState(defaultMenuPriceLimit)
   const [cartItems, setCartItems] = useState<MenuCartItem[]>([])
+  const [allItems, setAllItems] = useState<MenuItem[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadMenu() {
+      try {
+        const res = await fetch("/api/menu?pageSize=200")
+        const json = await res.json()
+        // Backend returns all items (including unavailable) — filter default handled server-side
+        // Pass isAvailable=false not set so backend returns all available items by default
+        setAllItems(
+          (json.data ?? []).map((item: MenuItem) => ({
+            ...item,
+            variants: Array.isArray(item.variants) ? item.variants : [],
+            addOns: Array.isArray(item.addOns) ? item.addOns : [],
+            tags: Array.isArray(item.tags) ? item.tags : [],
+          })),
+        )
+      } catch {
+        // Silent fallback — catalog shows empty state
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadMenu()
+  }, [])
 
   const filteredItems = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase()
 
-    const nextItems = menuItems.filter((item) => {
+    const nextItems = allItems.filter((item) => {
       const matchesCategory = activeCategory === "all" || item.category === activeCategory
       const matchesSearch =
         normalizedSearch.length === 0 ||
@@ -45,7 +71,7 @@ const MenuCatalog = () => {
       if (sortBy === "rating") return b.rating - a.rating
       return Number(b.isFeatured) - Number(a.isFeatured) || b.rating - a.rating
     })
-  }, [activeCategory, availableOnly, featuredOnly, priceLimit, searchTerm, sortBy, spicyOnly])
+  }, [activeCategory, allItems, availableOnly, featuredOnly, priceLimit, searchTerm, sortBy, spicyOnly])
 
   const cartSubtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
   const discount = Math.round(cartSubtotal * 0.1)
@@ -168,8 +194,14 @@ const MenuCatalog = () => {
           </label>
           <div className="flex items-center gap-3 text-xs font-bold text-muted-foreground">
             <SlidersHorizontal className="size-4 text-accent" />
-            Showing <span className="font-black text-primary">{filteredItems.length}</span> out of{" "}
-            <span className="font-black">{menuItems.length}</span> traditional delicacies
+            {isLoading ? (
+              <span>Loading menu...</span>
+            ) : (
+              <>
+                Showing <span className="font-black text-primary">{filteredItems.length}</span> out of{" "}
+                <span className="font-black">{allItems.length}</span> traditional delicacies
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -205,8 +237,17 @@ const MenuCatalog = () => {
                     !item.isAvailable && "opacity-70",
                   )}
                 >
-                  <div className="relative flex h-44 items-center justify-center bg-linear-to-br from-accent/15 to-primary/10">
-                    <span className="text-7xl transition duration-300 group-hover:scale-110">{item.emoji}</span>
+                  <div className="relative flex h-44 items-center justify-center overflow-hidden bg-linear-to-br from-accent/15 to-primary/10">
+                    {item.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={item.imageUrl}
+                        alt={item.name}
+                        className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <span className="text-7xl transition duration-300 group-hover:scale-110">{item.emoji}</span>
+                    )}
                     <div className="absolute left-3 top-3 flex flex-wrap gap-1">
                       {item.isFeatured && (
                         <span className="rounded-full border border-white/40 bg-accent px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-foreground">

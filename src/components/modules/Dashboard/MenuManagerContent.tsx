@@ -14,6 +14,7 @@ export default function MenuManagerContent() {
   const [editing, setEditing] = useState<MenuItem | null>(null)
   const [form, setForm] = useState<Partial<MenuItem>>({})
   const [isEditorOpen, setIsEditorOpen] = useState(false)
+  const [imageFile, setImageFile] = useState<File | null>(null)
 
   async function fetchList() {
     setLoading(true)
@@ -35,6 +36,7 @@ export default function MenuManagerContent() {
 
   function openCreate() {
     setEditing(null)
+    setImageFile(null)
     setForm({
       name: "",
       description: "",
@@ -56,6 +58,7 @@ export default function MenuManagerContent() {
   function openEdit(item: MenuItem) {
     setEditing(item)
     setForm({ ...item })
+    setImageFile(null)
     setIsEditorOpen(true)
   }
 
@@ -73,9 +76,19 @@ export default function MenuManagerContent() {
     })
 
     if (res.ok) {
+      const saved = await res.json().catch(() => null)
+      const savedId = saved?.data?.id ?? saved?.id ?? editing?.id
+
+      if (imageFile && savedId) {
+        const fd = new FormData()
+        fd.append("image", imageFile)
+        await fetch(`/api/menu/${savedId}/image`, { method: "POST", body: fd }).catch(() => null)
+      }
+
       await fetchList()
       setEditing(null)
       setForm({})
+      setImageFile(null)
       setIsEditorOpen(false)
     } else {
       const body = await res.json().catch(() => null)
@@ -254,6 +267,27 @@ export default function MenuManagerContent() {
               onChange={(e) => setForm((s) => ({ ...s, emoji: e.target.value }))}
               className={`${inputClass} max-w-xs`}
             />
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Menu Image (optional)
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
+                className={`${inputClass} cursor-pointer`}
+              />
+              {imageFile && <p className="text-xs text-muted-foreground">Selected: {imageFile.name}</p>}
+              {!imageFile && form.imageUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={form.imageUrl}
+                  alt="Current image"
+                  className="mt-2 h-20 w-20 rounded-xl object-cover border border-border"
+                />
+              )}
+            </div>
 
             <textarea
               placeholder="Description"
