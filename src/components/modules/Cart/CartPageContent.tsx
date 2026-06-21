@@ -1,32 +1,19 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { ArrowRight, BadgePercent, Minus, Plus, ShoppingBag, Trash2, Utensils } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { cartCouponPlaceholder, demoCartItems } from "@/lib/cart.constant"
-import { calculateCartTotals, calculateLineTotal, formatCurrency } from "@/lib/cart.utils"
-import type { CartLineItem } from "@/types/cart.interface"
+import { calculateLineTotal, formatCurrency } from "@/lib/cart.utils"
+import { useCartStore } from "@/store/cart.store"
 
 const CartPageContent = () => {
-  const [cartItems, setCartItems] = useState<CartLineItem[]>(demoCartItems)
-  const [couponCode, setCouponCode] = useState(cartCouponPlaceholder)
+  const { items: cartItems, updateQuantity, removeItem, getTotals, appliedCoupon } = useCartStore()
+  const [couponCode, setCouponCode] = useState("")
 
-  const totals = useMemo(() => calculateCartTotals(cartItems), [cartItems])
+  const totals = getTotals()
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0)
-
-  const updateQuantity = (id: string, nextQuantity: number) => {
-    if (nextQuantity < 1) return
-
-    setCartItems((currentItems) =>
-      currentItems.map((item) => (item.id === id ? { ...item, quantity: nextQuantity } : item)),
-    )
-  }
-
-  const removeItem = (id: string) => {
-    setCartItems((currentItems) => currentItems.filter((item) => item.id !== id))
-  }
 
   if (cartItems.length === 0) {
     return (
@@ -95,8 +82,13 @@ const CartPageContent = () => {
                 className="motion-soft-hover rounded-3xl border border-border bg-card p-5 shadow-sm hover:shadow-lg"
               >
                 <div className="grid gap-5 sm:grid-cols-[120px_1fr]">
-                  <div className="flex h-32 items-center justify-center rounded-2xl bg-linear-to-br from-accent/15 to-primary/10 text-6xl">
-                    {item.emoji}
+                  <div className="flex h-32 items-center justify-center overflow-hidden rounded-2xl bg-linear-to-br from-accent/15 to-primary/10">
+                    {item.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
+                    ) : (
+                      <span className="text-6xl">{item.emoji ?? "🍽"}</span>
+                    )}
                   </div>
 
                   <div className="min-w-0">
@@ -106,7 +98,9 @@ const CartPageContent = () => {
                           {item.category}
                         </span>
                         <h2 className="font-bengali mt-3 text-xl font-black leading-tight">{item.name}</h2>
-                        <p className="mt-1 text-xs font-bold text-muted-foreground">Variant: {item.variant}</p>
+                        {item.variant && (
+                          <p className="mt-1 text-xs font-bold text-muted-foreground">Variant: {item.variant}</p>
+                        )}
                       </div>
 
                       <button
@@ -190,16 +184,33 @@ const CartPageContent = () => {
               <BadgePercent className="size-4 text-accent" />
               Coupon Code
             </span>
-            <div className="flex gap-2">
-              <input
-                value={couponCode}
-                onChange={(event) => setCouponCode(event.target.value)}
-                className="h-11 min-w-0 flex-1 rounded-2xl border border-border bg-background px-4 text-sm font-bold outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
-                placeholder="Enter coupon"
-              />
-              <Button className="rounded-2xl border border-accent/40">Apply</Button>
-            </div>
-            <p className="mt-2 text-xs text-success">Demo discount is currently applied automatically.</p>
+            {appliedCoupon ? (
+              <div className="flex items-center justify-between rounded-2xl border border-success/30 bg-success-soft px-4 py-3">
+                <div>
+                  <p className="text-xs font-black text-success">{appliedCoupon.code} applied</p>
+                  <p className="text-xs text-muted-foreground">-{formatCurrency(appliedCoupon.discount)} discount</p>
+                </div>
+                <button
+                  onClick={() => useCartStore.getState().clearDiscount()}
+                  className="cursor-pointer text-xs font-black text-destructive hover:underline"
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  value={couponCode}
+                  onChange={(event) => setCouponCode(event.target.value)}
+                  className="h-11 min-w-0 flex-1 rounded-2xl border border-border bg-background px-4 text-sm font-bold outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
+                  placeholder="Enter coupon code"
+                />
+                <Button className="rounded-2xl border border-accent/40">Apply</Button>
+              </div>
+            )}
+            {!appliedCoupon && (
+              <p className="mt-2 text-xs text-muted-foreground">Demo discount (10%) is applied automatically.</p>
+            )}
           </label>
 
           <div className="space-y-3 border-t border-border pt-4 text-sm text-muted-foreground">
@@ -208,7 +219,7 @@ const CartPageContent = () => {
               <span className="font-extrabold text-foreground">{formatCurrency(totals.subtotal)}</span>
             </div>
             <div className="flex justify-between text-success">
-              <span>Coupon Discount (10%)</span>
+              <span>{appliedCoupon ? `Coupon (${appliedCoupon.code})` : "Discount (10%)"}</span>
               <span className="font-extrabold">-{formatCurrency(totals.discount)}</span>
             </div>
             <div className="flex justify-between">

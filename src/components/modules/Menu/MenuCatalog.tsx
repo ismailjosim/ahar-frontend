@@ -6,10 +6,10 @@ import { Clock3, FilterX, Search, ShoppingBag, SlidersHorizontal, Star } from "l
 
 import { Button } from "@/components/ui/button"
 import { defaultMenuPriceLimit, menuCategories } from "@/lib/menu.constant"
+import { formatCurrency } from "@/lib/cart.utils"
 import { cn } from "@/lib/utils"
-import type { MenuCartItem, MenuItem, MenuSortOption } from "@/types/menu.interface"
-
-const formatCurrency = (amount: number) => `৳${amount}`
+import { useCartStore } from "@/store/cart.store"
+import type { MenuItem, MenuSortOption } from "@/types/menu.interface"
 
 const MenuCatalog = () => {
   const [activeCategory, setActiveCategory] = useState("all")
@@ -19,7 +19,7 @@ const MenuCatalog = () => {
   const [spicyOnly, setSpicyOnly] = useState(false)
   const [availableOnly, setAvailableOnly] = useState(false)
   const [priceLimit, setPriceLimit] = useState(defaultMenuPriceLimit)
-  const [cartItems, setCartItems] = useState<MenuCartItem[]>([])
+  const { items: cartItems, addItem, removeItem: removeFromCart, getTotals, getItemCount } = useCartStore()
   const [allItems, setAllItems] = useState<MenuItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -73,31 +73,21 @@ const MenuCatalog = () => {
     })
   }, [activeCategory, allItems, availableOnly, featuredOnly, priceLimit, searchTerm, sortBy, spicyOnly])
 
-  const cartSubtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
-  const discount = Math.round(cartSubtotal * 0.1)
-  const vat = Math.round(cartSubtotal * 0.05)
-  const deliveryCharge = cartSubtotal > 0 ? 60 : 0
-  const grandTotal = cartSubtotal - discount + vat + deliveryCharge
-  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0)
+  const cartTotals = getTotals()
+  const cartCount = getItemCount()
 
   const addToCart = (item: MenuItem) => {
     if (!item.isAvailable) return
-
-    setCartItems((currentItems) => {
-      const existingItem = currentItems.find((cartItem) => cartItem.id === item.id)
-
-      if (existingItem) {
-        return currentItems.map((cartItem) =>
-          cartItem.id === item.id ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem,
-        )
-      }
-
-      return [...currentItems, { id: item.id, name: item.name, price: item.price, quantity: 1 }]
+    addItem({
+      id: item.id,
+      name: item.name,
+      category: item.category,
+      emoji: item.emoji,
+      imageUrl: item.imageUrl,
+      unitPrice: item.price,
+      quantity: 1,
+      addOns: [],
     })
-  }
-
-  const removeFromCart = (id: string) => {
-    setCartItems((currentItems) => currentItems.filter((item) => item.id !== id))
   }
 
   const resetFilters = () => {
@@ -335,7 +325,7 @@ const MenuCatalog = () => {
                     <div>
                       <h3 className="text-sm font-bold leading-tight">{item.name}</h3>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        Qty: {item.quantity} x {formatCurrency(item.price)}
+                        Qty: {item.quantity} x {formatCurrency(item.unitPrice)}
                       </p>
                     </div>
                     <button
@@ -359,23 +349,23 @@ const MenuCatalog = () => {
           <div className="space-y-2 border-t border-border/50 pt-4 text-sm text-muted-foreground">
             <div className="flex justify-between">
               <span>Subtotal</span>
-              <span className="font-extrabold text-foreground">{formatCurrency(cartSubtotal)}</span>
+              <span className="font-extrabold text-foreground">{formatCurrency(cartTotals.subtotal)}</span>
             </div>
             <div className="flex justify-between text-success">
               <span>Discount (10% Applied)</span>
-              <span className="font-extrabold">-{formatCurrency(discount)}</span>
+              <span className="font-extrabold">-{formatCurrency(cartTotals.discount)}</span>
             </div>
             <div className="flex justify-between">
               <span>Govt VAT (5%)</span>
-              <span className="font-extrabold text-foreground">{formatCurrency(vat)}</span>
+              <span className="font-extrabold text-foreground">{formatCurrency(cartTotals.vat)}</span>
             </div>
             <div className="flex justify-between">
               <span>Home Delivery Charge</span>
-              <span className="font-extrabold text-foreground">{formatCurrency(deliveryCharge)}</span>
+              <span className="font-extrabold text-foreground">{formatCurrency(cartTotals.deliveryCharge)}</span>
             </div>
             <div className="flex justify-between border-t border-border/40 pt-3 text-base font-black text-foreground">
               <span>Grand Total Due</span>
-              <span className="text-xl text-primary">{formatCurrency(grandTotal)}</span>
+              <span className="text-xl text-primary">{formatCurrency(cartTotals.total)}</span>
             </div>
           </div>
 
@@ -396,7 +386,7 @@ const MenuCatalog = () => {
           <div>
             <p className="text-xs font-bold text-muted-foreground">Cart Summary</p>
             <p className="text-lg font-black text-primary">
-              {cartCount} items • {formatCurrency(grandTotal)}
+              {cartCount} items • {formatCurrency(cartTotals.total)}
             </p>
           </div>
           <Button asChild className="rounded-2xl border border-accent/40">

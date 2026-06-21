@@ -21,11 +21,13 @@ import { cn } from "@/lib/utils"
 import { publicNavItems } from "@/lib/home.constant"
 import ThemeToggler from "@/components/shared/ThemeToggler"
 import { authClient } from "@/lib/auth-client"
+import { useCartStore } from "@/store/cart.store"
 
 const PublicNavbar = () => {
   const pathname = usePathname()
   const { data: session, isPending } = authClient.useSession()
   const user = session?.user
+  const cartCount = useCartStore((s) => s.getItemCount())
 
   async function handleSignOut() {
     await authClient.signOut()
@@ -109,7 +111,7 @@ const PublicNavbar = () => {
             <Link href="/cart" aria-label="Open cart">
               <ShoppingBag className="size-5" />
               <Badge className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full border border-accent bg-primary p-0 text-[10px] font-bold text-white hover:bg-primary">
-                0
+                {cartCount > 99 ? "99+" : cartCount}
               </Badge>
             </Link>
           </Button>

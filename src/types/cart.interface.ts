@@ -7,8 +7,9 @@ export interface CartLineItem {
   id: string
   name: string
   category: string
-  emoji: string
-  variant: string
+  emoji?: string
+  imageUrl?: string
+  variant?: string
   note?: string
   unitPrice: number
   quantity: number
