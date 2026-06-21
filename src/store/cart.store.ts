@@ -14,6 +14,9 @@ interface CartStore {
   items: CartLineItem[]
   hasDelivery: boolean
   appliedCoupon: AppliedCoupon | null
+  // Set right before navigating away after a successful order so the
+  // empty-cart checkout guard does not bounce the user to /menu mid-redirect.
+  justPlacedOrder: boolean
 
   // Item actions
   addItem: (item: CartLineItem) => void
@@ -26,6 +29,10 @@ interface CartStore {
   applyDiscount: (code: string, discount: number) => void
   clearDiscount: () => void
 
+  // Order placement flag
+  markOrderPlaced: () => void
+  clearOrderPlaced: () => void
+
   // Computed selectors
   getTotals: () => CartTotals
   getItemCount: () => number
@@ -37,16 +44,18 @@ export const useCartStore = create<CartStore>()(
       items: [],
       hasDelivery: true,
       appliedCoupon: null,
+      justPlacedOrder: false,
 
       addItem: (item) => {
         set((state) => {
           const existing = state.items.find((i) => i.id === item.id)
           if (existing) {
             return {
+              justPlacedOrder: false,
               items: state.items.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i)),
             }
           }
-          return { items: [...state.items, item] }
+          return { justPlacedOrder: false, items: [...state.items, item] }
         })
       },
 
@@ -71,6 +80,10 @@ export const useCartStore = create<CartStore>()(
       applyDiscount: (code, discount) => set({ appliedCoupon: { code, discount } }),
 
       clearDiscount: () => set({ appliedCoupon: null }),
+
+      markOrderPlaced: () => set({ justPlacedOrder: true }),
+
+      clearOrderPlaced: () => set({ justPlacedOrder: false }),
 
       getTotals: (): CartTotals => {
         const { items, hasDelivery, appliedCoupon } = get()
@@ -99,6 +112,12 @@ export const useCartStore = create<CartStore>()(
       // skipHydration avoids SSR mismatch — call useCartStore.persist.rehydrate()
       // inside a useEffect in the layout to restore persisted cart on the client.
       skipHydration: true,
+      // Only the durable cart data is persisted; transient flags are not.
+      partialize: (state) => ({
+        items: state.items,
+        hasDelivery: state.hasDelivery,
+        appliedCoupon: state.appliedCoupon,
+      }),
     },
   ),
 )

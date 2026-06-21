@@ -20,6 +20,15 @@ export interface RevenuePoint {
   amount: number
 }
 
+export interface OrderLineItem {
+  name: string
+  quantity: number
+  unitPrice: number
+  lineTotal: number
+  variant?: Record<string, unknown> | null
+  addOns?: unknown[] | null
+}
+
 export interface AdminOrderRow {
   id: string
   customer: string
@@ -29,6 +38,21 @@ export interface AdminOrderRow {
   total: number
   status: "Placed" | "Accepted" | "Preparing" | "Ready" | "Out for Delivery" | "Delivered" | "Cancelled"
   type: "Delivery" | "Pickup" | "Dine-In"
+  // Detail fields — present when fetched from a single-order endpoint.
+  email?: string | null
+  fulfillmentType?: string
+  itemSummary?: string
+  lineItems?: OrderLineItem[]
+  address?: string | null
+  notes?: string | null
+  subtotal?: number
+  deliveryFee?: number
+  vat?: number
+  serviceCharge?: number
+  discount?: number
+  paymentMethod?: string
+  paymentStatus?: string
+  createdAt?: string
 }
 
 export interface AdminReservationRow {

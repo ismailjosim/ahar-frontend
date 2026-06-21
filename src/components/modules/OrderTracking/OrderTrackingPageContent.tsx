@@ -1,42 +1,44 @@
 "use client"
 
 import type { FormEvent } from "react"
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { CheckCircle2, ClipboardList, PackageCheck, Phone, Search, Truck } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { formatCurrency } from "@/lib/cart.utils"
 import { orderStatusDescriptions, orderStatusLabels, orderStatusSequence } from "@/lib/order.constant"
 import { cn } from "@/lib/utils"
 import type { AdminOrderRow } from "@/types/dashboard.interface"
 
 export default function OrderTrackingPageContent() {
-  const [orderId, setOrderId] = useState("1024")
+  const searchParams = useSearchParams()
+  const [orderId, setOrderId] = useState("")
   const [phone, setPhone] = useState("")
   const [order, setOrder] = useState<AdminOrderRow | null>(null)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
-  const handleLookup = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+  const runLookup = useCallback(async (idValue: string, phoneValue: string) => {
     setError("")
     setOrder(null)
 
-    if (!orderId.trim()) {
+    if (!idValue.trim()) {
       setError("Enter an order ID.")
       return
     }
 
     setLoading(true)
     try {
-      const res = await fetch(`/api/orders/${orderId.trim()}`)
+      const res = await fetch(`/api/orders/${idValue.trim()}`)
       if (!res.ok) {
         setError("No order was found for that ID.")
         return
       }
 
       const data: AdminOrderRow = await res.json()
-      const enteredPhone = phone.trim()
+      const enteredPhone = phoneValue.trim()
       if (enteredPhone && !data.phone.endsWith(enteredPhone.replace(/^\+?880|^0/, "")) && data.phone !== enteredPhone) {
         setError("The phone number does not match this order.")
         return
@@ -48,6 +50,21 @@ export default function OrderTrackingPageContent() {
     } finally {
       setLoading(false)
     }
+  }, [])
+
+  // Auto-fetch when redirected from checkout with ?id=<orderId>.
+  useEffect(() => {
+    const idFromUrl = searchParams.get("id")
+    if (idFromUrl) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setOrderId(idFromUrl)
+      runLookup(idFromUrl, "")
+    }
+  }, [searchParams, runLookup])
+
+  const handleLookup = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    runLookup(orderId, phone)
   }
 
   const activeIndex = order
@@ -87,7 +104,7 @@ export default function OrderTrackingPageContent() {
                   value={orderId}
                   onChange={(event) => setOrderId(event.target.value)}
                   className="h-11 w-full rounded-xl border border-border bg-background pl-10 pr-4 text-sm font-semibold outline-none focus:border-accent focus:ring-2 focus:ring-accent/25"
-                  placeholder="1024"
+                  placeholder="Paste your order ID"
                 />
               </div>
               <label className="text-xs font-black uppercase tracking-wider text-muted-foreground">
@@ -173,13 +190,48 @@ export default function OrderTrackingPageContent() {
             <div className="rounded-3xl border border-border bg-card p-6 text-card-foreground shadow-sm">
               <PackageCheck className="size-9 text-primary" />
               <h3 className="font-bengali mt-3 text-xl font-black">Order Summary</h3>
+
               <div className="mt-4 space-y-3 text-sm">
                 <SummaryRow label="Customer" value={order.customer} />
                 <SummaryRow label="Phone" value={order.phone} />
-                <SummaryRow label="Items" value={order.items} />
                 <SummaryRow label="Payment" value={order.method} />
                 <SummaryRow label="Type" value={order.type} />
-                <SummaryRow label="Total" value={`৳${order.total}`} />
+              </div>
+
+              {order.lineItems && order.lineItems.length > 0 ? (
+                <div className="mt-5 space-y-2 border-t border-border pt-4">
+                  <p className="text-xs font-black uppercase tracking-wider text-muted-foreground">Items</p>
+                  {order.lineItems.map((item, index) => (
+                    <div key={`${item.name}-${index}`} className="flex items-start justify-between gap-3 text-xs">
+                      <span className="font-semibold">
+                        {item.name} <span className="text-muted-foreground">x{item.quantity}</span>
+                      </span>
+                      <span className="font-bold">{formatCurrency(item.lineTotal)}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-5 border-t border-border pt-4">
+                  <SummaryRow label="Items" value={order.items} />
+                </div>
+              )}
+
+              <div className="mt-5 space-y-2 border-t border-border pt-4 text-sm text-muted-foreground">
+                {order.subtotal !== undefined ? (
+                  <InvoiceRow label="Subtotal" value={formatCurrency(order.subtotal)} />
+                ) : null}
+                {order.discount ? <InvoiceRow label="Discount" value={`-${formatCurrency(order.discount)}`} /> : null}
+                {order.vat ? <InvoiceRow label="VAT" value={formatCurrency(order.vat)} /> : null}
+                {order.serviceCharge ? (
+                  <InvoiceRow label="Service Charge" value={formatCurrency(order.serviceCharge)} />
+                ) : null}
+                {order.deliveryFee ? (
+                  <InvoiceRow label="Delivery Fee" value={formatCurrency(order.deliveryFee)} />
+                ) : null}
+                <div className="flex justify-between border-t border-border pt-3 text-base font-black text-foreground">
+                  <span>Total</span>
+                  <span className="text-primary">{formatCurrency(order.total)}</span>
+                </div>
               </div>
             </div>
           </aside>
@@ -187,7 +239,9 @@ export default function OrderTrackingPageContent() {
       ) : (
         <div className="rounded-3xl border border-dashed border-border bg-card/70 p-10 text-center">
           <p className="font-bengali text-xl font-black">Search an order to see live progress</p>
-          <p className="mt-2 text-sm text-muted-foreground">Try demo order IDs 1024, 1023, 1022, or 1021.</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Use the order ID from your confirmation. We will show the current kitchen and delivery status.
+          </p>
         </div>
       )}
     </div>
@@ -198,5 +252,12 @@ const SummaryRow = ({ label, value }: { label: string; value: string }) => (
   <div className="flex items-start justify-between gap-4 border-b border-border pb-2 last:border-0">
     <span className="text-muted-foreground">{label}</span>
     <span className="text-right font-bold">{value}</span>
+  </div>
+)
+
+const InvoiceRow = ({ label, value }: { label: string; value: string }) => (
+  <div className="flex justify-between">
+    <span>{label}</span>
+    <span className="font-extrabold text-foreground">{value}</span>
   </div>
 )

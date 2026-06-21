@@ -1,7 +1,4 @@
-"use client"
-
 import OrdersPageContent from "@/components/modules/Dashboard/OrdersPageContent"
-import { recentAdminOrders } from "@/lib/dashboard.constant"
 
 export default function OrdersPage() {
   return (
@@ -13,7 +10,7 @@ export default function OrdersPage() {
         </p>
       </div>
 
-      <OrdersPageContent orders={recentAdminOrders} />
+      <OrdersPageContent />
     </div>
   )
 }

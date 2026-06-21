@@ -1,41 +1,52 @@
 "use client"
 
 import type { FormEvent, ReactNode } from "react"
-import { useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
-import { CheckCircle2, CreditCard, LockKeyhole, MapPin, Phone, ShieldCheck, ShoppingBag, User } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { CreditCard, Loader2, LockKeyhole, MapPin, Phone, ShieldCheck, ShoppingBag, User } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { demoCartItems } from "@/lib/cart.constant"
-import { calculateCartTotals, calculateLineTotal, formatCurrency } from "@/lib/cart.utils"
+import { calculateLineTotal, formatCurrency } from "@/lib/cart.utils"
 import { defaultCheckoutForm, deliveryAreas, fulfillmentOptions, paymentOptions } from "@/lib/checkout.constant"
-import { validateBDPhone } from "@/lib/phone.utils"
+import { normalizeBDPhone, validateBDPhone } from "@/lib/phone.utils"
 import { cn } from "@/lib/utils"
-import type {
-  CheckoutFormData,
-  CheckoutFulfillmentMode,
-  CheckoutPaymentMethod,
-  MockOrderConfirmation,
-} from "@/types/checkout.interface"
+import { useCartStore } from "@/store/cart.store"
+import type { CheckoutFormData, CheckoutFulfillmentMode, CheckoutPaymentMethod } from "@/types/checkout.interface"
 
 const fieldClass =
   "h-11 w-full rounded-xl border border-border bg-background px-4 text-xs font-bold outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/25"
 
 const CheckoutPageContent = () => {
+  const router = useRouter()
+  const cartItems = useCartStore((s) => s.items)
+  const appliedCoupon = useCartStore((s) => s.appliedCoupon)
+  const setDelivery = useCartStore((s) => s.setDelivery)
+  const getTotals = useCartStore((s) => s.getTotals)
+  const clearCart = useCartStore((s) => s.clearCart)
+  const markOrderPlaced = useCartStore((s) => s.markOrderPlaced)
+
   const [fulfillmentMode, setFulfillmentMode] = useState<CheckoutFulfillmentMode>("delivery")
   const [paymentMethod, setPaymentMethod] = useState<CheckoutPaymentMethod>("cod")
   const [formData, setFormData] = useState<CheckoutFormData>(defaultCheckoutForm)
   const [errors, setErrors] = useState<Partial<Record<keyof CheckoutFormData, string>>>({})
-  const [confirmation, setConfirmation] = useState<MockOrderConfirmation | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState("")
 
   const hasDelivery = fulfillmentMode === "delivery"
-  const totals = useMemo(() => calculateCartTotals(demoCartItems, hasDelivery), [hasDelivery])
-  const cartCount = demoCartItems.reduce((total, item) => total + item.quantity, 0)
+
+  // Keep the cart store delivery flag in sync so getTotals reflects the choice.
+  useEffect(() => {
+    setDelivery(hasDelivery)
+  }, [hasDelivery, setDelivery])
+
+  const totals = getTotals()
+  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0)
 
   const updateFormField = (field: keyof CheckoutFormData, value: string) => {
     setFormData((currentData) => ({ ...currentData, [field]: value }))
     setErrors((currentErrors) => ({ ...currentErrors, [field]: undefined }))
-    setConfirmation(null)
+    setSubmitError("")
   }
 
   const validateForm = () => {
@@ -58,18 +69,58 @@ const CheckoutPageContent = () => {
     return Object.keys(nextErrors).length === 0
   }
 
-  const handlePlaceOrder = (event: FormEvent<HTMLFormElement>) => {
+  const handlePlaceOrder = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     if (!validateForm()) return
 
-    setConfirmation({
-      orderId: `AHAR-${Date.now().toString().slice(-6)}`,
+    setIsSubmitting(true)
+    setSubmitError("")
+
+    const payload = {
       customerName: formData.fullName.trim(),
-      fulfillmentMode,
+      phone: normalizeBDPhone(formData.phone),
+      email: formData.email.trim() || undefined,
+      fulfillmentType: fulfillmentMode,
+      items: cartItems.map((item) => ({
+        menuItemId: item.id,
+        nameSnapshot: item.name,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        selectedVariant: item.variant ? { name: item.variant } : undefined,
+        selectedAddOns: item.addOns.length > 0 ? item.addOns : undefined,
+        lineTotal: calculateLineTotal(item),
+      })),
+      address:
+        fulfillmentMode === "delivery" ? `${formData.streetAddress}, ${formData.area}, ${formData.city}` : undefined,
+      notes: formData.orderNote.trim() || undefined,
       paymentMethod,
-      payableTotal: totals.total,
-    })
+      couponCode: appliedCoupon?.code ?? undefined,
+    }
+
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        setSubmitError(err.error ?? err.message ?? "Failed to place order. Please try again.")
+        return
+      }
+
+      const order = await res.json()
+
+      markOrderPlaced()
+      clearCart()
+      router.push(`/order-tracking?id=${order.id}`)
+    } catch {
+      setSubmitError("Network error. Please check your connection and try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -93,8 +144,8 @@ const CheckoutPageContent = () => {
             নিরাপদ পেমেন্ট ও চেকআউট
           </h1>
           <p className="max-w-2xl text-xs leading-5 text-muted-foreground">
-            Please configure billing, delivery, and payment details. This is a local mock checkout until backend APIs
-            and live payment gateways are connected.
+            Please configure billing, delivery, and payment details. Cash on delivery is live now; online payment
+            gateways are coming soon.
           </p>
         </div>
       </section>
@@ -112,7 +163,7 @@ const CheckoutPageContent = () => {
                     type="button"
                     onClick={() => {
                       setFulfillmentMode(option.id as CheckoutFulfillmentMode)
-                      setConfirmation(null)
+                      setSubmitError("")
                     }}
                     className={cn(
                       "motion-soft-hover flex cursor-pointer items-center justify-between rounded-2xl border-2 bg-background p-4 text-left transition",
@@ -257,7 +308,7 @@ const CheckoutPageContent = () => {
                     type="button"
                     onClick={() => {
                       setPaymentMethod(option.value)
-                      setConfirmation(null)
+                      setSubmitError("")
                     }}
                     className={cn(
                       "motion-soft-hover flex cursor-pointer items-center justify-between rounded-2xl border-2 bg-background p-4 text-left transition",
@@ -296,13 +347,19 @@ const CheckoutPageContent = () => {
             </div>
 
             <div className="mt-5 space-y-4">
-              {demoCartItems.map((item) => (
+              {cartItems.map((item) => (
                 <div key={item.id} className="flex items-start justify-between gap-3 text-xs">
                   <div>
                     <p className="font-black">{item.name}</p>
                     <p className="mt-1 text-muted-foreground">
-                      {item.quantity} x {item.variant}
+                      {item.quantity} x {formatCurrency(item.unitPrice)}
+                      {item.variant ? ` • ${item.variant}` : ""}
                     </p>
+                    {item.addOns.length > 0 ? (
+                      <p className="mt-0.5 text-[10px] text-muted-foreground">
+                        + {item.addOns.map((addOn) => addOn.name).join(", ")}
+                      </p>
+                    ) : null}
                   </div>
                   <span className="font-black text-primary">{formatCurrency(calculateLineTotal(item))}</span>
                 </div>
@@ -311,7 +368,13 @@ const CheckoutPageContent = () => {
 
             <div className="mt-5 space-y-3 border-t border-border pt-4 text-sm text-muted-foreground">
               <InvoiceLine label="Cart Subtotal" value={formatCurrency(totals.subtotal)} />
-              <InvoiceLine isSuccess label="Coupon Discount (10%)" value={`-${formatCurrency(totals.discount)}`} />
+              {totals.discount > 0 ? (
+                <InvoiceLine
+                  isSuccess
+                  label={appliedCoupon ? `Coupon (${appliedCoupon.code})` : "Discount"}
+                  value={`-${formatCurrency(totals.discount)}`}
+                />
+              ) : null}
               <InvoiceLine label="Govt VAT (5%)" value={formatCurrency(totals.vat)} />
               <InvoiceLine
                 label="Delivery Charge"
@@ -321,14 +384,24 @@ const CheckoutPageContent = () => {
                 <span>Total Payable</span>
                 <span className="text-2xl text-primary">{formatCurrency(totals.total)}</span>
               </div>
+              <p className="text-[10px] leading-4 text-muted-foreground">
+                Final total is confirmed by the server when your order is placed.
+              </p>
             </div>
+
+            {submitError ? (
+              <div className="mt-5 rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-xs font-bold text-destructive">
+                {submitError}
+              </div>
+            ) : null}
 
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="mt-6 w-full rounded-full border border-accent/40 py-6 font-black shadow-lg shadow-primary/20"
             >
-              <LockKeyhole />
-              Securely Place Order
+              {isSubmitting ? <Loader2 className="animate-spin" /> : <LockKeyhole />}
+              {isSubmitting ? "Placing Order..." : "Securely Place Order"}
             </Button>
 
             <div className="mt-4 flex items-center justify-center gap-3 text-lg">
@@ -342,32 +415,16 @@ const CheckoutPageContent = () => {
             </p>
           </div>
 
-          {confirmation ? (
-            <div className="motion-reveal rounded-3xl border border-success/40 bg-success-soft p-5 text-success-foreground shadow-sm">
-              <h3 className="flex items-center gap-2 text-sm font-black text-success">
-                <CheckCircle2 className="size-5" />
-                Mock order created
-              </h3>
-              <div className="mt-3 space-y-1 text-xs font-bold text-foreground">
-                <p>Order ID: {confirmation.orderId}</p>
-                <p>Customer: {confirmation.customerName}</p>
-                <p>Mode: {confirmation.fulfillmentMode}</p>
-                <p>Payment: {confirmation.paymentMethod.toUpperCase()}</p>
-                <p>Total: {formatCurrency(confirmation.payableTotal)}</p>
-              </div>
-            </div>
-          ) : (
-            <div className="rounded-3xl border border-border bg-secondary p-5 text-xs leading-5 text-muted-foreground">
-              <p className="flex items-start gap-2">
-                <CreditCard className="mt-0.5 size-4 shrink-0 text-accent" />
-                COD is active first. SSLCOMMERZ is shown as the future payment gateway placeholder.
-              </p>
-              <p className="mt-3 flex items-start gap-2">
-                <Phone className="mt-0.5 size-4 shrink-0 text-primary" />
-                Phone validation follows the demo checkout: 10 digits after +880.
-              </p>
-            </div>
-          )}
+          <div className="rounded-3xl border border-border bg-secondary p-5 text-xs leading-5 text-muted-foreground">
+            <p className="flex items-start gap-2">
+              <CreditCard className="mt-0.5 size-4 shrink-0 text-accent" />
+              COD is active first. SSLCOMMERZ is shown as the future payment gateway placeholder.
+            </p>
+            <p className="mt-3 flex items-start gap-2">
+              <Phone className="mt-0.5 size-4 shrink-0 text-primary" />
+              Phone validation follows the demo checkout: 10 digits after +880.
+            </p>
+          </div>
         </aside>
       </form>
     </div>
