@@ -66,7 +66,10 @@ async function requestBackend<T>(path: string, init: RequestInit = {}): Promise<
 }
 
 export async function proxyList<T>(path: string, req: Request) {
-  const body = await requestBackend<T[]>(getTargetPath(path, req))
+  const cookie = req.headers.get("cookie")
+  const body = await requestBackend<T[]>(getTargetPath(path, req), {
+    headers: cookie ? { cookie } : undefined,
+  })
 
   if (body.success === false) {
     return NextResponse.json(body, { status: 500 })
@@ -92,19 +95,25 @@ export async function proxyData<T>(path: string, options: RequestInit & { status
 export async function proxyMutation<T>(path: string, req: Request, method: "POST" | "PATCH", status?: number) {
   try {
     const payload = await req.json()
+    const cookie = req.headers.get("cookie")
 
     return proxyData<T>(path, {
       method,
       body: JSON.stringify(payload),
       status,
+      headers: cookie ? { cookie } : undefined,
     })
   } catch {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 })
   }
 }
 
-export async function proxyDelete(path: string) {
-  const body = await requestBackend(path, { method: "DELETE" })
+export async function proxyDelete(path: string, req?: Request) {
+  const cookie = req?.headers.get("cookie")
+  const body = await requestBackend(path, {
+    method: "DELETE",
+    headers: cookie ? { cookie } : undefined,
+  })
 
   if (body.success === false) {
     return NextResponse.json({ error: body.message || "Backend request failed" }, { status: 500 })

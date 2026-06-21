@@ -14,5 +14,5 @@ export async function PATCH(req: Request, { params }: RouteContext) {
 
 export async function DELETE(req: Request, { params }: RouteContext) {
   const { id } = await params
-  return proxyDelete(`/inventory/${id}`)
+  return proxyDelete(`/inventory/${id}`, req)
 }
