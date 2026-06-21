@@ -3,10 +3,11 @@
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { FormEvent, Suspense, useState } from "react"
-import { Eye, EyeOff, Loader2, Lock, Mail, UserRound, Utensils } from "lucide-react"
+import { Eye, EyeOff, Loader2, Lock, Mail, Phone, UserRound, Utensils } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { authClient } from "@/lib/auth-client"
+import { normalizeBDPhone, validateBDPhone } from "@/lib/phone.utils"
 
 export default function SignUpPage() {
   return (
@@ -22,6 +23,7 @@ function SignUpForm() {
   const callbackURL = getSafeCallbackURL(searchParams.get("callbackURL"))
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
+  const [phone, setPhone] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -42,6 +44,11 @@ function SignUpForm() {
       return
     }
 
+    if (phone && !validateBDPhone(phone)) {
+      setError("Please enter a valid Bangladeshi phone number.")
+      return
+    }
+
     if (password !== confirmPassword) {
       setError("Passwords do not match.")
       return
@@ -54,8 +61,9 @@ function SignUpForm() {
         name: name.trim(),
         email: email.trim(),
         password,
+        phone: phone ? normalizeBDPhone(phone) : undefined,
         callbackURL,
-      })
+      } as Parameters<typeof authClient.signUp.email>[0])
 
       if (signUpError) {
         setError(signUpError.message || "Unable to create your account.")
@@ -113,6 +121,23 @@ function SignUpForm() {
                 className="h-10 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                 placeholder="you@example.com"
                 required
+              />
+            </span>
+          </label>
+
+          <label className="block space-y-2 text-sm font-medium">
+            <span>
+              Phone number <span className="text-muted-foreground font-normal">(optional)</span>
+            </span>
+            <span className="flex items-center gap-2 rounded-md border border-input bg-background px-3 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+              <Phone className="size-4 text-muted-foreground" aria-hidden="true" />
+              <input
+                type="tel"
+                value={phone}
+                onChange={(event) => setPhone(event.target.value)}
+                autoComplete="tel"
+                className="h-10 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                placeholder="01712345678"
               />
             </span>
           </label>
