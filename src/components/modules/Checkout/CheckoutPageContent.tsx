@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { demoCartItems } from "@/lib/cart.constant"
 import { calculateCartTotals, calculateLineTotal, formatCurrency } from "@/lib/cart.utils"
 import { defaultCheckoutForm, deliveryAreas, fulfillmentOptions, paymentOptions } from "@/lib/checkout.constant"
+import { validateBDPhone } from "@/lib/phone.utils"
 import { cn } from "@/lib/utils"
 import type {
   CheckoutFormData,
@@ -16,8 +17,6 @@ import type {
   CheckoutPaymentMethod,
   MockOrderConfirmation,
 } from "@/types/checkout.interface"
-
-const bdPhoneRegex = /^(1[3-9]\d{8})$/
 
 const fieldClass =
   "h-11 w-full rounded-xl border border-border bg-background px-4 text-xs font-bold outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/25"
@@ -46,8 +45,8 @@ const CheckoutPageContent = () => {
       nextErrors.fullName = "Full name is required."
     }
 
-    if (!bdPhoneRegex.test(formData.phone.trim())) {
-      nextErrors.phone = "Use a valid BD mobile number, for example 1712345678."
+    if (!validateBDPhone(formData.phone.trim())) {
+      nextErrors.phone = "Use a valid BD mobile number, for example 01712345678."
     }
 
     if (hasDelivery && !formData.streetAddress.trim()) {

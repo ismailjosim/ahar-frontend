@@ -13,10 +13,9 @@ import {
   reservationTablePreferences,
   reservationTimeSlots,
 } from "@/lib/reservation.constant"
+import { validateBDPhone } from "@/lib/phone.utils"
 import { cn } from "@/lib/utils"
 import type { ReservationConfirmation, ReservationFormData, ReservationFormErrors } from "@/types/reservation.interface"
-
-const bdPhoneRegex = /^(?:\+?880|0)?1[3-9]\d{8}$/
 
 const fieldClass =
   "h-11 w-full rounded-xl border border-border bg-background px-4 text-sm font-semibold text-foreground outline-none transition placeholder:text-muted-foreground focus:border-accent focus:ring-2 focus:ring-accent/25"
@@ -44,7 +43,7 @@ export default function ReservationPageContent() {
       nextErrors.customer = "Guest name is required."
     }
 
-    if (!bdPhoneRegex.test(formData.phone.trim())) {
+    if (!validateBDPhone(formData.phone.trim())) {
       nextErrors.phone = "Use a valid BD mobile number, for example 01712345678."
     }
 
