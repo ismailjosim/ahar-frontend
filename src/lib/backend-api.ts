@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
 
+import { auth } from "@/lib/auth"
+
 type BackendBody<T = unknown> = {
   success?: boolean
   message?: string
@@ -11,6 +13,8 @@ type BackendBody<T = unknown> = {
   data?: T
   error?: unknown
 }
+
+type BackendResponse<T> = BackendBody<T> & { _httpStatus?: number }
 
 const API_VERSION = "/api/v1"
 
@@ -32,7 +36,33 @@ function getTargetPath(path: string, req?: Request) {
   return query ? `${normalizedPath}?${query}` : normalizedPath
 }
 
-async function requestBackend<T>(path: string, init: RequestInit = {}): Promise<BackendBody<T>> {
+/**
+ * Validates the session using the frontend's auth instance (the one that
+ * created the session) and returns trusted internal headers.  The backend's
+ * requireAuth/optionalAuth middlewares accept these headers when the
+ * x-internal-secret matches BETTER_AUTH_SECRET, bypassing the unreliable
+ * cross-service cookie validation.
+ */
+async function getAuthHeaders(req: Request): Promise<Record<string, string>> {
+  try {
+    const session = await auth.api.getSession({ headers: req.headers })
+    if (!session?.user) return {}
+
+    const user = session.user as typeof session.user & { role?: string; phone?: string | null }
+
+    return {
+      "x-internal-secret": process.env.BETTER_AUTH_SECRET ?? "",
+      "x-auth-user-id": user.id,
+      "x-auth-user-name": user.name ?? "",
+      "x-auth-user-email": user.email ?? "",
+      "x-auth-user-role": user.role ?? "customer",
+    }
+  } catch {
+    return {}
+  }
+}
+
+async function requestBackend<T>(path: string, init: RequestInit = {}): Promise<BackendResponse<T>> {
   const headers = new Headers(init.headers)
 
   if (init.body && !headers.has("Content-Type")) {
@@ -52,6 +82,7 @@ async function requestBackend<T>(path: string, init: RequestInit = {}): Promise<
         success: false,
         message: body.message || "Backend request failed",
         error: body.error || body,
+        _httpStatus: response.status,
       }
     }
 
@@ -61,18 +92,19 @@ async function requestBackend<T>(path: string, init: RequestInit = {}): Promise<
       success: false,
       message: "Unable to reach backend API",
       error,
+      _httpStatus: 503,
     }
   }
 }
 
 export async function proxyList<T>(path: string, req: Request) {
-  const cookie = req.headers.get("cookie")
+  const authHeaders = await getAuthHeaders(req)
   const body = await requestBackend<T[]>(getTargetPath(path, req), {
-    headers: cookie ? { cookie } : undefined,
+    headers: authHeaders,
   })
 
   if (body.success === false) {
-    return NextResponse.json(body, { status: 500 })
+    return NextResponse.json(body, { status: body._httpStatus || 500 })
   }
 
   return NextResponse.json({
@@ -86,7 +118,7 @@ export async function proxyData<T>(path: string, options: RequestInit & { status
   const body = await requestBackend<T>(path, init)
 
   if (body.success === false) {
-    return NextResponse.json({ error: body.message || "Backend request failed" }, { status: 500 })
+    return NextResponse.json({ error: body.message || "Backend request failed" }, { status: body._httpStatus || 500 })
   }
 
   return NextResponse.json(body.data ?? null, { status: status || 200 })
@@ -95,13 +127,13 @@ export async function proxyData<T>(path: string, options: RequestInit & { status
 export async function proxyMutation<T>(path: string, req: Request, method: "POST" | "PATCH", status?: number) {
   try {
     const payload = await req.json()
-    const cookie = req.headers.get("cookie")
+    const authHeaders = await getAuthHeaders(req)
 
     return proxyData<T>(path, {
       method,
       body: JSON.stringify(payload),
       status,
-      headers: cookie ? { cookie } : undefined,
+      headers: authHeaders,
     })
   } catch {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 })
@@ -109,14 +141,14 @@ export async function proxyMutation<T>(path: string, req: Request, method: "POST
 }
 
 export async function proxyDelete(path: string, req?: Request) {
-  const cookie = req?.headers.get("cookie")
+  const authHeaders = req ? await getAuthHeaders(req) : {}
   const body = await requestBackend(path, {
     method: "DELETE",
-    headers: cookie ? { cookie } : undefined,
+    headers: authHeaders,
   })
 
   if (body.success === false) {
-    return NextResponse.json({ error: body.message || "Backend request failed" }, { status: 500 })
+    return NextResponse.json({ error: body.message || "Backend request failed" }, { status: body._httpStatus || 500 })
   }
 
   return NextResponse.json({ success: true })

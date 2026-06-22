@@ -1,22 +1,15 @@
-import {
-  BarChart3,
-  Bell,
-  CalendarCheck,
-  ChartPie,
-  CreditCard,
-  ClipboardList,
-  CookingPot,
-  Gauge,
-  PackageSearch,
-  Settings,
-  ShoppingBag,
-  Table2,
-  Utensils,
-  WalletCards,
-} from "lucide-react"
+/**
+ * dashboard.constant.ts
+ *
+ * Mock data and configuration for the admin dashboard.
+ *
+ * Navigation items have been moved to src/lib/navitems.config.ts —
+ * import { adminNavItems, adminControlItems } from "@/lib/navitems.config".
+ */
+
+import { Bell, CalendarCheck, ChartPie, ClipboardList, ShoppingBag, WalletCards } from "lucide-react"
 
 import type {
-  AdminNavItem,
   AdminOrderRow,
   AdminReservationRow,
   DashboardNotification,
@@ -24,51 +17,6 @@ import type {
   LowStockItem,
   RevenuePoint,
 } from "@/types/dashboard.interface"
-
-export const adminNavItems: AdminNavItem[] = [
-  {
-    href: "/dashboard",
-    label: "ড্যাশবোর্ড (Dashboard)",
-    icon: Gauge,
-  },
-  {
-    href: "/dashboard/orders",
-    label: "অর্ডার সমূহ (Orders)",
-    badge: "৪",
-    icon: CookingPot,
-  },
-  {
-    href: "/dashboard/menu",
-    label: "মেনু ম্যানেজার (Menu)",
-    icon: Utensils,
-  },
-  {
-    href: "/dashboard/reservations",
-    label: "রিজার্ভেশন (Reservations)",
-    badge: "৩",
-    icon: Table2,
-  },
-  {
-    href: "/dashboard/payments",
-    label: "পেমেন্ট (Payments)",
-    icon: CreditCard,
-  },
-  {
-    href: "/dashboard/inventory",
-    label: "ইনভেন্টরি (Inventory)",
-    icon: PackageSearch,
-  },
-  {
-    href: "/dashboard/reports",
-    label: "রিপোর্টস (Reports)",
-    icon: BarChart3,
-  },
-  {
-    href: "/dashboard/settings",
-    label: "সেটিংস (Settings)",
-    icon: Settings,
-  },
-]
 
 export const dashboardStats: DashboardStatCard[] = [
   {

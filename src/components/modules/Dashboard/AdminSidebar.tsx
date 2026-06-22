@@ -1,35 +1,20 @@
 "use client"
 
+/**
+ * AdminSidebar.tsx
+ *
+ * Sidebar shell — composes <NavMain /> (primary nav) and <NavUser /> (profile /
+ * logout).  Nav items are driven by navitems.config.ts; this file owns only
+ * the structural layout and the mobile overlay.
+ *
+ * Mirrors WellSpace's app-sidebar.tsx composition pattern.
+ */
+
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import {
-  Gauge,
-  CookingPot,
-  Utensils,
-  Table2,
-  CreditCard,
-  PackageSearch,
-  BarChart3,
-  Settings,
-  X,
-  LogOut,
-  UserRound,
-} from "lucide-react"
+import { X } from "lucide-react"
 
-import ThemeToggler from "@/components/shared/ThemeToggler"
-import { authClient } from "@/lib/auth-client"
-
-const navItems = [
-  { href: "/dashboard", label: "ড্যাশবোর্ড (Dashboard)", icon: Gauge, badge: null },
-  { href: "/dashboard/orders", label: "অর্ডার সমূহ (Orders)", icon: CookingPot, badge: "৪" },
-  { href: "/dashboard/reservations", label: "রিজার্ভেশন (Reservations)", icon: Table2, badge: "৩" },
-  { href: "/dashboard/menu", label: "মেনু ম্যানেজার (Menu)", icon: Utensils, badge: null },
-  { href: "/dashboard/payments", label: "পেমেন্ট (Payments)", icon: CreditCard, badge: null },
-  { href: "/dashboard/inventory", label: "ইনভেন্টরি (Inventory)", icon: PackageSearch, badge: null },
-  { href: "/dashboard/reports", label: "রিপোর্টস (Reports)", icon: BarChart3, badge: null },
-]
-
-const controlItems = [{ href: "/dashboard/settings", label: "সেটিংস (Settings)", icon: Settings }]
+import NavMain from "@/components/modules/Dashboard/NavMain"
+import NavUser from "@/components/modules/Dashboard/NavUser"
 
 interface AdminSidebarProps {
   isOpen?: boolean
@@ -37,17 +22,9 @@ interface AdminSidebarProps {
 }
 
 export default function AdminSidebar({ isOpen = true, onClose }: AdminSidebarProps) {
-  const pathname = usePathname()
-  const { data: session } = authClient.useSession()
-  const user = session?.user
-
-  async function handleSignOut() {
-    await authClient.signOut()
-    window.location.href = "/auth/login"
-  }
-
   return (
     <>
+      {/* Mobile overlay backdrop */}
       {isOpen && <div className="fixed inset-0 z-40 bg-black/50 md:hidden" onClick={onClose} />}
 
       <aside
@@ -55,6 +32,7 @@ export default function AdminSidebar({ isOpen = true, onClose }: AdminSidebarPro
           isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
+        {/* ── Sidebar header ──────────────────────────────────────────────── */}
         <div className="flex h-20 items-center justify-between border-b border-border bg-card px-6">
           <Link
             href="/"
@@ -74,6 +52,7 @@ export default function AdminSidebar({ isOpen = true, onClose }: AdminSidebarPro
             </h1>
           </Link>
 
+          {/* Mobile close button */}
           <button
             type="button"
             onClick={onClose}
@@ -84,100 +63,11 @@ export default function AdminSidebar({ isOpen = true, onClose }: AdminSidebarPro
           </button>
         </div>
 
-        <nav className="flex-1 space-y-1.5 overflow-y-auto px-4 py-6">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            const isActive = pathname === item.href
+        {/* ── Primary navigation ──────────────────────────────────────────── */}
+        <NavMain onNavClick={onClose} />
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onClose}
-                className={`flex items-center justify-between gap-3.5 rounded-xl px-4 py-3 text-sm transition-all duration-200 ${
-                  isActive
-                    ? "border-l-4 border-secondary bg-primary-soft text-primary"
-                    : "text-muted-foreground hover:bg-primary-soft hover:text-primary"
-                }`}
-              >
-                <div className="flex items-center gap-3.5">
-                  <Icon className="size-5" />
-                  <span className="font-bengali font-medium">{item.label}</span>
-                </div>
-
-                {item.badge && (
-                  <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground">
-                    {item.badge}
-                  </span>
-                )}
-              </Link>
-            )
-          })}
-        </nav>
-
-        <div className="border-t border-border px-4 py-4">
-          <p className="font-bengali px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            অ্যাডমিন কন্ট্রোল
-          </p>
-        </div>
-
-        <nav className="space-y-1.5 px-4 pb-6">
-          {controlItems.map((item) => {
-            const Icon = item.icon
-            const isActive = pathname === item.href
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onClose}
-                className={`flex items-center gap-3.5 rounded-xl px-4 py-3 text-sm transition-all duration-200 ${
-                  isActive
-                    ? "border-l-4 border-secondary bg-primary-soft text-primary"
-                    : "text-muted-foreground hover:bg-primary-soft hover:text-primary"
-                }`}
-              >
-                <Icon className="size-5" />
-                <span className="font-bengali font-medium">{item.label}</span>
-              </Link>
-            )
-          })}
-        </nav>
-
-        <div className="space-y-3 border-t border-border bg-card p-4">
-          <Link
-            href="/profile"
-            onClick={onClose}
-            className="flex items-center gap-3 rounded-xl border border-border bg-secondary/20 p-2.5 transition hover:bg-muted"
-          >
-            <span
-              className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-secondary/30 bg-primary bg-cover bg-center font-bengali font-bold text-primary-foreground"
-              style={user?.image ? { backgroundImage: `url("${user.image}")` } : undefined}
-            >
-              {!user?.image && <UserRound className="size-5" aria-hidden="true" />}
-            </span>
-
-            <span className="min-w-0 overflow-hidden text-left">
-              <span className="block truncate text-sm font-semibold text-foreground">{user?.name || "Profile"}</span>
-              <span className="block truncate text-xs font-semibold text-muted-foreground">
-                {user?.email || "Signed in"}
-              </span>
-            </span>
-          </Link>
-
-          <div className="flex items-center justify-between gap-2">
-            <ThemeToggler />
-
-            <button
-              type="button"
-              onClick={handleSignOut}
-              className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-background px-3 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-primary"
-            >
-              <LogOut className="size-4" aria-hidden="true" />
-              Logout
-            </button>
-          </div>
-        </div>
+        {/* ── User profile + logout ────────────────────────────────────────── */}
+        <NavUser onNavClick={onClose} />
       </aside>
     </>
   )
