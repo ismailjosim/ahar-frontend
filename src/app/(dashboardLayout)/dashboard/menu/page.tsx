@@ -1,16 +1,19 @@
-"use client"
-
+import MenuManagementHeader from "@/components/modules/Dashboard/Menu/MenuManagementHeader"
 import MenuManagerContent from "@/components/modules/Dashboard/MenuManagerContent"
 
-export default function MenuManagerPage() {
+const MenuManagementPage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) => {
+  const searchParamsObj = await searchParams
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-bengali text-3xl font-bold text-gray-900 dark:text-white">মেনু ম্যানেজার (Menu)</h1>
-        <p className="font-bengali mt-2 text-gray-600 dark:text-gray-400">মেনু আইটেম যোগ, সম্পাদনা ও অপসারণ করুন</p>
-      </div>
+      <MenuManagementHeader />
 
       <MenuManagerContent />
     </div>
   )
 }
+
+export default MenuManagementPage

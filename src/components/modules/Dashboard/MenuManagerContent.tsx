@@ -323,7 +323,7 @@ export default function MenuManagerContent() {
         ),
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     [],
   )
 

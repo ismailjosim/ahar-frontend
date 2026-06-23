@@ -1,34 +1,33 @@
-/**
- * ManagementPageHeader.tsx
- *
- * Consistent header used at the top of every admin management page.
- * Provides a title, optional subtitle, and a primary action button slot.
- *
- * Usage:
- *   <ManagementPageHeader
- *     title="Menu Items"
- *     subtitle="Create, edit or remove menu items"
- *     action={<button onClick={openCreate}>New Item</button>}
- *   />
- */
+import { LucideIcon, Plus } from "lucide-react"
 
-import type { ReactNode } from "react"
+import { Button } from "../ui/button"
 
 interface ManagementPageHeaderProps {
   title: string
-  subtitle?: string
-  action?: ReactNode
+  description?: string
+  action?: {
+    label: string
+    icon?: LucideIcon
+    onClick: () => void
+  }
+  children?: React.ReactNode
 }
 
-export default function ManagementPageHeader({ title, subtitle, action }: ManagementPageHeaderProps) {
+export default function ManagementPageHeader({ title, description, action, children }: ManagementPageHeaderProps) {
+  const Icon = action?.icon || Plus
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="flex items-center justify-between">
       <div>
-        <h3 className="font-bengali text-lg font-bold text-foreground">{title}</h3>
-        {subtitle && <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>}
+        <h1 className="text-3xl font-bold">{title}</h1>
+        {description && <p className="text-muted-foreground mt-1">{description}</p>}
       </div>
-
-      {action && <div className="shrink-0">{action}</div>}
+      {action && (
+        <Button onClick={action?.onClick}>
+          <Icon className="mr-2 h-4 w-4" />
+          {action?.label}
+        </Button>
+      )}
+      {children}
     </div>
   )
 }

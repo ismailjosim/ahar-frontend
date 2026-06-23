@@ -3,6 +3,7 @@ import { Geist_Mono, Hind_Siliguri, Manrope } from "next/font/google"
 
 import NextThemeProvider from "@/providers/NextThemeProvider"
 import "./(commonlayout)/globals.css"
+import { Toaster } from "@/components/ui/sonner"
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -40,7 +41,10 @@ export default function RootLayout({
       className={`${manrope.variable} ${hindSiliguri.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col font-sans" suppressHydrationWarning>
-        <NextThemeProvider>{children}</NextThemeProvider>
+        <NextThemeProvider>
+          <Toaster />
+          {children}
+        </NextThemeProvider>
       </body>
     </html>
   )
