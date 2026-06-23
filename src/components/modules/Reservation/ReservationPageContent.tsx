@@ -82,25 +82,34 @@ export default function ReservationPageContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customer: formData.customer.trim(),
+          customerName: formData.customer.trim(),
           phone: formData.phone.trim(),
           guests: Number(formData.guests),
-          time: `${formData.date}, ${formData.timeSlot}`,
-          table: formData.tablePreference,
-          status: "Pending",
-          request: formData.request.trim(),
+          displayTime: `${formData.date}, ${formData.timeSlot}`,
+          tableCode: formData.tablePreference,
+          notes: formData.request.trim() || undefined,
         }),
       })
 
+      const json = await res.json()
+
       if (!res.ok) {
-        throw new Error("Failed to create reservation")
+        const msg = json?.message ?? "Reservation could not be submitted. Please try again."
+        throw new Error(msg)
       }
 
-      const created = await res.json()
-      setConfirmation(created)
+      const data = json?.data ?? json
+      setConfirmation({
+        id: data.id,
+        customer: data.customer,
+        guests: Number(data.guests),
+        time: data.time,
+        table: data.table ?? "Any Available",
+        status: data.status,
+      })
       setFormData(defaultReservationForm)
-    } catch {
-      setSubmitError("Reservation could not be submitted. Please try again.")
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Reservation could not be submitted. Please try again.")
     } finally {
       setIsSubmitting(false)
     }

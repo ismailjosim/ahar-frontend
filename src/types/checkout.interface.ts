@@ -1,6 +1,6 @@
 export type CheckoutFulfillmentMode = "delivery" | "pickup"
 
-export type CheckoutPaymentMethod = "cod" | "sslcommerz"
+export type CheckoutPaymentMethod = "cod" | "sslcommerz" | "bkash" | "nagad"
 
 export interface CheckoutFormData {
   fullName: string

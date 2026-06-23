@@ -85,7 +85,22 @@ export default function ReservationsManagerContent() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: "Approved" }),
     })
-    if (res.ok) fetchList()
+    if (res.ok) {
+      fetchList()
+      notifyDashboard(`Reservation approved`, "success")
+    }
+  }
+
+  async function reject(id: string) {
+    const res = await fetch(`/api/reservations/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "Rejected" }),
+    })
+    if (res.ok) {
+      fetchList()
+      notifyDashboard(`Reservation rejected`, "warning")
+    }
   }
 
   return (
@@ -128,16 +143,26 @@ export default function ReservationsManagerContent() {
                   <td className="px-4 py-3">{r.guests}</td>
                   <td className="px-4 py-3">{r.time}</td>
                   <td className="px-4 py-3">{r.table}</td>
-                  <td className="px-4 py-3">{r.status}</td>
+                  <td className="px-4 py-3">
+                    <StatusBadge status={r.status} />
+                  </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       {r.status === "Pending" && (
-                        <button
-                          onClick={() => approve(r.id)}
-                          className="rounded px-2 py-1 text-xs bg-(--success)/20 text-success-foreground"
-                        >
-                          Approve
-                        </button>
+                        <>
+                          <button
+                            onClick={() => approve(r.id)}
+                            className="rounded px-2 py-1 text-xs bg-(--success)/20 text-success-foreground"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => reject(r.id)}
+                            className="rounded px-2 py-1 text-xs bg-destructive/10 text-destructive font-semibold hover:bg-destructive/20"
+                          >
+                            Reject
+                          </button>
+                        </>
                       )}
                       <button onClick={() => openEdit(r)} className="rounded px-2 py-1 text-xs border">
                         Edit
@@ -240,5 +265,23 @@ export default function ReservationsManagerContent() {
         </DashboardModal>
       )}
     </div>
+  )
+}
+
+// ── Status badge ──────────────────────────────────────────────────────────────
+
+function StatusBadge({ status }: { status: string }) {
+  const classes: Record<string, string> = {
+    Pending: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+    Approved: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+    Rejected: "bg-red-100 text-destructive dark:bg-red-900/30 dark:text-red-400",
+    Cancelled: "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400",
+  }
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${classes[status] ?? "bg-muted text-muted-foreground"}`}
+    >
+      {status}
+    </span>
   )
 }

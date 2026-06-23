@@ -4,7 +4,7 @@ import type { FormEvent } from "react"
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { CheckCircle2, ClipboardList, PackageCheck, Phone, Search, Truck } from "lucide-react"
+import { AlertTriangle, CheckCircle2, ClipboardList, PackageCheck, Phone, Search, Truck } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { formatCurrency } from "@/lib/cart.utils"
@@ -135,7 +135,21 @@ export default function OrderTrackingPageContent() {
       )}
 
       {order ? (
-        <div className="grid gap-8 lg:grid-cols-12">
+        <div className="space-y-6">
+          {(order.method === "bkash" || order.method === "nagad") && (
+            <div className="motion-reveal rounded-3xl border border-warning/40 bg-warning-soft p-5 text-sm font-semibold text-warning-foreground shadow-sm flex items-start gap-4">
+              <AlertTriangle className="size-6 text-warning mt-0.5 shrink-0" />
+              <div>
+                <h4 className="font-extrabold text-base">bKash/Nagad Gateway in Sandbox Mode</h4>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                  The mobile banking portal is currently undergoing sandbox configuration. Your order has been registered, 
+                  but the payment is marked as PENDING. **Please pay using Cash on Delivery (COD)** when your order is delivered.
+                </p>
+              </div>
+            </div>
+          )}
+
+          <div className="grid gap-8 lg:grid-cols-12">
           <section className="rounded-3xl border border-border bg-card p-6 text-card-foreground shadow-sm lg:col-span-8">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -236,6 +250,7 @@ export default function OrderTrackingPageContent() {
             </div>
           </aside>
         </div>
+      </div>
       ) : (
         <div className="rounded-3xl border border-dashed border-border bg-card/70 p-10 text-center">
           <p className="font-bengali text-xl font-black">Search an order to see live progress</p>

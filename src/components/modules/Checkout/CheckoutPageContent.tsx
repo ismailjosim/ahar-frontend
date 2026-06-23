@@ -108,6 +108,7 @@ const CheckoutPageContent = () => {
       if (!res.ok) {
         const err = await res.json().catch(() => ({}))
         setSubmitError(err.error ?? err.message ?? "Failed to place order. Please try again.")
+        setIsSubmitting(false)
         return
       }
 
@@ -115,11 +116,44 @@ const CheckoutPageContent = () => {
 
       markOrderPlaced()
       clearCart()
+
+      if (paymentMethod === "sslcommerz") {
+        const initRes = await fetch("/api/payments/sslcommerz/init", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId: order.id }),
+        })
+
+        if (!initRes.ok) {
+          const err = await initRes.json().catch(() => ({}))
+          setSubmitError(err.error ?? err.message ?? "Order placed, but failed to connect to payment gateway. Please contact support.")
+          setIsSubmitting(false)
+          return
+        }
+
+        const { data } = await initRes.json()
+        if (data?.gatewayUrl) {
+          window.location.href = data.gatewayUrl
+          return
+        } else {
+          setSubmitError("Order placed, but payment gateway URL was not found.")
+          setIsSubmitting(false)
+          return
+        }
+      }
+
+      if (paymentMethod === "bkash" || paymentMethod === "nagad") {
+        await new Promise((resolve) => setTimeout(resolve, 1500))
+      }
+
       router.push(`/order-tracking?id=${order.id}`)
     } catch {
       setSubmitError("Network error. Please check your connection and try again.")
-    } finally {
       setIsSubmitting(false)
+    } finally {
+      if (paymentMethod !== "sslcommerz") {
+        setIsSubmitting(false)
+      }
     }
   }
 
@@ -401,7 +435,15 @@ const CheckoutPageContent = () => {
               className="mt-6 w-full rounded-full border border-accent/40 py-6 font-black shadow-lg shadow-primary/20"
             >
               {isSubmitting ? <Loader2 className="animate-spin" /> : <LockKeyhole />}
-              {isSubmitting ? "Placing Order..." : "Securely Place Order"}
+              {isSubmitting
+                ? paymentMethod === "sslcommerz"
+                  ? "Redirecting to SSLCOMMERZ..."
+                  : paymentMethod === "bkash"
+                    ? "Redirecting to bKash..."
+                    : paymentMethod === "nagad"
+                      ? "Redirecting to Nagad..."
+                      : "Placing Order..."
+                : "Securely Place Order"}
             </Button>
 
             <div className="mt-4 flex items-center justify-center gap-3 text-lg">
