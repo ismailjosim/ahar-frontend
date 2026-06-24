@@ -1,6 +1,7 @@
 export interface ReservationFormData {
   customer: string
   phone: string
+  email: string
   date: string
   timeSlot: string
   guests: string

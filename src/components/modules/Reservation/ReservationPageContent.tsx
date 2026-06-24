@@ -84,6 +84,7 @@ export default function ReservationPageContent() {
         body: JSON.stringify({
           customerName: formData.customer.trim(),
           phone: formData.phone.trim(),
+          email: formData.email.trim() || undefined,
           guests: Number(formData.guests),
           displayTime: `${formData.date}, ${formData.timeSlot}`,
           tableCode: formData.tablePreference,
@@ -167,7 +168,13 @@ export default function ReservationPageContent() {
                 placeholder="01712345678"
                 value={formData.phone}
               />
-            </div>
+              <ReservationInput
+                label="Email (optional — for booking confirmation)"
+                type="email"
+                onChange={(value) => updateField("email", value)}
+                placeholder="your@email.com"
+                value={formData.email}
+              />            </div>
           </ReservationPanel>
 
           <ReservationPanel step="২" title="Reservation Schedule" required>

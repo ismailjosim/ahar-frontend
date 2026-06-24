@@ -6,6 +6,7 @@ tomorrow.setDate(tomorrow.getDate() + 1)
 export const defaultReservationForm: ReservationFormData = {
   customer: "",
   phone: "",
+  email: "",
   date: tomorrow.toISOString().slice(0, 10),
   timeSlot: "7:00 PM",
   guests: "2",
