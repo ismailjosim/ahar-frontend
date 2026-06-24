@@ -109,9 +109,7 @@ function ProfileShell({ user, refetch }: { user: ProfileUser; refetch: () => Pro
           <div className="mt-5 text-center">
             <h1 className="text-lg font-bold">{user.name || "Your profile"}</h1>
             <p className="mt-1 break-all text-sm text-muted-foreground">{user.email}</p>
-            {extUser.phone && (
-              <p className="mt-1 text-sm text-muted-foreground">{extUser.phone}</p>
-            )}
+            {extUser.phone && <p className="mt-1 text-sm text-muted-foreground">{extUser.phone}</p>}
           </div>
 
           {/* Tab nav */}
@@ -140,9 +138,7 @@ function ProfileShell({ user, refetch }: { user: ProfileUser; refetch: () => Pro
 
         {/* ── Main panel ── */}
         <section className="rounded-xl border border-border bg-card shadow-sm">
-          {activeTab === "profile" && (
-            <ProfileEditor user={user} refetch={refetch} />
-          )}
+          {activeTab === "profile" && <ProfileEditor user={user} refetch={refetch} />}
           {activeTab === "orders" && <OrdersTab />}
           {activeTab === "reservations" && <ReservationsTab />}
         </section>
@@ -209,9 +205,7 @@ function ProfileEditor({ user, refetch }: { user: ProfileUser; refetch: () => Pr
     <div className="p-6">
       <div className="mb-6">
         <h2 className="text-xl font-bold">Profile settings</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Update your display name, phone, and profile image URL.
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">Update your display name, phone, and profile image URL.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -282,11 +276,7 @@ function ProfileEditor({ user, refetch }: { user: ProfileUser; refetch: () => Pr
         )}
 
         <Button id="profile-save-btn" type="submit" className="h-10" disabled={isSaving}>
-          {isSaving ? (
-            <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-          ) : (
-            <Save className="size-4" />
-          )}
+          {isSaving ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Save className="size-4" />}
           Save changes
         </Button>
       </form>
@@ -303,20 +293,17 @@ function OrdersTab() {
   const [total, setTotal] = useState(0)
   const pageSize = 5
 
-  const fetchOrders = useCallback(
-    async (p: number) => {
-      setIsLoading(true)
-      try {
-        const res = await fetch(`/api/orders/my?page=${p}&pageSize=${pageSize}`)
-        const json = await res.json()
-        setOrders(json.data ?? [])
-        setTotal(json.total ?? 0)
-      } finally {
-        setIsLoading(false)
-      }
-    },
-    [],
-  )
+  const fetchOrders = useCallback(async (p: number) => {
+    setIsLoading(true)
+    try {
+      const res = await fetch(`/api/orders/my?page=${p}&pageSize=${pageSize}`)
+      const json = await res.json()
+      setOrders(json.data ?? [])
+      setTotal(json.total ?? 0)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
     fetchOrders(page)
@@ -356,11 +343,8 @@ function OrdersTab() {
                   year: "numeric",
                 })
               : "—"
-            const statusClass =
-              orderStatusColor[order.status] ??
-              "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
-            const statusLabel =
-              orderStatusLabels[order.status as keyof typeof orderStatusLabels] ?? order.status
+            const statusClass = orderStatusColor[order.status] ?? "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+            const statusLabel = orderStatusLabels[order.status as keyof typeof orderStatusLabels] ?? order.status
 
             return (
               <li
@@ -369,12 +353,8 @@ function OrdersTab() {
               >
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-semibold text-muted-foreground">
-                      #{shortId}
-                    </span>
-                    <span
-                      className={`rounded-full border px-2 py-0.5 text-xs font-medium ${statusClass}`}
-                    >
+                    <span className="font-mono text-xs font-semibold text-muted-foreground">#{shortId}</span>
+                    <span className={`rounded-full border px-2 py-0.5 text-xs font-medium ${statusClass}`}>
                       {statusLabel}
                     </span>
                   </div>
@@ -384,9 +364,7 @@ function OrdersTab() {
                   </div>
                 </div>
 
-                <p className="mt-2 line-clamp-2 text-sm text-foreground">
-                  {order.items || order.itemSummary || "—"}
-                </p>
+                <p className="mt-2 line-clamp-2 text-sm text-foreground">{order.items || order.itemSummary || "—"}</p>
 
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5 text-sm">
@@ -454,20 +432,17 @@ function ReservationsTab() {
   const [total, setTotal] = useState(0)
   const pageSize = 5
 
-  const fetchReservations = useCallback(
-    async (p: number) => {
-      setIsLoading(true)
-      try {
-        const res = await fetch(`/api/reservations/my?page=${p}&pageSize=${pageSize}`)
-        const json = await res.json()
-        setReservations(json.data ?? [])
-        setTotal(json.total ?? 0)
-      } finally {
-        setIsLoading(false)
-      }
-    },
-    [],
-  )
+  const fetchReservations = useCallback(async (p: number) => {
+    setIsLoading(true)
+    try {
+      const res = await fetch(`/api/reservations/my?page=${p}&pageSize=${pageSize}`)
+      const json = await res.json()
+      setReservations(json.data ?? [])
+      setTotal(json.total ?? 0)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
     fetchReservations(page)
@@ -483,9 +458,7 @@ function ReservationsTab() {
       })
       if (res.ok) {
         // Optimistically update status in list
-        setReservations((prev) =>
-          prev.map((r) => (r.id === id ? { ...r, status: "Cancelled" } : r)),
-        )
+        setReservations((prev) => prev.map((r) => (r.id === id ? { ...r, status: "Cancelled" } : r)))
       }
     } finally {
       setCancelling(null)
@@ -499,9 +472,7 @@ function ReservationsTab() {
       <div className="mb-6">
         <h2 className="text-xl font-bold">My Reservations</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          {total > 0
-            ? `${total} reservation${total !== 1 ? "s" : ""} made`
-            : "Your reservation history"}
+          {total > 0 ? `${total} reservation${total !== 1 ? "s" : ""} made` : "Your reservation history"}
         </p>
       </div>
 
@@ -521,9 +492,7 @@ function ReservationsTab() {
         <ul className="space-y-3" aria-label="Reservation history">
           {reservations.map((res) => {
             const shortId = res.id.slice(0, 8).toUpperCase()
-            const statusClass =
-              reservationStatusColor[res.status] ??
-              "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+            const statusClass = reservationStatusColor[res.status] ?? "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
             const canCancel = res.status === "Pending" || res.status === "Approved"
 
             return (
@@ -533,12 +502,8 @@ function ReservationsTab() {
               >
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-semibold text-muted-foreground">
-                      #{shortId}
-                    </span>
-                    <span
-                      className={`rounded-full border px-2 py-0.5 text-xs font-medium ${statusClass}`}
-                    >
+                    <span className="font-mono text-xs font-semibold text-muted-foreground">#{shortId}</span>
+                    <span className={`rounded-full border px-2 py-0.5 text-xs font-medium ${statusClass}`}>
                       {res.status}
                     </span>
                   </div>
@@ -549,11 +514,7 @@ function ReservationsTab() {
                       disabled={cancelling === res.id}
                       className="flex items-center gap-1 rounded-md border border-destructive/40 bg-destructive/10 px-2 py-1 text-xs font-medium text-destructive transition-colors hover:bg-destructive/20 disabled:opacity-50"
                     >
-                      {cancelling === res.id ? (
-                        <Loader2 className="size-3 animate-spin" />
-                      ) : (
-                        <X className="size-3" />
-                      )}
+                      {cancelling === res.id ? <Loader2 className="size-3 animate-spin" /> : <X className="size-3" />}
                       Cancel
                     </button>
                   )}
@@ -566,7 +527,9 @@ function ReservationsTab() {
                   </div>
                   <div className="flex items-center gap-1.5 text-muted-foreground">
                     <UserRound className="size-3.5 shrink-0" />
-                    <span>{res.guests} guest{res.guests !== 1 ? "s" : ""}</span>
+                    <span>
+                      {res.guests} guest{res.guests !== 1 ? "s" : ""}
+                    </span>
                   </div>
                   {res.table && res.table !== "TBD" && (
                     <div className="flex items-center gap-1.5 text-muted-foreground">

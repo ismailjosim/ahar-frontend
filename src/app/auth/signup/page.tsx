@@ -139,7 +139,7 @@ function SignUpForm() {
 
         {invitedRole && (
           <div className="mb-4 rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm font-semibold text-primary">
-            You have been invited as a <span className="underline">{roleLabels[invitedRole] || invitedRole}</span>. 
+            You have been invited as a <span className="underline">{roleLabels[invitedRole] || invitedRole}</span>.
             Signing up will join you as staff.
           </div>
         )}

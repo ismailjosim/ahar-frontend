@@ -20,10 +20,13 @@ const inputClass =
 
 const roleBadgeStyles: Record<string, string> = {
   super_admin: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300 border border-red-200 dark:border-red-800",
-  owner: "bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border border-purple-200 dark:border-purple-800",
+  owner:
+    "bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border border-purple-200 dark:border-purple-800",
   manager: "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800",
-  kitchen: "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border border-amber-200 dark:border-amber-800",
-  cashier: "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300 border border-green-200 dark:border-green-800",
+  kitchen:
+    "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border border-amber-200 dark:border-amber-800",
+  cashier:
+    "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300 border border-green-200 dark:border-green-800",
 }
 
 const roleNames: Record<string, string> = {
@@ -159,7 +162,9 @@ export default function StaffManagerContent() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="font-bengali text-2xl font-black text-foreground">স্টাফ ব্যবস্থাপনা (Staff Management)</h2>
-          <p className="text-sm text-muted-foreground">স্টাফদের ভূমিকা এবং স্থিতি পরিবর্তন করুন অথবা নতুন স্টাফদের আমন্ত্রণ পাঠান।</p>
+          <p className="text-sm text-muted-foreground">
+            স্টাফদের ভূমিকা এবং স্থিতি পরিবর্তন করুন অথবা নতুন স্টাফদের আমন্ত্রণ পাঠান।
+          </p>
         </div>
         <div>
           <button
@@ -189,11 +194,21 @@ export default function StaffManagerContent() {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/20">
-                <th className="px-6 py-4 font-bengali text-xs font-black uppercase tracking-wider text-muted-foreground">নাম (Name)</th>
-                <th className="px-6 py-4 font-bengali text-xs font-black uppercase tracking-wider text-muted-foreground">ইমেইল ও ফোন (Email & Phone)</th>
-                <th className="px-6 py-4 font-bengali text-xs font-black uppercase tracking-wider text-muted-foreground">ভূমিকা (Role)</th>
-                <th className="px-6 py-4 font-bengali text-xs font-black uppercase tracking-wider text-muted-foreground">অবস্থা (Status)</th>
-                <th className="px-6 py-4 font-bengali text-xs font-black uppercase tracking-wider text-muted-foreground text-right">পদ পরিবর্তন (Change Role)</th>
+                <th className="px-6 py-4 font-bengali text-xs font-black uppercase tracking-wider text-muted-foreground">
+                  নাম (Name)
+                </th>
+                <th className="px-6 py-4 font-bengali text-xs font-black uppercase tracking-wider text-muted-foreground">
+                  ইমেইল ও ফোন (Email & Phone)
+                </th>
+                <th className="px-6 py-4 font-bengali text-xs font-black uppercase tracking-wider text-muted-foreground">
+                  ভূমিকা (Role)
+                </th>
+                <th className="px-6 py-4 font-bengali text-xs font-black uppercase tracking-wider text-muted-foreground">
+                  অবস্থা (Status)
+                </th>
+                <th className="px-6 py-4 font-bengali text-xs font-black uppercase tracking-wider text-muted-foreground text-right">
+                  পদ পরিবর্তন (Change Role)
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -312,7 +327,9 @@ export default function StaffManagerContent() {
         >
           <form onSubmit={handleInviteSubmit} className="space-y-4">
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">ইমেইল ঠিকানা (Email Address)</label>
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                ইমেইল ঠিকানা (Email Address)
+              </label>
               <input
                 type="email"
                 placeholder="staff@example.com"
@@ -324,12 +341,10 @@ export default function StaffManagerContent() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">ভূমিকা নির্ধারণ (Select Role)</label>
-              <select
-                value={inviteRole}
-                onChange={(e) => setInviteRole(e.target.value)}
-                className={inputClass}
-              >
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                ভূমিকা নির্ধারণ (Select Role)
+              </label>
+              <select value={inviteRole} onChange={(e) => setInviteRole(e.target.value)} className={inputClass}>
                 <option value="cashier">ক্যাশিয়ার (Cashier)</option>
                 <option value="kitchen">কিচেন স্টাফ (Kitchen)</option>
                 <option value="manager">ম্যানেজার (Manager)</option>
