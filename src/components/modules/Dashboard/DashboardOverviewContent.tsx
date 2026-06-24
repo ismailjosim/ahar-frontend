@@ -1,6 +1,7 @@
 "use client"
 
 import { Bell, TrendingUp } from "lucide-react"
+import { useEffect, useState } from "react"
 import { orderStatusLabels } from "@/lib/order.constant"
 import type { DashboardStatCard, AdminOrderRow, AdminReservationRow, LowStockItem } from "@/types/dashboard.interface"
 
@@ -8,7 +9,7 @@ interface DashboardOverviewContentProps {
   stats: DashboardStatCard[]
   recentOrders: AdminOrderRow[]
   reservations: AdminReservationRow[]
-  lowStockItems: LowStockItem[]
+  lowStockItems?: LowStockItem[]
 }
 
 function StatCard({ stat }: { stat: DashboardStatCard }) {
@@ -54,8 +55,42 @@ export default function DashboardOverviewContent({
   stats,
   recentOrders,
   reservations,
-  lowStockItems,
+  lowStockItems: initialLowStockItems = [],
 }: DashboardOverviewContentProps) {
+  const [lowStockItems, setLowStockItems] = useState<LowStockItem[]>(initialLowStockItems)
+  const [loadingLowStock, setLoadingLowStock] = useState(false)
+
+  useEffect(() => {
+    // Fetch low-stock items from the backend
+    async function fetchLowStock() {
+      setLoadingLowStock(true)
+      try {
+        const res = await fetch("/api/inventory?lowStockOnly=true")
+        const data = await res.json()
+
+        // Transform the inventory items to the LowStockItem format
+        const items = (data.data || []).map(
+          (item: { id: string; name: string; stock: number; threshold: number; category: string }) => ({
+            item: item.name,
+            stock: `${item.stock} units`,
+            category: item.category,
+            severity: item.stock === 0 ? "critical" : "warning",
+          }),
+        )
+
+        setLowStockItems(items)
+      } catch (error) {
+        console.error("Failed to fetch low-stock items:", error)
+        // Fall back to initial items if provided
+        setLowStockItems(initialLowStockItems)
+      } finally {
+        setLoadingLowStock(false)
+      }
+    }
+
+    fetchLowStock()
+  }, [])
+
   return (
     <div className="space-y-6 text-foreground">
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">

@@ -26,6 +26,8 @@ export default function InventoryManagerContent() {
   const [editing, setEditing] = useState<InventoryItem | null>(null)
   const [form, setForm] = useState<Partial<InventoryItem>>(emptyForm)
   const [isEditorOpen, setIsEditorOpen] = useState(false)
+  const [stockInputs, setStockInputs] = useState<Record<string, number>>({})
+  const [updatingStock, setUpdatingStock] = useState<string | null>(null)
 
   async function fetchList() {
     setLoading(true)
@@ -40,13 +42,28 @@ export default function InventoryManagerContent() {
     fetchList()
   }, [])
 
-  async function setStock(id: string, value: number) {
-    const res = await fetch(`/api/inventory/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ stock: value }),
-    })
-    if (res.ok) fetchList()
+  async function updateStock(id: string) {
+    const newStock = stockInputs[id]
+    if (newStock === undefined) return
+
+    setUpdatingStock(id)
+    try {
+      const res = await fetch(`/api/inventory/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stock: newStock }),
+      })
+      if (res.ok) {
+        fetchList()
+        setStockInputs((prev) => {
+          const updated = { ...prev }
+          delete updated[id]
+          return updated
+        })
+      }
+    } finally {
+      setUpdatingStock(null)
+    }
   }
 
   async function submit() {
@@ -110,53 +127,72 @@ export default function InventoryManagerContent() {
                   </tr>
                 </thead>
                 <tbody>
-                  {items.map((it) => (
-                    <tr key={it.id} className="border-b border-border last:border-0">
-                      <td className="px-4 py-3">
-                        <div className="font-bold">{it.name}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {it.category} • threshold {it.threshold} • ৳{it.unitCost}/{it.unit}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 font-mono text-xs">{it.sku}</td>
-                      <td className="px-4 py-3 text-right">
-                        {it.stock} {it.unit}
-                      </td>
-                      <td className="px-4 py-3">{it.supplier}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <button
-                            onClick={() => setStock(it.id, Math.max(0, it.stock - 1))}
-                            className="rounded border border-border px-2 py-1 text-xs"
-                          >
-                            -1
-                          </button>
-                          <button
-                            onClick={() => setStock(it.id, it.stock + 1)}
-                            className="rounded border border-border px-2 py-1 text-xs"
-                          >
-                            +1
-                          </button>
-                          <button
-                            onClick={() => {
-                              setEditing(it)
-                              setForm(it)
-                              setIsEditorOpen(true)
-                            }}
-                            className="rounded border border-border px-2 py-1 text-xs"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => remove(it.id)}
-                            className="rounded border border-border px-2 py-1 text-xs text-destructive"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {items.map((it) => {
+                    const isLowStock = it.stock <= it.threshold
+                    return (
+                      <tr key={it.id} className="border-b border-border last:border-0">
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <div>
+                              <div className="font-bold">{it.name}</div>
+                              <div className="text-xs text-muted-foreground">
+                                {it.category} • threshold {it.threshold} • ৳{it.unitCost}/{it.unit}
+                              </div>
+                            </div>
+                            {isLowStock && (
+                              <span className={`rounded-full px-2 py-1 text-xs font-semibold ${it.stock === 0 ? "bg-destructive/20 text-destructive" : "bg-warning-soft/20 text-warning-foreground"}`}>
+                                {it.stock === 0 ? "Out" : "Low"}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 font-mono text-xs">{it.sku}</td>
+                        <td className="px-4 py-3 text-right">
+                          {it.stock} {it.unit}
+                        </td>
+                        <td className="px-4 py-3">{it.supplier}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <input
+                              type="number"
+                              min="0"
+                              value={stockInputs[it.id] ?? it.stock}
+                              onChange={(e) =>
+                                setStockInputs((prev) => ({
+                                  ...prev,
+                                  [it.id]: parseInt(e.target.value, 10) || 0,
+                                }))
+                              }
+                              className="w-16 rounded border border-border bg-background px-2 py-1 text-xs"
+                            />
+                            <button
+                              onClick={() => updateStock(it.id)}
+                              disabled={updatingStock === it.id}
+                              className="rounded border border-border px-2 py-1 text-xs hover:bg-muted disabled:opacity-50"
+                            >
+                              {updatingStock === it.id ? "..." : "Update"}
+                            </button>
+                            <button
+                              onClick={() => {
+                                setEditing(it)
+                                setForm(it)
+                                setIsEditorOpen(true)
+                              }}
+                              className="rounded border border-border px-2 py-1 text-xs"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => remove(it.id)}
+                              className="rounded border border-border px-2 py-1 text-xs text-destructive"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             )}
