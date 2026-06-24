@@ -1,8 +1,8 @@
 "use client"
 
+import { FormEvent, Suspense, useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { FormEvent, Suspense, useState } from "react"
 import { Eye, EyeOff, Loader2, Lock, Mail, Phone, UserRound, Utensils } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -17,10 +17,20 @@ export default function SignUpPage() {
   )
 }
 
+const roleLabels: Record<string, string> = {
+  cashier: "Cashier (ক্যাশিয়ার)",
+  kitchen: "Kitchen Staff (কিচেন স্টাফ)",
+  manager: "Manager (ম্যানেজার)",
+  owner: "Owner (মালিক)",
+  super_admin: "Super Admin (সুপার এডমিন)",
+}
+
 function SignUpForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const inviteToken = searchParams.get("invite")
   const callbackURL = getSafeCallbackURL(searchParams.get("callbackURL"))
+
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
@@ -29,6 +39,32 @@ function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Invite states
+  const [invitedRole, setInvitedRole] = useState("")
+  const [inviteEmailLocked, setInviteEmailLocked] = useState(false)
+
+  useEffect(() => {
+    if (!inviteToken) return
+
+    async function checkInvite() {
+      try {
+        const res = await fetch(`/api/staff/invite/${inviteToken}`)
+        const json = await res.json()
+        if (res.ok && json) {
+          setEmail(json.email)
+          setInvitedRole(json.role)
+          setInviteEmailLocked(true)
+        } else {
+          setError("Your staff invite link is invalid or has expired.")
+        }
+      } catch {
+        setError("Unable to validate staff invite token.")
+      }
+    }
+
+    checkInvite()
+  }, [inviteToken])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -62,7 +98,7 @@ function SignUpForm() {
         email: email.trim(),
         password,
         phone: phone ? normalizeBDPhone(phone) : undefined,
-        callbackURL,
+        callbackURL: inviteToken ? "/dashboard" : callbackURL,
       } as Parameters<typeof authClient.signUp.email>[0])
 
       if (signUpError) {
@@ -70,7 +106,15 @@ function SignUpForm() {
         return
       }
 
-      router.push(callbackURL)
+      // If signed up via invite, mark invite as used to trigger role promotion on server
+      if (inviteToken) {
+        await fetch(`/api/staff/invite/${inviteToken}/use`, {
+          method: "PATCH",
+        })
+        router.push("/dashboard")
+      } else {
+        router.push(callbackURL)
+      }
       router.refresh()
     } catch {
       setError("Something went wrong while creating your account.")
@@ -93,6 +137,13 @@ function SignUpForm() {
           </div>
         </div>
 
+        {invitedRole && (
+          <div className="mb-4 rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm font-semibold text-primary">
+            You have been invited as a <span className="underline">{roleLabels[invitedRole] || invitedRole}</span>. 
+            Signing up will join you as staff.
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <label className="block space-y-2 text-sm font-medium">
             <span>Name</span>
@@ -111,16 +162,17 @@ function SignUpForm() {
 
           <label className="block space-y-2 text-sm font-medium">
             <span>Email</span>
-            <span className="flex items-center gap-2 rounded-md border border-input bg-background px-3 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+            <span className="flex items-center gap-2 rounded-md border border-input bg-background px-3 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 disabled:opacity-60">
               <Mail className="size-4 text-muted-foreground" aria-hidden="true" />
               <input
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 autoComplete="email"
-                className="h-10 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                className="h-10 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground disabled:text-muted-foreground disabled:cursor-not-allowed"
                 placeholder="you@example.com"
                 required
+                disabled={inviteEmailLocked}
               />
             </span>
           </label>

@@ -9,8 +9,10 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { Users } from "lucide-react"
 
 import { adminNavItems, adminControlItems } from "@/lib/navitems.config"
+import { authClient } from "@/lib/auth-client"
 
 interface NavMainProps {
   onNavClick?: () => void
@@ -18,6 +20,7 @@ interface NavMainProps {
 
 export default function NavMain({ onNavClick }: NavMainProps) {
   const pathname = usePathname()
+  const { data: session } = authClient.useSession()
 
   return (
     <>
@@ -61,6 +64,21 @@ export default function NavMain({ onNavClick }: NavMainProps) {
       </div>
 
       <nav className="space-y-1.5 px-4 pb-6">
+        {session?.user?.role === "super_admin" && (
+          <Link
+            href="/dashboard/staff"
+            onClick={onNavClick}
+            className={`flex items-center gap-3.5 rounded-xl px-4 py-3 text-sm transition-all duration-200 ${
+              pathname === "/dashboard/staff"
+                ? "border-l-4 border-secondary bg-primary-soft text-primary"
+                : "text-muted-foreground hover:bg-primary-soft hover:text-primary"
+            }`}
+          >
+            <Users className="size-5 shrink-0" />
+            <span className="font-bengali font-medium">স্টাফ (Staff)</span>
+          </Link>
+        )}
+
         {adminControlItems.map((item) => {
           const Icon = item.icon
           const isActive = pathname === item.href
