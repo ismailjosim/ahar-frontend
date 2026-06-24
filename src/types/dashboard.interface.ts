@@ -78,3 +78,31 @@ export interface DashboardNotification {
   title: string
   timestamp: string
 }
+
+export interface BestSellerItem {
+  name: string
+  quantity: number
+  revenue: number
+}
+
+export interface OrderStatusStat {
+  status: string
+  count: number
+}
+
+export interface PaymentMethodStat {
+  method: string
+  count: number
+  total: number
+}
+
+export interface ReportSummary {
+  revenue: number
+  totalOrders: number
+  avgOrderValue: number
+  topItems: BestSellerItem[]
+  ordersByStatus: OrderStatusStat[]
+  paymentsByMethod: PaymentMethodStat[]
+  fromDate: string
+  toDate: string
+}

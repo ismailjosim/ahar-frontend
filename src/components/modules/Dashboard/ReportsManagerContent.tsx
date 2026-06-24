@@ -1,24 +1,80 @@
 "use client"
 
-import { useState } from "react"
-
-const reportStats = [
-  { label: "Gross Sales", value: "৳45,780", helper: "+12% from selected period" },
-  { label: "Orders", value: "128", helper: "Delivery leads at 58%" },
-  { label: "Avg. Ticket", value: "৳358", helper: "Best during dinner" },
-  { label: "Low Stock", value: "3", helper: "Needs purchase review" },
-]
-
-const bestSellers = [
-  { name: "Royal Mutton Kacchi", orders: 38, revenue: "৳15,960" },
-  { name: "Shorshe Ilish", orders: 24, revenue: "৳12,480" },
-  { name: "Chicken Roast Combo", orders: 21, revenue: "৳7,560" },
-]
+import { useEffect, useState } from "react"
+import type { ReportSummary } from "@/types/dashboard.interface"
 
 export default function ReportsManagerContent() {
-  const [fromDate, setFromDate] = useState("2026-06-01")
-  const [toDate, setToDate] = useState("2026-06-18")
+  const [summary, setSummary] = useState<ReportSummary | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [downloading, setDownloading] = useState("")
+
+  const [fromDate, setFromDate] = useState(() => {
+    const d = new Date()
+    d.setDate(d.getDate() - 30)
+    return d.toISOString().split("T")[0]
+  })
+  const [toDate, setToDate] = useState(() => new Date().toISOString().split("T")[0])
+
+  // Fetch summary stats when dates change
+  useEffect(() => {
+    async function fetchSummary() {
+      setIsLoading(true)
+      setError(null)
+      try {
+        const params = new URLSearchParams({ from: fromDate, to: toDate })
+        const res = await fetch(`/api/reports/summary?${params.toString()}`)
+        if (!res.ok) throw new Error("Failed to fetch summary")
+        const json = await res.json()
+        setSummary(json.data)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unknown error")
+        setSummary(null)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchSummary()
+  }, [fromDate, toDate])
+
+  // Format currency in BDT
+  const formatCurrency = (amount: number): string => {
+    return `৳${amount.toLocaleString("bn-BD", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })}`
+  }
+
+  // Report stats to display
+  const reportStats = summary
+    ? [
+        {
+          label: "Gross Sales",
+          value: formatCurrency(summary.revenue),
+          helper: `From ${new Date(summary.fromDate).toLocaleDateString("bn-BD")} to ${new Date(summary.toDate).toLocaleDateString("bn-BD")}`,
+        },
+        {
+          label: "Orders",
+          value: summary.totalOrders.toString(),
+          helper: `Average value: ${formatCurrency(summary.avgOrderValue)}`,
+        },
+        {
+          label: "Avg. Ticket",
+          value: formatCurrency(summary.avgOrderValue),
+          helper: `Total: ${summary.totalOrders} orders`,
+        },
+        {
+          label: "Best Seller",
+          value: summary.topItems[0]?.name || "N/A",
+          helper: `${summary.topItems[0]?.quantity || 0} sold`,
+        },
+      ]
+    : [
+        { label: "Gross Sales", value: "—", helper: "Loading..." },
+        { label: "Orders", value: "—", helper: "Loading..." },
+        { label: "Avg. Ticket", value: "—", helper: "Loading..." },
+        { label: "Best Seller", value: "—", helper: "Loading..." },
+      ]
 
   async function download(type: string) {
     setDownloading(type)
@@ -30,11 +86,13 @@ export default function ReportsManagerContent() {
       const url = URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      a.download = `${type}_${fromDate}_to_${toDate}.csv`
+      a.download = `ahar-${type}-${fromDate}-to-${toDate}.csv`
       document.body.appendChild(a)
       a.click()
       a.remove()
       URL.revokeObjectURL(url)
+    } catch (err) {
+      alert("Error downloading report: " + (err instanceof Error ? err.message : "Unknown error"))
     } finally {
       setDownloading("")
     }
@@ -72,11 +130,21 @@ export default function ReportsManagerContent() {
           </div>
         </div>
 
+        {error && (
+          <div className="mt-4 rounded-lg border border-destructive bg-destructive/10 p-3 text-sm text-destructive">
+            Error: {error}
+          </div>
+        )}
+
         <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {reportStats.map((stat) => (
-            <div key={stat.label} className="rounded-2xl border border-border bg-muted/30 p-4">
+            <div
+              key={stat.label}
+              className="rounded-2xl border border-border bg-muted/30 p-4 opacity-100 transition"
+              style={{ opacity: isLoading ? 0.6 : 1 }}
+            >
               <p className="text-xs font-black uppercase tracking-wider text-muted-foreground">{stat.label}</p>
-              <p className="mt-2 text-2xl font-black text-primary">{stat.value}</p>
+              <p className="mt-2 truncate text-2xl font-black text-primary">{stat.value}</p>
               <p className="mt-1 text-xs text-muted-foreground">{stat.helper}</p>
             </div>
           ))}
@@ -87,18 +155,24 @@ export default function ReportsManagerContent() {
         <div className="rounded-3xl border border-border bg-card p-6 text-card-foreground shadow-sm">
           <h3 className="font-bengali text-lg font-bold">Best Sellers</h3>
           <div className="mt-4 space-y-3">
-            {bestSellers.map((item) => (
-              <div
-                key={item.name}
-                className="flex items-center justify-between rounded-2xl border border-border bg-muted/30 p-4"
-              >
-                <div>
-                  <p className="font-bold">{item.name}</p>
-                  <p className="text-xs text-muted-foreground">{item.orders} orders</p>
+            {isLoading ? (
+              <p className="py-4 text-sm text-muted-foreground">Loading...</p>
+            ) : summary && summary.topItems.length > 0 ? (
+              summary.topItems.map((item) => (
+                <div
+                  key={item.name}
+                  className="flex items-center justify-between rounded-2xl border border-border bg-muted/30 p-4"
+                >
+                  <div>
+                    <p className="font-bold">{item.name}</p>
+                    <p className="text-xs text-muted-foreground">{item.quantity} sold</p>
+                  </div>
+                  <p className="font-black text-primary">{formatCurrency(item.revenue)}</p>
                 </div>
-                <p className="font-black text-primary">{item.revenue}</p>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="py-4 text-sm text-muted-foreground">No data available for this period</p>
+            )}
           </div>
         </div>
 
@@ -108,7 +182,7 @@ export default function ReportsManagerContent() {
             Downloads include the selected date range in the filename.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
-            {["orders", "payments", "inventory"].map((type) => (
+            {["orders", "reservations", "inventory"].map((type) => (
               <button
                 key={type}
                 onClick={() => download(type)}

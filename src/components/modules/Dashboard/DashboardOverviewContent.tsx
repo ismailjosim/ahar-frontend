@@ -1,15 +1,40 @@
 "use client"
 
-import { Bell, TrendingUp } from "lucide-react"
+import {
+  AlertTriangle,
+  Bell,
+  CalendarCheck,
+  ClipboardList,
+  ShoppingBag,
+  TrendingUp,
+  UtensilsCrossed,
+  WalletCards,
+} from "lucide-react"
 import { useEffect, useState } from "react"
 import { orderStatusLabels } from "@/lib/order.constant"
 import type { DashboardStatCard, AdminOrderRow, AdminReservationRow, LowStockItem } from "@/types/dashboard.interface"
 
-interface DashboardOverviewContentProps {
-  stats: DashboardStatCard[]
+// Helper function to format currency
+const formatCurrency = (amount: number) => {
+  return `৳${amount.toLocaleString("en-BD", { maximumFractionDigits: 0 })}`
+}
+
+interface DashboardData {
+  stats: {
+    totalOrdersToday: number
+    totalRevenueToday: number
+    pendingOrders: number
+    totalReservationsToday: number
+    activeMenuItems: number
+    lowStockCount: number
+  }
   recentOrders: AdminOrderRow[]
-  reservations: AdminReservationRow[]
-  lowStockItems?: LowStockItem[]
+  upcomingReservations: AdminReservationRow[]
+  weeklyRevenue: Array<{ createdAt: string; _sum: { total: number | null } }>
+}
+
+interface DashboardOverviewContentProps {
+  data: DashboardData | null
 }
 
 function StatCard({ stat }: { stat: DashboardStatCard }) {
@@ -51,13 +76,8 @@ function StatCard({ stat }: { stat: DashboardStatCard }) {
   )
 }
 
-export default function DashboardOverviewContent({
-  stats,
-  recentOrders,
-  reservations,
-  lowStockItems: initialLowStockItems = [],
-}: DashboardOverviewContentProps) {
-  const [lowStockItems, setLowStockItems] = useState<LowStockItem[]>(initialLowStockItems)
+export default function DashboardOverviewContent({ data }: DashboardOverviewContentProps) {
+  const [lowStockItems, setLowStockItems] = useState<LowStockItem[]>([])
   const [loadingLowStock, setLoadingLowStock] = useState(false)
 
   useEffect(() => {
@@ -66,10 +86,10 @@ export default function DashboardOverviewContent({
       setLoadingLowStock(true)
       try {
         const res = await fetch("/api/inventory?lowStockOnly=true")
-        const data = await res.json()
+        const json = await res.json()
 
         // Transform the inventory items to the LowStockItem format
-        const items = (data.data || []).map(
+        const items = (json.data || []).map(
           (item: { id: string; name: string; stock: number; threshold: number; category: string }) => ({
             item: item.name,
             stock: `${item.stock} units`,
@@ -81,8 +101,6 @@ export default function DashboardOverviewContent({
         setLowStockItems(items)
       } catch (error) {
         console.error("Failed to fetch low-stock items:", error)
-        // Fall back to initial items if provided
-        setLowStockItems(initialLowStockItems)
       } finally {
         setLoadingLowStock(false)
       }
@@ -91,10 +109,64 @@ export default function DashboardOverviewContent({
     fetchLowStock()
   }, [])
 
+  if (!data) {
+    return <div className="p-6 text-muted-foreground">No data available</div>
+  }
+
+  // Build stat cards from real data
+  const statCards: DashboardStatCard[] = [
+    {
+      label: "আজকের মোট বিক্রি",
+      value: formatCurrency(data.stats.totalRevenueToday),
+      helper: "ডেলিভার করা অর্ডার শুধুমাত্র",
+      icon: WalletCards,
+      tone: "accent",
+    },
+    {
+      label: "নতুন লাইভ অর্ডার",
+      value: String(data.stats.totalOrdersToday),
+      helper: `${data.stats.pendingOrders} টি অপেক্ষারত`,
+      icon: ShoppingBag,
+      tone: "primary",
+    },
+    {
+      label: "টেবিল রিজার্ভেশন",
+      value: String(data.stats.totalReservationsToday),
+      helper: "পেন্ডিং + অনুমোদিত",
+      icon: CalendarCheck,
+      tone: "success",
+    },
+    {
+      label: "সক্রিয় মেনু আইটেম",
+      value: String(data.stats.activeMenuItems),
+      helper: "বর্তমানে উপলব্ধ",
+      icon: ClipboardList,
+      tone: "primary",
+    },
+    {
+      label: "লো স্টক সতর্কতা",
+      value: String(data.stats.lowStockCount),
+      helper: "থ্রেশহোল্ডে বা তার নিচে",
+      icon: AlertTriangle,
+      tone: "warning",
+    },
+  ]
+
+  // Aggregate weekly revenue by day of week
+  const chartData = (data.weeklyRevenue || []).reduce(
+    (acc, row) => {
+      const date = new Date(row.createdAt)
+      const day = date.toLocaleDateString("en-US", { weekday: "short" })
+      acc[day] = (acc[day] ?? 0) + (row._sum?.total ?? 0)
+      return acc
+    },
+    {} as Record<string, number>,
+  )
+
   return (
     <div className="space-y-6 text-foreground">
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
-        {stats.map((stat) => (
+        {statCards.map((stat) => (
           <StatCard key={stat.label} stat={stat} />
         ))}
       </div>
@@ -122,6 +194,12 @@ export default function DashboardOverviewContent({
               <TrendingUp className="mx-auto size-12 opacity-40" />
               <p className="mt-2 font-bengali text-sm">চার্ট প্লেসহোল্ডার</p>
               <p className="font-bengali text-xs opacity-70">Chart.js ইন্টিগ্রেশন হবে</p>
+              <p className="mt-2 font-bengali text-xs text-muted-foreground">
+                সাপ্তাহিক আয়:{" "}
+                {Object.values(chartData)
+                  .reduce((a, b) => a + b, 0)
+                  .toLocaleString()}
+              </p>
             </div>
           </div>
         </div>
@@ -200,7 +278,7 @@ export default function DashboardOverviewContent({
             </thead>
 
             <tbody className="divide-y divide-border text-sm">
-              {recentOrders.map((order) => (
+              {(data.recentOrders || []).map((order) => (
                 <tr key={order.id} className="transition hover:bg-muted/40">
                   <td className="px-6 py-4 text-center font-semibold">{order.id}</td>
                   <td className="px-6 py-4">
@@ -223,12 +301,14 @@ export default function DashboardOverviewContent({
                                 ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400"
                                 : order.status === "Out for Delivery"
                                   ? "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400"
-                                  : order.status === "Cancelled"
-                                    ? "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400"
-                                    : "bg-muted text-muted-foreground"
+                                  : order.status === "Delivered"
+                                    ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400"
+                                    : order.status === "Cancelled"
+                                      ? "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400"
+                                      : "bg-muted text-muted-foreground"
                       }`}
                     >
-                      {orderStatusLabels[order.status]}
+                      {orderStatusLabels[order.status] || order.status}
                     </span>
                   </td>
                 </tr>
@@ -256,7 +336,7 @@ export default function DashboardOverviewContent({
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {reservations.map((res) => (
+                {(data.upcomingReservations || []).map((res) => (
                   <tr key={res.id} className="transition hover:bg-muted/40">
                     <td className="px-6 py-4 font-semibold">{res.id}</td>
                     <td className="px-6 py-4">
@@ -294,32 +374,42 @@ export default function DashboardOverviewContent({
             </div>
           </div>
           <div className="space-y-3 p-6">
-            {lowStockItems.map((item, idx) => (
-              <div
-                key={idx}
-                className={`rounded-lg border-l-4 p-4 ${
-                  item.severity === "critical"
-                    ? "border-red-500 bg-red-50 dark:border-red-600 dark:bg-red-950"
-                    : "border-amber-500 bg-amber-50 dark:border-amber-600 dark:bg-amber-950"
-                }`}
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-bengali font-semibold">{item.item}</p>
-                    <p className="font-bengali text-xs text-muted-foreground">{item.category}</p>
+            {(lowStockItems || []).length > 0 ? (
+              lowStockItems.map((item, idx) => (
+                <div
+                  key={idx}
+                  className={`rounded-lg border-l-4 p-4 ${
+                    item.severity === "critical"
+                      ? "border-l-red-500 bg-red-50 dark:bg-red-950"
+                      : "border-l-amber-500 bg-amber-50 dark:bg-amber-950"
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p
+                        className={`font-bengali font-semibold ${item.severity === "critical" ? "text-red-700 dark:text-red-200" : "text-amber-700 dark:text-amber-200"}`}
+                      >
+                        {item.item}
+                      </p>
+                      <p
+                        className={`font-bengali text-xs ${item.severity === "critical" ? "text-red-600 dark:text-red-300" : "text-amber-600 dark:text-amber-300"}`}
+                      >
+                        {item.category}
+                      </p>
+                    </div>
+                    <span
+                      className={`font-bengali text-xs font-bold ${item.severity === "critical" ? "text-red-700 dark:text-red-200" : "text-amber-700 dark:text-amber-200"}`}
+                    >
+                      {item.stock}
+                    </span>
                   </div>
-                  <span
-                    className={`inline-block rounded px-2 py-1 font-bengali text-xs font-bold ${
-                      item.severity === "critical"
-                        ? "bg-red-200 text-red-700 dark:bg-red-700 dark:text-red-200"
-                        : "bg-amber-200 text-amber-700 dark:bg-amber-700 dark:text-amber-200"
-                    }`}
-                  >
-                    {item.stock}
-                  </span>
                 </div>
+              ))
+            ) : (
+              <div className="py-8 text-center">
+                <p className="font-bengali text-sm text-muted-foreground">কোনো নিম্ন স্টক সতর্কতা নেই</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>
