@@ -140,7 +140,9 @@ export default function InventoryManagerContent() {
                               </div>
                             </div>
                             {isLowStock && (
-                              <span className={`rounded-full px-2 py-1 text-xs font-semibold ${it.stock === 0 ? "bg-destructive/20 text-destructive" : "bg-warning-soft/20 text-warning-foreground"}`}>
+                              <span
+                                className={`rounded-full px-2 py-1 text-xs font-semibold ${it.stock === 0 ? "bg-destructive/20 text-destructive" : "bg-warning-soft/20 text-warning-foreground"}`}
+                              >
                                 {it.stock === 0 ? "Out" : "Low"}
                               </span>
                             )}

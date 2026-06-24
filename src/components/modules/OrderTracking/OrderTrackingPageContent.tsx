@@ -142,115 +142,120 @@ export default function OrderTrackingPageContent() {
               <div>
                 <h4 className="font-extrabold text-base">bKash/Nagad Gateway in Sandbox Mode</h4>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                  The mobile banking portal is currently undergoing sandbox configuration. Your order has been registered, 
-                  but the payment is marked as PENDING. **Please pay using Cash on Delivery (COD)** when your order is delivered.
+                  The mobile banking portal is currently undergoing sandbox configuration. Your order has been
+                  registered, but the payment is marked as PENDING. **Please pay using Cash on Delivery (COD)** when
+                  your order is delivered.
                 </p>
               </div>
             </div>
           )}
 
           <div className="grid gap-8 lg:grid-cols-12">
-          <section className="rounded-3xl border border-border bg-card p-6 text-card-foreground shadow-sm lg:col-span-8">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-xs font-black uppercase tracking-wider text-muted-foreground">Order #{order.id}</p>
-                <h2 className="font-bengali mt-1 text-2xl font-black">{orderStatusLabels[order.status]}</h2>
+            <section className="rounded-3xl border border-border bg-card p-6 text-card-foreground shadow-sm lg:col-span-8">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-wider text-muted-foreground">Order #{order.id}</p>
+                  <h2 className="font-bengali mt-1 text-2xl font-black">{orderStatusLabels[order.status]}</h2>
+                </div>
+                <span
+                  className={cn(
+                    "inline-flex rounded-full px-3 py-1 text-xs font-black",
+                    order.status === "Cancelled"
+                      ? "bg-destructive/10 text-destructive"
+                      : "bg-primary-soft text-primary",
+                  )}
+                >
+                  {order.status}
+                </span>
               </div>
-              <span
-                className={cn(
-                  "inline-flex rounded-full px-3 py-1 text-xs font-black",
-                  order.status === "Cancelled" ? "bg-destructive/10 text-destructive" : "bg-primary-soft text-primary",
-                )}
-              >
-                {order.status}
-              </span>
-            </div>
 
-            <div className="mt-8 space-y-4">
-              {orderStatusSequence.map((status, index) => {
-                const isDone = activeIndex >= index
-                const isCurrent = activeIndex === index
+              <div className="mt-8 space-y-4">
+                {orderStatusSequence.map((status, index) => {
+                  const isDone = activeIndex >= index
+                  const isCurrent = activeIndex === index
 
-                return (
-                  <div key={status} className="flex gap-4">
-                    <div className="flex flex-col items-center">
-                      <span
-                        className={cn(
-                          "flex size-9 items-center justify-center rounded-full border-2",
-                          isDone
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-border bg-background text-muted-foreground",
+                  return (
+                    <div key={status} className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <span
+                          className={cn(
+                            "flex size-9 items-center justify-center rounded-full border-2",
+                            isDone
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border bg-background text-muted-foreground",
+                          )}
+                        >
+                          {isDone ? <CheckCircle2 className="size-5" /> : index + 1}
+                        </span>
+                        {index < orderStatusSequence.length - 1 && (
+                          <span className={cn("h-10 w-0.5", isDone ? "bg-primary" : "bg-border")} />
                         )}
-                      >
-                        {isDone ? <CheckCircle2 className="size-5" /> : index + 1}
-                      </span>
-                      {index < orderStatusSequence.length - 1 && (
-                        <span className={cn("h-10 w-0.5", isDone ? "bg-primary" : "bg-border")} />
-                      )}
+                      </div>
+                      <div className="pb-4">
+                        <p className={cn("font-bengali font-black", isCurrent && "text-primary")}>
+                          {orderStatusLabels[status]}
+                        </p>
+                        <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                          {orderStatusDescriptions[status]}
+                        </p>
+                      </div>
                     </div>
-                    <div className="pb-4">
-                      <p className={cn("font-bengali font-black", isCurrent && "text-primary")}>
-                        {orderStatusLabels[status]}
-                      </p>
-                      <p className="mt-1 text-xs leading-5 text-muted-foreground">{orderStatusDescriptions[status]}</p>
-                    </div>
+                  )
+                })}
+              </div>
+            </section>
+
+            <aside className="space-y-5 lg:col-span-4">
+              <div className="rounded-3xl border border-border bg-card p-6 text-card-foreground shadow-sm">
+                <PackageCheck className="size-9 text-primary" />
+                <h3 className="font-bengali mt-3 text-xl font-black">Order Summary</h3>
+
+                <div className="mt-4 space-y-3 text-sm">
+                  <SummaryRow label="Customer" value={order.customer} />
+                  <SummaryRow label="Phone" value={order.phone} />
+                  <SummaryRow label="Payment" value={order.method} />
+                  <SummaryRow label="Type" value={order.type} />
+                </div>
+
+                {order.lineItems && order.lineItems.length > 0 ? (
+                  <div className="mt-5 space-y-2 border-t border-border pt-4">
+                    <p className="text-xs font-black uppercase tracking-wider text-muted-foreground">Items</p>
+                    {order.lineItems.map((item, index) => (
+                      <div key={`${item.name}-${index}`} className="flex items-start justify-between gap-3 text-xs">
+                        <span className="font-semibold">
+                          {item.name} <span className="text-muted-foreground">x{item.quantity}</span>
+                        </span>
+                        <span className="font-bold">{formatCurrency(item.lineTotal)}</span>
+                      </div>
+                    ))}
                   </div>
-                )
-              })}
-            </div>
-          </section>
+                ) : (
+                  <div className="mt-5 border-t border-border pt-4">
+                    <SummaryRow label="Items" value={order.items} />
+                  </div>
+                )}
 
-          <aside className="space-y-5 lg:col-span-4">
-            <div className="rounded-3xl border border-border bg-card p-6 text-card-foreground shadow-sm">
-              <PackageCheck className="size-9 text-primary" />
-              <h3 className="font-bengali mt-3 text-xl font-black">Order Summary</h3>
-
-              <div className="mt-4 space-y-3 text-sm">
-                <SummaryRow label="Customer" value={order.customer} />
-                <SummaryRow label="Phone" value={order.phone} />
-                <SummaryRow label="Payment" value={order.method} />
-                <SummaryRow label="Type" value={order.type} />
-              </div>
-
-              {order.lineItems && order.lineItems.length > 0 ? (
-                <div className="mt-5 space-y-2 border-t border-border pt-4">
-                  <p className="text-xs font-black uppercase tracking-wider text-muted-foreground">Items</p>
-                  {order.lineItems.map((item, index) => (
-                    <div key={`${item.name}-${index}`} className="flex items-start justify-between gap-3 text-xs">
-                      <span className="font-semibold">
-                        {item.name} <span className="text-muted-foreground">x{item.quantity}</span>
-                      </span>
-                      <span className="font-bold">{formatCurrency(item.lineTotal)}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="mt-5 border-t border-border pt-4">
-                  <SummaryRow label="Items" value={order.items} />
-                </div>
-              )}
-
-              <div className="mt-5 space-y-2 border-t border-border pt-4 text-sm text-muted-foreground">
-                {order.subtotal !== undefined ? (
-                  <InvoiceRow label="Subtotal" value={formatCurrency(order.subtotal)} />
-                ) : null}
-                {order.discount ? <InvoiceRow label="Discount" value={`-${formatCurrency(order.discount)}`} /> : null}
-                {order.vat ? <InvoiceRow label="VAT" value={formatCurrency(order.vat)} /> : null}
-                {order.serviceCharge ? (
-                  <InvoiceRow label="Service Charge" value={formatCurrency(order.serviceCharge)} />
-                ) : null}
-                {order.deliveryFee ? (
-                  <InvoiceRow label="Delivery Fee" value={formatCurrency(order.deliveryFee)} />
-                ) : null}
-                <div className="flex justify-between border-t border-border pt-3 text-base font-black text-foreground">
-                  <span>Total</span>
-                  <span className="text-primary">{formatCurrency(order.total)}</span>
+                <div className="mt-5 space-y-2 border-t border-border pt-4 text-sm text-muted-foreground">
+                  {order.subtotal !== undefined ? (
+                    <InvoiceRow label="Subtotal" value={formatCurrency(order.subtotal)} />
+                  ) : null}
+                  {order.discount ? <InvoiceRow label="Discount" value={`-${formatCurrency(order.discount)}`} /> : null}
+                  {order.vat ? <InvoiceRow label="VAT" value={formatCurrency(order.vat)} /> : null}
+                  {order.serviceCharge ? (
+                    <InvoiceRow label="Service Charge" value={formatCurrency(order.serviceCharge)} />
+                  ) : null}
+                  {order.deliveryFee ? (
+                    <InvoiceRow label="Delivery Fee" value={formatCurrency(order.deliveryFee)} />
+                  ) : null}
+                  <div className="flex justify-between border-t border-border pt-3 text-base font-black text-foreground">
+                    <span>Total</span>
+                    <span className="text-primary">{formatCurrency(order.total)}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </aside>
+            </aside>
+          </div>
         </div>
-      </div>
       ) : (
         <div className="rounded-3xl border border-dashed border-border bg-card/70 p-10 text-center">
           <p className="font-bengali text-xl font-black">Search an order to see live progress</p>

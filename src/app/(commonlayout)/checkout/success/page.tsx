@@ -87,7 +87,7 @@ function SuccessPageContent() {
         <h1 className="font-bengali mt-4 text-3xl font-black tracking-tight sm:text-4xl">
           {isCompleted ? "পেমেন্ট সফল হয়েছে!" : "পেমেন্ট প্রসেসিং হচ্ছে..."}
         </h1>
-        
+
         <p className="mt-2 text-sm text-muted-foreground">
           {isCompleted
             ? "Thank you for your payment. Your order has been placed and is being prepared."
@@ -117,7 +117,7 @@ function SuccessPageContent() {
               <span
                 className={cn(
                   "rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider",
-                  isCompleted ? "bg-success-soft text-success" : "bg-warning-soft text-warning"
+                  isCompleted ? "bg-success-soft text-success" : "bg-warning-soft text-warning",
                 )}
               >
                 {order.paymentStatus}
@@ -141,12 +141,14 @@ function SuccessPageContent() {
 
 export default function SuccessPage() {
   return (
-    <Suspense fallback={
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
-        <Loader2 className="size-10 animate-spin text-primary" />
-        <p className="text-sm font-bold text-muted-foreground">Loading checkout status...</p>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
+          <Loader2 className="size-10 animate-spin text-primary" />
+          <p className="text-sm font-bold text-muted-foreground">Loading checkout status...</p>
+        </div>
+      }
+    >
       <SuccessPageContent />
     </Suspense>
   )

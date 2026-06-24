@@ -29,9 +29,7 @@ function CancelPageContent() {
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
         <Button asChild className="rounded-full px-8 py-5 font-bold shadow-md">
-          <Link href={orderId ? `/order-tracking?id=${orderId}` : "/menu"}>
-            View Unpaid Order
-          </Link>
+          <Link href={orderId ? `/order-tracking?id=${orderId}` : "/menu"}>View Unpaid Order</Link>
         </Button>
         <Button asChild variant="outline" className="rounded-full px-8 py-5 font-bold">
           <Link href="/menu">Back to Menu</Link>

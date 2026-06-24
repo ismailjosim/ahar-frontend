@@ -159,7 +159,6 @@ export default function ReservationPageContent() {
                 placeholder="Ismail Hossain"
                 value={formData.customer}
               />
-
               <ReservationInput
                 error={errors.phone}
                 icon={<Phone className="size-4" />}
@@ -174,7 +173,8 @@ export default function ReservationPageContent() {
                 onChange={(value) => updateField("email", value)}
                 placeholder="your@email.com"
                 value={formData.email}
-              />            </div>
+              />{" "}
+            </div>
           </ReservationPanel>
 
           <ReservationPanel step="২" title="Reservation Schedule" required>

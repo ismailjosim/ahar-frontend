@@ -126,7 +126,11 @@ const CheckoutPageContent = () => {
 
         if (!initRes.ok) {
           const err = await initRes.json().catch(() => ({}))
-          setSubmitError(err.error ?? err.message ?? "Order placed, but failed to connect to payment gateway. Please contact support.")
+          setSubmitError(
+            err.error ??
+              err.message ??
+              "Order placed, but failed to connect to payment gateway. Please contact support.",
+          )
           setIsSubmitting(false)
           return
         }
