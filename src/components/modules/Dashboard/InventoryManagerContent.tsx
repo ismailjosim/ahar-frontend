@@ -77,7 +77,7 @@ export default function InventoryManagerContent() {
 
   async function submit() {
     setErrors({})
-    const result = editing 
+    const result = editing
       ? await updateInventoryItem(editing.id, form)
       : await createInventoryItem(form)
 
@@ -176,11 +176,10 @@ export default function InventoryManagerContent() {
                               </div>
                               {isLowStock && (
                                 <span
-                                  className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                                    it.stock === 0
-                                      ? "bg-destructive/20 text-destructive"
-                                      : "bg-amber-500/20 text-amber-600 dark:text-amber-500"
-                                  }`}
+                                  className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${it.stock === 0
+                                    ? "bg-destructive/20 text-destructive"
+                                    : "bg-amber-500/20 text-amber-600 dark:text-amber-500"
+                                    }`}
                                 >
                                   {it.stock === 0 ? "Out" : "Low"}
                                 </span>
@@ -252,11 +251,10 @@ export default function InventoryManagerContent() {
                 low.map((l) => (
                   <div
                     key={l.item}
-                    className={`rounded-xl p-3 ${
-                      l.severity === "critical"
-                        ? "bg-destructive/10 text-destructive"
-                        : "bg-amber-500/10 text-amber-600 dark:text-amber-500"
-                    }`}
+                    className={`rounded-xl p-3 ${l.severity === "critical"
+                      ? "bg-destructive/10 text-destructive"
+                      : "bg-amber-500/10 text-amber-600 dark:text-amber-500"
+                      }`}
                   >
                     <div className="font-bold">{l.item}</div>
                     <div className="text-xs">{l.stock} remaining</div>
