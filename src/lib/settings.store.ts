@@ -18,6 +18,8 @@ let settings: RestaurantSettings = {
   lowStockAlerts: true,
   reservationAlerts: true,
   paymentAlerts: true,
+  maxTablesPerSlot: 10,
+  reservationSlotGap: 30,
 }
 
 export function getSettings() {

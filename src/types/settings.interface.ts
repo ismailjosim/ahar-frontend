@@ -16,4 +16,6 @@ export interface RestaurantSettings {
   lowStockAlerts: boolean
   reservationAlerts: boolean
   paymentAlerts: boolean
+  maxTablesPerSlot: number
+  reservationSlotGap: number
 }

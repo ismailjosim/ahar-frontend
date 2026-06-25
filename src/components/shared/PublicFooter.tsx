@@ -1,6 +1,11 @@
+"use client"
+
 import Link from "next/link"
+import { usePublicSettings } from "@/lib/use-public-settings"
 
 const PublicFooter = () => {
+  const settings = usePublicSettings()
+
   return (
     <footer className="motion-reveal border-t border-border bg-secondary py-12">
       <div className="container mx-auto grid gap-8 md:grid-cols-[1.3fr_0.7fr_0.7fr_0.9fr]">
@@ -38,9 +43,9 @@ const PublicFooter = () => {
         <div>
           <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-primary">Operating Hours</h2>
           <ul className="space-y-2 text-sm font-semibold text-muted-foreground">
-            <li>Daily: 10:00 AM - 11:00 PM</li>
+            <li>Daily: {settings?.openingTime ?? "10:00 AM"} - {settings?.closingTime ?? "11:00 PM"}</li>
             <li>Delivery: 11:00 AM - 10:30 PM</li>
-            <li>Dhaka, Bangladesh</li>
+            <li>{settings?.address ?? "Dhaka, Bangladesh"}</li>
           </ul>
         </div>
         <div>

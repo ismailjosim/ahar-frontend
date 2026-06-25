@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { CalendarCheck } from "lucide-react"
 import type { RestaurantSettings } from "@/types/settings.interface"
 
 const inputClass =
@@ -154,6 +155,25 @@ export default function SettingsManagerContent() {
         </div>
       </SettingsSection>
 
+      <SettingsSection title="Reservations" icon={<CalendarCheck className="size-5 text-primary" />}>
+        <div className="grid gap-4 md:grid-cols-2">
+          <NumberField
+            label="Max bookings per time slot"
+            value={settings.maxTablesPerSlot}
+            onChange={(value) => updateField("maxTablesPerSlot", value)}
+            min={1}
+            max={50}
+          />
+          <NumberField
+            label="Slot gap (minutes)"
+            value={settings.reservationSlotGap}
+            onChange={(value) => updateField("reservationSlotGap", value)}
+            min={15}
+            max={120}
+          />
+        </div>
+      </SettingsSection>
+
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <button
           onClick={save}
@@ -174,10 +194,21 @@ export default function SettingsManagerContent() {
   )
 }
 
-function SettingsSection({ children, title }: { children: React.ReactNode; title: string }) {
+function SettingsSection({
+  children,
+  title,
+  icon,
+}: {
+  children: React.ReactNode
+  title: string
+  icon?: React.ReactNode
+}) {
   return (
     <section className="rounded-3xl border border-border bg-card p-6 text-card-foreground shadow-sm">
-      <h2 className="font-bengali text-xl font-black">{title}</h2>
+      <h2 className="font-bengali flex items-center gap-2 text-xl font-black">
+        {icon}
+        {title}
+      </h2>
       <div className="mt-5">{children}</div>
     </section>
   )
@@ -202,7 +233,19 @@ function TextField({
   )
 }
 
-function NumberField({ label, onChange, value }: { label: string; onChange: (value: number) => void; value: number }) {
+function NumberField({
+  label,
+  onChange,
+  value,
+  min,
+  max,
+}: {
+  label: string
+  onChange: (value: number) => void
+  value: number
+  min?: number
+  max?: number
+}) {
   return (
     <label className="space-y-1.5 text-sm font-semibold">
       <span className="block text-xs font-black uppercase tracking-wider text-muted-foreground">{label}</span>
@@ -210,6 +253,8 @@ function NumberField({ label, onChange, value }: { label: string; onChange: (val
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
         type="number"
+        min={min}
+        max={max}
         className={inputClass}
       />
     </label>

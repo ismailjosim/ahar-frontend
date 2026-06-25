@@ -6,14 +6,21 @@ import { ArrowRight, BadgePercent, Minus, Plus, ShoppingBag, Trash2, Utensils } 
 
 import { Button } from "@/components/ui/button"
 import { calculateLineTotal, formatCurrency } from "@/lib/cart.utils"
+import { cartDeliveryCharge } from "@/lib/cart.constant"
+import { usePublicSettings } from "@/lib/use-public-settings"
 import { useCartStore } from "@/store/cart.store"
 
 const CartPageContent = () => {
   const { items: cartItems, updateQuantity, removeItem, getTotals, appliedCoupon } = useCartStore()
   const [couponCode, setCouponCode] = useState("")
+  const publicSettings = usePublicSettings()
 
   const totals = getTotals()
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0)
+
+  const deliveryFee = publicSettings?.deliveryFee ?? cartDeliveryCharge
+  const freeDeliveryMin = publicSettings?.freeDeliveryMin ?? 0
+  const isFreeDelivery = freeDeliveryMin > 0 && totals.subtotal >= freeDeliveryMin
 
   if (cartItems.length === 0) {
     return (
@@ -228,8 +235,19 @@ const CartPageContent = () => {
             </div>
             <div className="flex justify-between">
               <span>Premium Delivery Charge</span>
-              <span className="font-extrabold text-foreground">{formatCurrency(totals.deliveryCharge)}</span>
+              <span className="font-extrabold text-foreground">
+                {isFreeDelivery ? (
+                  <span className="text-success">FREE</span>
+                ) : (
+                  formatCurrency(deliveryFee)
+                )}
+              </span>
             </div>
+            {freeDeliveryMin > 0 && !isFreeDelivery && (
+              <p className="text-xs text-muted-foreground">
+                Add ৳{(freeDeliveryMin - totals.subtotal).toFixed(0)} more for free delivery
+              </p>
+            )}
             <div className="flex justify-between border-t border-border pt-4 text-base font-black text-foreground">
               <span>Grand Total Due</span>
               <span className="text-2xl text-primary">{formatCurrency(totals.total)}</span>

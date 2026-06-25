@@ -1,6 +1,23 @@
+"use client"
+
 import { MapPin, Phone, Mail, Clock, Compass, ExternalLink } from "lucide-react"
+import { usePublicSettings } from "@/lib/use-public-settings"
 
 export default function LocationHoursSection() {
+  const settings = usePublicSettings()
+  const openingTime = settings?.openingTime ?? "11:00"
+  const closingTime = settings?.closingTime ?? "23:00"
+  const address = settings?.address ?? "Gulshan Avenue, Dhaka"
+  const supportPhone = settings?.supportPhone ?? "+880 17XXXXXXXX"
+
+  // Format 24h time (e.g. "11:00") to 12h display (e.g. "11:00 AM")
+  function formatTime(time: string) {
+    const [hourStr, min] = time.split(":")
+    const hour = parseInt(hourStr, 10)
+    const period = hour >= 12 ? "PM" : "AM"
+    const displayHour = hour % 12 === 0 ? 12 : hour % 12
+    return `${displayHour}:${min} ${period}`
+  }
   return (
     <section className="motion-reveal py-20 bg-muted/30 border-t border-border/80 relative">
       <div className="container mx-auto">
@@ -27,8 +44,8 @@ export default function LocationHoursSection() {
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-card-foreground text-base">Gulshan Branch</h4>
-                  <p className="text-sm text-muted-foreground mt-0.5">House 42, Road 11, Gulshan-1, Dhaka 1212</p>
+                  <h4 className="font-bold text-card-foreground text-base">Branch Location</h4>
+                  <p className="text-sm text-muted-foreground mt-0.5">{address}</p>
                 </div>
               </div>
 
@@ -38,8 +55,7 @@ export default function LocationHoursSection() {
                 </div>
                 <div>
                   <h4 className="font-bold text-card-foreground text-base">Hotline & Bookings</h4>
-                  <p className="text-sm text-muted-foreground mt-0.5">+880 171X-XXXXXX</p>
-                  <p className="text-xs text-muted-foreground">+880 2-98XXXXX (Landline)</p>
+                  <p className="text-sm text-muted-foreground mt-0.5">+880 {supportPhone}</p>
                 </div>
               </div>
             </div>
@@ -54,12 +70,12 @@ export default function LocationHoursSection() {
 
               <div className="grid grid-cols-2 gap-6 divide-x divide-border/80">
                 <div className="space-y-1">
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Lunch Session</p>
-                  <p className="text-foreground font-semibold text-sm sm:text-base">12:00 PM – 04:00 PM</p>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Opening</p>
+                  <p className="text-foreground font-semibold text-sm sm:text-base">{formatTime(openingTime)}</p>
                 </div>
                 <div className="space-y-1 pl-6">
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Dinner Session</p>
-                  <p className="text-foreground font-semibold text-sm sm:text-base">06:00 PM – 11:00 PM</p>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Closing</p>
+                  <p className="text-foreground font-semibold text-sm sm:text-base">{formatTime(closingTime)}</p>
                 </div>
               </div>
 

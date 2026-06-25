@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { calculateLineTotal, formatCurrency } from "@/lib/cart.utils"
 import { defaultCheckoutForm, deliveryAreas, fulfillmentOptions, paymentOptions } from "@/lib/checkout.constant"
 import { normalizeBDPhone, validateBDPhone } from "@/lib/phone.utils"
+import { usePublicSettings } from "@/lib/use-public-settings"
 import { cn } from "@/lib/utils"
 import { useCartStore } from "@/store/cart.store"
 import type { CheckoutFormData, CheckoutFulfillmentMode, CheckoutPaymentMethod } from "@/types/checkout.interface"
@@ -32,6 +33,18 @@ const CheckoutPageContent = () => {
   const [errors, setErrors] = useState<Partial<Record<keyof CheckoutFormData, string>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState("")
+
+  const publicSettings = usePublicSettings()
+
+  // Derive which payment methods are enabled from settings (fall back to all when settings not yet loaded)
+  const enabledPaymentOptions = paymentOptions.filter((option) => {
+    if (!publicSettings) return true // show all while loading
+    if (option.value === "cod") return publicSettings.acceptCod
+    if (option.value === "sslcommerz") return publicSettings.acceptSslcommerz
+    if (option.value === "bkash") return publicSettings.acceptBkash
+    if (option.value === "nagad") return publicSettings.acceptNagad
+    return true
+  })
 
   const hasDelivery = fulfillmentMode === "delivery"
 
@@ -337,7 +350,7 @@ const CheckoutPageContent = () => {
             </label>
 
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              {paymentOptions.map((option) => {
+              {enabledPaymentOptions.map((option) => {
                 const isSelected = paymentMethod === option.value
 
                 return (
