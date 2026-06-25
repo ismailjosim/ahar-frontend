@@ -236,11 +236,7 @@ const CartPageContent = () => {
             <div className="flex justify-between">
               <span>Premium Delivery Charge</span>
               <span className="font-extrabold text-foreground">
-                {isFreeDelivery ? (
-                  <span className="text-success">FREE</span>
-                ) : (
-                  formatCurrency(deliveryFee)
-                )}
+                {isFreeDelivery ? <span className="text-success">FREE</span> : formatCurrency(deliveryFee)}
               </span>
             </div>
             {freeDeliveryMin > 0 && !isFreeDelivery && (

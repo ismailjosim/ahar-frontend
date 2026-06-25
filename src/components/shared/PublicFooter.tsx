@@ -43,7 +43,9 @@ const PublicFooter = () => {
         <div>
           <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-primary">Operating Hours</h2>
           <ul className="space-y-2 text-sm font-semibold text-muted-foreground">
-            <li>Daily: {settings?.openingTime ?? "10:00 AM"} - {settings?.closingTime ?? "11:00 PM"}</li>
+            <li>
+              Daily: {settings?.openingTime ?? "10:00 AM"} - {settings?.closingTime ?? "11:00 PM"}
+            </li>
             <li>Delivery: 11:00 AM - 10:30 PM</li>
             <li>{settings?.address ?? "Dhaka, Bangladesh"}</li>
           </ul>
