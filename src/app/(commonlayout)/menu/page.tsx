@@ -1,4 +1,4 @@
-import MenuCatalog from "@/components/modules/Menu/MenuCatalog"
+import MenuCatalog from "@/components/modules/Dashboard/Menu/MenuCatalog"
 
 export default function MenuPage() {
   return (

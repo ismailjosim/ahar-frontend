@@ -1,6 +1,13 @@
+import { Suspense } from "react"
+import { Plus } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import MenuManagementHeader from "@/components/modules/Dashboard/Menu/MenuManagementHeader"
-import MenuManagerContent from "@/components/modules/Dashboard/MenuManagerContent"
+import MenusFilter from "@/components/modules/Dashboard/Menu/MenusFilter"
+import MenusTable from "@/components/modules/Dashboard/Menu/MenusTable"
+
+import { getMenuItems } from "@/services/menu/menusManagement"
 import { queryStringFormatter } from "@/lib/formatters.ts"
+import RefreshButton from "@/components/shared/RefreshButton"
 
 const MenuManagementPage = async ({
   searchParams,
@@ -9,12 +16,21 @@ const MenuManagementPage = async ({
 }) => {
   const searchParamsObj = await searchParams
   const queryString = queryStringFormatter(searchParamsObj)
-  // const menuResult = await getAllMenuItems(queryString)
-  // const totalPages = Math.ceil((menuResult?.meta?.total || 1) / (menuResult?.meta?.limit || 1))
+  const menuResult = await getMenuItems(queryString)
+  const menuItems = menuResult?.data ?? []
+
   return (
     <div className="space-y-6">
       <MenuManagementHeader />
-      <MenuManagerContent />
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Suspense fallback={<div className="h-9 w-80 animate-pulse rounded-md bg-muted" />}>
+          <MenusFilter />
+        </Suspense>
+        <RefreshButton />
+      </div>
+
+      <MenusTable menuItems={menuItems} />
     </div>
   )
 }

@@ -3,7 +3,6 @@
 import { Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState, useTransition } from "react"
-// import AdminFormDialog from "./AdminFormDialog"
 import ManagementPageHeader from "@/components/shared/ManagementPageHeader"
 import MenuFormDialog from "./MenuFormDialog"
 
@@ -16,15 +15,11 @@ const MenuManagementHeader = () => {
     startTransition(() => {
       router.refresh()
     })
-    setIsDialogOpen(false) // Close the dialog after a successful operation
+    setIsDialogOpen(false)
   }
 
   return (
     <>
-      {/* By conditionally rendering the dialog, React automatically destroys (unmounts)
-        the component and resets its internal form state whenever `isDialogOpen` is false.
-        This completely eliminates the need for a manual `dialogKey` state.
-      */}
       {isDialogOpen && (
         <MenuFormDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} onSuccess={handleSuccess} />
       )}

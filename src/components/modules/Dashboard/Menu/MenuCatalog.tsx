@@ -9,7 +9,7 @@ import { defaultMenuPriceLimit, menuCategories } from "@/lib/menu.constant"
 import { formatCurrency } from "@/lib/cart.utils"
 import { cn } from "@/lib/utils"
 import { useCartStore } from "@/store/cart.store"
-import type { MenuItem, MenuSortOption } from "@/types/menu.interface"
+import { MenuItem, MenuSortOption } from "@/types/menu.interface"
 
 const MenuCatalog = () => {
   const [activeCategory, setActiveCategory] = useState("all")
@@ -28,8 +28,6 @@ const MenuCatalog = () => {
       try {
         const res = await fetch("/api/menu?pageSize=200")
         const json = await res.json()
-        // Backend returns all items (including unavailable) — filter default handled server-side
-        // Pass isAvailable=false not set so backend returns all available items by default
         setAllItems(
           (json.data ?? []).map((item: MenuItem) => ({
             ...item,
@@ -54,7 +52,8 @@ const MenuCatalog = () => {
       const matchesCategory = activeCategory === "all" || item.category === activeCategory
       const matchesSearch =
         normalizedSearch.length === 0 ||
-        [item.name, item.description, item.category, ...item.tags].some((value) =>
+        // Fix 1: description is optional — fall back to "" so .toLowerCase() never throws
+        [item.name, item.description ?? "", item.category, ...item.tags].some((value) =>
           value.toLowerCase().includes(normalizedSearch),
         )
       const matchesFeatured = !featuredOnly || item.isFeatured
@@ -68,8 +67,9 @@ const MenuCatalog = () => {
     return [...nextItems].sort((a, b) => {
       if (sortBy === "price-low") return a.price - b.price
       if (sortBy === "price-high") return b.price - a.price
-      if (sortBy === "rating") return b.rating - a.rating
-      return Number(b.isFeatured) - Number(a.isFeatured) || b.rating - a.rating
+      // Fix 2: rating is optional — fall back to 0 so subtraction is always number - number
+      if (sortBy === "rating") return (b.rating ?? 0) - (a.rating ?? 0)
+      return Number(b.isFeatured) - Number(a.isFeatured) || (b.rating ?? 0) - (a.rating ?? 0)
     })
   }, [activeCategory, allItems, availableOnly, featuredOnly, priceLimit, searchTerm, sortBy, spicyOnly])
 
@@ -262,17 +262,26 @@ const MenuCatalog = () => {
                       <span className="text-[10px] font-bold uppercase tracking-wider text-accent">
                         {item.category}
                       </span>
-                      <span className="flex items-center gap-1 text-[11px] font-extrabold text-muted-foreground">
-                        <Clock3 className="size-3" />
-                        {item.prepTime}
-                      </span>
+                      {/* Fix 3: prepTime is optional */}
+                      {item.prepTime && (
+                        <span className="flex items-center gap-1 text-[11px] font-extrabold text-muted-foreground">
+                          <Clock3 className="size-3" />
+                          {item.prepTime}
+                        </span>
+                      )}
                     </div>
                     <h2 className="font-bengali text-base font-extrabold leading-snug text-foreground">{item.name}</h2>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.description}</p>
-                    <div className="mt-3 flex items-center gap-1 text-accent">
-                      <Star className="size-4 fill-current" />
-                      <span className="text-xs font-bold">{item.rating.toFixed(1)}</span>
-                    </div>
+                    {/* Fix 4: description is optional */}
+                    {item.description && (
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.description}</p>
+                    )}
+                    {/* Fix 5: rating is optional — only render the star row when present */}
+                    {item.rating !== undefined && (
+                      <div className="mt-3 flex items-center gap-1 text-accent">
+                        <Star className="size-4 fill-current" />
+                        <span className="text-xs font-bold">{item.rating.toFixed(1)}</span>
+                      </div>
+                    )}
                     <div className="mt-auto flex items-center justify-between pt-5">
                       <div>
                         <span className="block text-[9px] font-bold uppercase text-muted-foreground">Base Price</span>

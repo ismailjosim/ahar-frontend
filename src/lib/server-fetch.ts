@@ -2,6 +2,7 @@
 // import { getNewAccessToken } from '../services/auth/authService'
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL
+
 const AUTH_REFRESH_EXCLUDED_ENDPOINTS = [
   "/auth/login",
   "/auth/register",
@@ -11,21 +12,31 @@ const AUTH_REFRESH_EXCLUDED_ENDPOINTS = [
 ]
 
 const serverFetchHelper = async (endpoint: string, options: RequestInit): Promise<Response> => {
-  const { headers, ...restOptions } = options
+  const { headers, body, ...restOptions } = options
   // const accessToken = await getCookie('accessToken')
 
   if (!BACKEND_API_URL) {
     throw new Error("NEXT_PUBLIC_BACKEND_API_URL is not configured")
   }
 
+  // When the body is FormData, do NOT set Content-Type manually.
+  // fetch() will automatically set "multipart/form-data; boundary=<...>"
+  // with the correct boundary string. Setting it manually breaks the
+  // boundary and causes Express's JSON body-parser to receive a raw
+  // multipart stream → PayloadTooLargeError or parse failure.
+
+  const isFormData = body instanceof FormData
+
   // if (!AUTH_REFRESH_EXCLUDED_ENDPOINTS.includes(endpoint)) {
   // 	await getNewAccessToken()
   // }
 
   const res = await fetch(`${BACKEND_API_URL}${endpoint}`, {
+    body,
     headers: {
-      "Content-Type": "application/json",
-      // ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      // Only default to JSON when not sending FormData
+      ...(!isFormData && { "Content-Type": "application/json" }),
+      // Caller-supplied headers always win (e.g. explicit JSON patch)
       ...headers,
     },
     ...restOptions,
@@ -35,35 +46,20 @@ const serverFetchHelper = async (endpoint: string, options: RequestInit): Promis
 }
 
 export const serverFetch = {
-  get: async (endpoint: string, options: RequestInit = {}): Promise<Response> =>
-    serverFetchHelper(endpoint, {
-      method: "GET",
-      ...options,
-    }),
+  get: (endpoint: string, options: RequestInit = {}): Promise<Response> =>
+    serverFetchHelper(endpoint, { method: "GET", ...options }),
 
-  post: (endpoint: string, options: RequestInit = {}) =>
-    serverFetchHelper(endpoint, {
-      method: "POST",
-      ...options,
-    }),
+  post: (endpoint: string, options: RequestInit = {}): Promise<Response> =>
+    serverFetchHelper(endpoint, { method: "POST", ...options }),
 
-  put: (endpoint: string, options: RequestInit = {}) =>
-    serverFetchHelper(endpoint, {
-      method: "PUT",
-      ...options,
-    }),
+  put: (endpoint: string, options: RequestInit = {}): Promise<Response> =>
+    serverFetchHelper(endpoint, { method: "PUT", ...options }),
 
-  patch: (endpoint: string, options: RequestInit = {}) =>
-    serverFetchHelper(endpoint, {
-      method: "PATCH",
-      ...options,
-    }),
+  patch: (endpoint: string, options: RequestInit = {}): Promise<Response> =>
+    serverFetchHelper(endpoint, { method: "PATCH", ...options }),
 
-  delete: (endpoint: string, options: RequestInit = {}) =>
-    serverFetchHelper(endpoint, {
-      method: "DELETE",
-      ...options,
-    }),
+  delete: (endpoint: string, options: RequestInit = {}): Promise<Response> =>
+    serverFetchHelper(endpoint, { method: "DELETE", ...options }),
 }
 
 // serverFetch.get('/auth/me')

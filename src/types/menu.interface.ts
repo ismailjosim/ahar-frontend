@@ -1,6 +1,7 @@
 // ─── Enums ────────────────────────────────────────────────────────────────────
 
 export type StockStatus = "in_stock" | "out_of_stock" | "limited"
+export type MenuSortOption = "default" | "price-low" | "price-high" | "rating"
 
 export type Allergen =
   | "gluten"
@@ -16,14 +17,22 @@ export type Allergen =
 
 // ─── Sub-types ────────────────────────────────────────────────────────────────
 
+// Matches Prisma MenuItemVariant — id + menuItemId come back from the API
 export interface MenuVariant {
+  id?: string // present on existing records, absent on new unsaved ones
+  menuItemId?: string
   name: string // e.g. "Regular", "Large", "Family Pack"
-  markup: number // price added on top of base price (0 means same price)
+  markup: number // price added on top of base price (0 = same price)
+  sortOrder: number // was missing — exists in Prisma model and Zod schema
 }
 
+// Matches Prisma MenuItemAddOn
 export interface MenuAddOn {
+  id?: string
+  menuItemId?: string
   name: string // e.g. "Extra Mutton", "Borhani"
   price: number // standalone price for the add-on
+  isAvailable: boolean // was missing — exists in Prisma model and Zod schema
 }
 
 export interface NutritionInfo {
@@ -39,17 +48,18 @@ export interface MenuItem {
   // Identity
   id: string
   name: string
-  slug: string // URL-safe identifier e.g. "royal-mutton-kacchi-biryani"
-  description: string
+  slug?: string // Optional — Prisma: String? @unique; auto-generated server-side
+  description?: string // Optional — Prisma: String @default(""); treat "" as absent
   category: string
 
   // Pricing
   price: number // base price in BDT
-  discountPrice?: number // discounted selling price (if on offer)
-  discountPercent?: number // e.g. 10 for 10% off — derived but useful for display
+  discountPrice?: number
+  discountPercent?: number
 
   // Media
   imageUrl?: string
+  emoji?: string // used in MenuCatalog fallback display; not in Prisma (frontend-only)
 
   // Dietary flags
   isVegetarian: boolean
@@ -59,17 +69,19 @@ export interface MenuItem {
   isSpicy: boolean
 
   // Allergens
-  allergens: Allergen[] //* e.g. ["gluten", "dairy"] any normally harmless substance that triggers an allergic reaction in your body's immune system
+  allergens: Allergen[]
 
   // Nutrition
   nutrition?: NutritionInfo
-  prepTime: string // human-readable e.g. "25 min"
+  prepTime?: string // Optional — Prisma: String?; was incorrectly required before
 
-  // Discovery & SEO
-  tags: string[] // e.g. ["Signature", "Popular", "Chef Special"]
-  rating?: number // 0–5
+  // Discovery
+  tags: string[]
+  sortOrder: number
+
+  // Aggregated from Review model — optional because they're computed, not stored on MenuItem
+  rating?: number
   reviewCount?: number
-  sortOrder: number // lower = appears first in listing
 
   // Status
   isFeatured: boolean
@@ -87,7 +99,10 @@ export interface MenuItem {
 
 // ─── Form / create payload (omits server-generated fields) ───────────────────
 
-export type CreateMenuItemPayload = Omit<MenuItem, "id" | "slug" | "rating" | "reviewCount" | "createdAt" | "updatedAt">
+export type CreateMenuItemPayload = Omit<
+  MenuItem,
+  "id" | "slug" | "rating" | "reviewCount" | "createdAt" | "updatedAt" | "emoji"
+>
 
 export type UpdateMenuItemPayload = Partial<CreateMenuItemPayload>
 
