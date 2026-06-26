@@ -32,13 +32,7 @@ export default function LoginPage() {
               <LoginForm />
             </CardContent>
 
-            <CardFooter className="flex flex-col gap-4">
-              <Button variant="outline" className="w-full" asChild>
-                <Link href="/">
-                  <ArrowLeft className="mr-2 size-4" />
-                  Back to home
-                </Link>
-              </Button>
+            <CardFooter>
               <p className="text-sm text-muted-foreground">
                 Don&apos;t have an account?{" "}
                 <Link href="/auth/signup" className="text-primary hover:underline">
