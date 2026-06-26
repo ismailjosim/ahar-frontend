@@ -56,7 +56,8 @@ export default function ForgotPasswordForm() {
         <div>
           <p className="font-semibold text-foreground">Check your inbox</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            We sent a reset link to <span className="font-medium text-foreground">{sentTo}</span>. It expires in 1 hour.
+            We sent a reset link to <span className="font-medium text-foreground">{sentTo}</span>. It expires in 2
+            minutes.
           </p>
         </div>
         <p className="text-xs text-muted-foreground">
