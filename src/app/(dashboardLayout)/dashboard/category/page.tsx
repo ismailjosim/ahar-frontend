@@ -5,33 +5,50 @@ import CategoriesTable from "@/components/modules/Dashboard/Category/CategoriesT
 
 import { getCategories } from "@/services/category/categoriesManagement"
 import { queryStringFormatter } from "@/lib/formatters.ts"
+
 import RefreshButton from "@/components/shared/RefreshButton"
+
 import CategoryManagementHeader from "@/components/modules/Dashboard/Category/CategoryManagementHeader"
 
-const CategoryPage = async ({
+const CategoryManagementPage = async ({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<{
+    [key: string]: string | string[] | undefined
+  }>
 }) => {
   const searchParamsObj = await searchParams
-  const queryString = queryStringFormatter(searchParamsObj)
-  const categoryResult = await getCategories(queryString)
-  const categories = categoryResult?.data ?? []
+
+  const queryString =
+    queryStringFormatter(searchParamsObj)
+
+  const categoriesResult =
+    await getCategories(queryString)
+
+  const categories =
+    categoriesResult?.data ?? []
 
   return (
     <div className="space-y-6">
       <CategoryManagementHeader />
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Suspense fallback={<div className="h-9 w-80 animate-pulse rounded-md bg-muted" />}>
+      <div className="flex items-center justify-between gap-3">
+        <Suspense
+          fallback={
+            <div className="h-9 w-80 animate-pulse rounded-md bg-muted" />
+          }
+        >
           <CategoriesFilter />
+          <RefreshButton />
         </Suspense>
-        <RefreshButton />
+
       </div>
 
-      <CategoriesTable categories={categories} />
+      <CategoriesTable
+        categories={categories}
+      />
     </div>
   )
 }
 
-export default CategoryPage
+export default CategoryManagementPage

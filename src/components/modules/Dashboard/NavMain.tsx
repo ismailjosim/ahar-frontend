@@ -35,11 +35,10 @@ export default function NavMain({ onNavClick }: NavMainProps) {
               key={item.href}
               href={item.href}
               onClick={onNavClick}
-              className={`flex items-center justify-between gap-3.5 rounded-xl px-4 py-3 text-sm transition-all duration-200 ${
-                isActive
+              className={`flex items-center justify-between gap-3.5 rounded-xl px-4 py-3 text-sm transition-all duration-200 ${isActive
                   ? "border-l-4 border-secondary bg-primary-soft text-primary"
                   : "text-muted-foreground hover:bg-primary-soft hover:text-primary"
-              }`}
+                }`}
             >
               <div className="flex items-center gap-3.5">
                 <Icon className="size-5 shrink-0" />
@@ -68,11 +67,10 @@ export default function NavMain({ onNavClick }: NavMainProps) {
           <Link
             href="/dashboard/staff"
             onClick={onNavClick}
-            className={`flex items-center gap-3.5 rounded-xl px-4 py-3 text-sm transition-all duration-200 ${
-              pathname === "/dashboard/staff"
+            className={`flex items-center gap-3.5 rounded-xl px-4 py-3 text-sm transition-all duration-200 ${pathname === "/dashboard/staff"
                 ? "border-l-4 border-secondary bg-primary-soft text-primary"
                 : "text-muted-foreground hover:bg-primary-soft hover:text-primary"
-            }`}
+              }`}
           >
             <Users className="size-5 shrink-0" />
             <span className="font-bengali font-medium">স্টাফ (Staff)</span>
@@ -88,11 +86,10 @@ export default function NavMain({ onNavClick }: NavMainProps) {
               key={item.href}
               href={item.href}
               onClick={onNavClick}
-              className={`flex items-center gap-3.5 rounded-xl px-4 py-3 text-sm transition-all duration-200 ${
-                isActive
+              className={`flex items-center gap-3.5 rounded-xl px-4 py-3 text-sm transition-all duration-200 ${isActive
                   ? "border-l-4 border-secondary bg-primary-soft text-primary"
                   : "text-muted-foreground hover:bg-primary-soft hover:text-primary"
-              }`}
+                }`}
             >
               <Icon className="size-5 shrink-0" />
               <span className="font-bengali font-medium">{item.label}</span>

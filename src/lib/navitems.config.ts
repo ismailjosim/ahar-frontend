@@ -7,7 +7,7 @@
  * already reads from this file.
  */
 
-import { BarChart3, CookingPot, CreditCard, Gauge, PackageSearch, Settings, Table2, Utensils } from "lucide-react"
+import { BarChart3, CookingPot, CreditCard, Gauge, LayoutGrid, PackageSearch, Settings, Table2, Utensils } from "lucide-react"
 
 import type { AdminNavItem } from "@/types/dashboard.interface"
 
@@ -28,6 +28,11 @@ export const adminNavItems: AdminNavItem[] = [
     href: "/dashboard/menu",
     label: "মেনু ম্যানেজার (Menu)",
     icon: Utensils,
+  },
+  {
+    href: "/dashboard/category",
+    label: "ক্যাটাগরি (Category)",
+    icon: LayoutGrid,
   },
   {
     href: "/dashboard/reservations",
