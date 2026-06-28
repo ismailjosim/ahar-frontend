@@ -14,6 +14,7 @@ const AUTH_REFRESH_EXCLUDED_ENDPOINTS = [
 const serverFetchHelper = async (endpoint: string, options: RequestInit): Promise<Response> => {
   const { headers, body, ...restOptions } = options
   // const accessToken = await getCookie('accessToken')
+  console.log("accessToken", headers)
 
   if (!BACKEND_API_URL) {
     throw new Error("NEXT_PUBLIC_BACKEND_API_URL is not configured")

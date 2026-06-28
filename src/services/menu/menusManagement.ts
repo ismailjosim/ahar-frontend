@@ -145,8 +145,16 @@ export async function createMenuItem(_prevState: any, formData: FormData) {
     newFormData.append("data", JSON.stringify(validation.data))
     newFormData.append("file", file as Blob)
 
-    const res = await serverFetch.post("/menu", { body: newFormData })
-    return await res.json()
+    // see the form data
+
+    for (let [key, value] of newFormData.entries()) {
+      console.log(key, value)
+    }
+
+    const res = await serverFetch.post("/menu/create", { body: newFormData })
+    const data = await res.json()
+    console.log("data", data)
+    return data
   } catch (error: any) {
     console.error(error)
     return {

@@ -64,3 +64,8 @@ export type Account = Prisma.AccountModel
  *
  */
 export type Verification = Prisma.VerificationModel
+/**
+ * Model StaffInvite
+ *
+ */
+export type StaffInvite = Prisma.StaffInviteModel

@@ -7,65 +7,115 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean
-  image         String?
-  phone         String?   @unique
-  role          String    @default("customer")
-  isActive      Boolean   @default(true)
-  createdAt     DateTime
-  updatedAt     DateTime
-  sessions      Session[]
-  accounts      Account[]
+enum UserRole {
+  CUSTOMER
+  CASHIER
+  KITCHEN
+  MANAGER
+  OWNER
+  SUPER_ADMIN
+}
 
-  @@unique([email])
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+model User {
+  id            String  @id
+  name          String
+  email         String  @unique
+  emailVerified Boolean
+
+  image String?
+  phone String? @unique
+
+  role   UserRole   @default(CUSTOMER)
+  status UserStatus @default(ACTIVE)
+
+  createdAt DateTime
+  updatedAt DateTime
+
+  sessions Session[]
+  accounts Account[]
+
   @@map("user")
 }
 
 model Session {
   id        String   @id
   expiresAt DateTime
-  token     String
+
+  token String @unique
+
   createdAt DateTime
   updatedAt DateTime
+
   ipAddress String?
   userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
+  userId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("session")
 }
 
 model Account {
-  id                    String    @id
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
+  id String @id
+
+  accountId  String
+  providerId String
+
+  userId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  accessToken  String?
+  refreshToken String?
+  idToken      String?
+
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime
-  updatedAt             DateTime
+
+  scope    String?
+  password String?
+
+  createdAt DateTime
+  updatedAt DateTime
 
   @@map("account")
 }
 
 model Verification {
-  id         String    @id
+  id String @id
+
   identifier String
   value      String
-  expiresAt  DateTime
-  createdAt  DateTime?
-  updatedAt  DateTime?
+
+  expiresAt DateTime
+
+  createdAt DateTime?
+  updatedAt DateTime?
 
   @@map("verification")
+}
+
+model StaffInvite {
+  id String @id @default(uuid())
+
+  email String @unique
+
+  role String
+
+  token String @unique @default(uuid())
+
+  expiresAt DateTime
+
+  usedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@map("staff_invite")
 }

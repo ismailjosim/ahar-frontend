@@ -52,6 +52,7 @@ export const ModelName = {
   Session: "Session",
   Account: "Account",
   Verification: "Verification",
+  StaffInvite: "StaffInvite",
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -77,7 +78,7 @@ export const UserScalarFieldEnum = {
   image: "image",
   phone: "phone",
   role: "role",
-  isActive: "isActive",
+  status: "status",
   createdAt: "createdAt",
   updatedAt: "updatedAt",
 } as const
@@ -125,6 +126,18 @@ export const VerificationScalarFieldEnum = {
 } as const
 
 export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[keyof typeof VerificationScalarFieldEnum]
+
+export const StaffInviteScalarFieldEnum = {
+  id: "id",
+  email: "email",
+  role: "role",
+  token: "token",
+  expiresAt: "expiresAt",
+  usedAt: "usedAt",
+  createdAt: "createdAt",
+} as const
+
+export type StaffInviteScalarFieldEnum = (typeof StaffInviteScalarFieldEnum)[keyof typeof StaffInviteScalarFieldEnum]
 
 export const SortOrder = {
   asc: "asc",

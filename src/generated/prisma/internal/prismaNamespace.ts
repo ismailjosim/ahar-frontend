@@ -365,6 +365,7 @@ export const ModelName = {
   Session: "Session",
   Account: "Account",
   Verification: "Verification",
+  StaffInvite: "StaffInvite",
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -384,7 +385,7 @@ export type TypeMap<
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification"
+    modelProps: "user" | "session" | "account" | "verification" | "staffInvite"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -684,6 +685,80 @@ export type TypeMap<
         }
       }
     }
+    StaffInvite: {
+      payload: Prisma.$StaffInvitePayload<ExtArgs>
+      fields: Prisma.StaffInviteFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StaffInviteFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffInvitePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StaffInviteFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffInvitePayload>
+        }
+        findFirst: {
+          args: Prisma.StaffInviteFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffInvitePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StaffInviteFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffInvitePayload>
+        }
+        findMany: {
+          args: Prisma.StaffInviteFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffInvitePayload>[]
+        }
+        create: {
+          args: Prisma.StaffInviteCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffInvitePayload>
+        }
+        createMany: {
+          args: Prisma.StaffInviteCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StaffInviteCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffInvitePayload>[]
+        }
+        delete: {
+          args: Prisma.StaffInviteDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffInvitePayload>
+        }
+        update: {
+          args: Prisma.StaffInviteUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffInvitePayload>
+        }
+        deleteMany: {
+          args: Prisma.StaffInviteDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StaffInviteUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StaffInviteUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffInvitePayload>[]
+        }
+        upsert: {
+          args: Prisma.StaffInviteUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffInvitePayload>
+        }
+        aggregate: {
+          args: Prisma.StaffInviteAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStaffInvite>
+        }
+        groupBy: {
+          args: Prisma.StaffInviteGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffInviteGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StaffInviteCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffInviteCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -730,7 +805,7 @@ export const UserScalarFieldEnum = {
   image: "image",
   phone: "phone",
   role: "role",
-  isActive: "isActive",
+  status: "status",
   createdAt: "createdAt",
   updatedAt: "updatedAt",
 } as const
@@ -779,6 +854,18 @@ export const VerificationScalarFieldEnum = {
 
 export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[keyof typeof VerificationScalarFieldEnum]
 
+export const StaffInviteScalarFieldEnum = {
+  id: "id",
+  email: "email",
+  role: "role",
+  token: "token",
+  expiresAt: "expiresAt",
+  usedAt: "usedAt",
+  createdAt: "createdAt",
+} as const
+
+export type StaffInviteScalarFieldEnum = (typeof StaffInviteScalarFieldEnum)[keyof typeof StaffInviteScalarFieldEnum]
+
 export const SortOrder = {
   asc: "asc",
   desc: "desc",
@@ -818,6 +905,26 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, "Boolean">
+
+/**
+ * Reference to a field of type 'UserRole'
+ */
+export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, "UserRole">
+
+/**
+ * Reference to a field of type 'UserRole[]'
+ */
+export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, "UserRole[]">
+
+/**
+ * Reference to a field of type 'UserStatus'
+ */
+export type EnumUserStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, "UserStatus">
+
+/**
+ * Reference to a field of type 'UserStatus[]'
+ */
+export type ListEnumUserStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, "UserStatus[]">
 
 /**
  * Reference to a field of type 'DateTime'
@@ -960,6 +1067,7 @@ export type GlobalOmitConfig = {
   session?: Prisma.SessionOmit
   account?: Prisma.AccountOmit
   verification?: Prisma.VerificationOmit
+  staffInvite?: Prisma.StaffInviteOmit
 }
 
 /* Types for Logging */
