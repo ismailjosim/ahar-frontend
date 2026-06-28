@@ -54,7 +54,7 @@ const categorySchema = z.object({
         })
         .optional(),
 
-    status: statusEnum.default('ACTIVE'),
+    status: statusEnum.default('ACTIVE').optional(),
 })
 
 export const createCategoryZodSchema =

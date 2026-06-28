@@ -170,6 +170,8 @@ export async function createCategory(
 export async function getCategories(
     queryString?: string
 ) {
+    console.log('queryString', queryString);
+
     try {
         const res =
             await serverFetch.get(
