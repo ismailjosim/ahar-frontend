@@ -1,505 +1,637 @@
-import InputFieldError from "@/components/shared/InputFieldError"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Field, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import Image from "next/image"
-import { useActionState, useEffect, useRef, useState } from "react"
-import { toast } from "sonner"
-import type { Allergen, MenuItem } from "@/types/menu.interface"
-import { menuCategories } from "@/lib/menu.constant"
-import { createMenuItem, updateMenuItem } from "@/services/menu/menusManagement"
+'use client'
 
-// ── Constants ────────────────────────────────────────────────────────────────
+import InputFieldError from '@/components/shared/InputFieldError'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Field, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import Image from 'next/image'
+import {
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
+import { toast } from 'sonner'
 
-const ALLERGEN_OPTIONS: { value: Allergen; label: string }[] = [
-  { value: "gluten", label: "Gluten" },
-  { value: "dairy", label: "Dairy" },
-  { value: "eggs", label: "Eggs" },
-  { value: "nuts", label: "Nuts" },
-  { value: "peanuts", label: "Peanuts" },
-  { value: "soy", label: "Soy" },
-  { value: "fish", label: "Fish" },
-  { value: "shellfish", label: "Shellfish" },
-  { value: "sesame", label: "Sesame" },
-  { value: "mustard", label: "Mustard" },
-]
-
-const DIETARY_FLAGS = [
-  { name: "isHalal", label: "Halal" },
-  { name: "isVegetarian", label: "Vegetarian" },
-  { name: "isVegan", label: "Vegan" },
-  { name: "isGlutenFree", label: "Gluten-Free" },
-  { name: "isSpicy", label: "Spicy" },
-] as const
-
-const STOCK_OPTIONS = [
-  { value: "in_stock", label: "In Stock" },
-  { value: "limited", label: "Limited Stock" },
-  { value: "out_of_stock", label: "Out of Stock" },
-]
-
-const selectClass =
-  "w-full rounded-md border border-border bg-muted/50 px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+import type { MenuItem } from '@/types/menu.interface'
+import type { Category } from '@/types/category.interface'
+import { Plus, Trash2, X } from 'lucide-react'
+import { createMenuItem, updateMenuItem } from '@/services/menu/menusManagement'
 
 const textareaClass =
-  "w-full rounded-md border border-border bg-muted/50 px-3 py-2 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-24 resize-y"
+  'w-full rounded-md border border-border bg-muted/50 px-3 py-2 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-20 resize-y'
 
-// ── Component ─────────────────────────────────────────────────────────────────
+const inputClass =
+  'w-full rounded-md border border-border bg-muted/50 px-3 py-2 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20'
 
-interface IMenuFormDialogProps {
+interface MenuFormDialogProps {
   open: boolean
   onClose: () => void
   onSuccess: () => void
   menuItem?: MenuItem
+  categories: Category[]
 }
 
-const MenuFormDialog = ({ open, onClose, onSuccess, menuItem }: IMenuFormDialogProps) => {
+interface Variant {
+  id?: string
+  name: string
+  price: number
+}
+
+interface AddOn {
+  id?: string
+  name: string
+  price: number
+}
+
+const MenuFormDialog = ({
+  open,
+  onClose,
+  onSuccess,
+  menuItem,
+  categories,
+}: MenuFormDialogProps) => {
   const formRef = useRef<HTMLFormElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
   const isEdit = !!menuItem?.id
 
   const [state, formAction, isPending] = useActionState(
-    isEdit ? updateMenuItem.bind(null, menuItem.id) : createMenuItem,
-    null,
+    isEdit
+      ? updateMenuItem.bind(null, menuItem.id)
+      : createMenuItem,
+    null
   )
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const [tags, setTags] = useState<string[]>(menuItem?.tags || [])
+  const [tagInput, setTagInput] = useState('')
+  const [variants, setVariants] = useState<Variant[]>(menuItem?.variants || [])
+  const [variantName, setVariantName] = useState('')
+  const [variantPrice, setVariantPrice] = useState('')
+  const [addOns, setAddOns] = useState<AddOn[]>(menuItem?.addOns || [])
+  const [addOnName, setAddOnName] = useState('')
+  const [addOnPrice, setAddOnPrice] = useState('')
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     setSelectedFile(file || null)
   }
 
-  // Handle success / error from server
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = () => {
+    setIsDragging(false)
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(false)
+
+    const file = e.dataTransfer.files?.[0]
+    if (file && file.type.startsWith('image/')) {
+      setSelectedFile(file)
+      if (fileInputRef.current) {
+        const dt = new DataTransfer()
+        dt.items.add(file)
+        fileInputRef.current.files = dt.files
+      }
+    }
+  }
+
+  const addTag = () => {
+    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
+      setTags([...tags, tagInput.trim()])
+      setTagInput('')
+    }
+  }
+
+  const removeTag = (tag: string) => {
+    setTags(tags.filter((t) => t !== tag))
+  }
+
+  const addVariant = () => {
+    if (variantName.trim() && variantPrice) {
+      setVariants([
+        ...variants,
+        {
+          name: variantName.trim(),
+          price: parseFloat(variantPrice),
+        },
+      ])
+      setVariantName('')
+      setVariantPrice('')
+    }
+  }
+
+  const removeVariant = (index: number) => {
+    setVariants(variants.filter((_, i) => i !== index))
+  }
+
+  const addAddOn = () => {
+    if (addOnName.trim() && addOnPrice) {
+      setAddOns([
+        ...addOns,
+        {
+          name: addOnName.trim(),
+          price: parseFloat(addOnPrice),
+        },
+      ])
+      setAddOnName('')
+      setAddOnPrice('')
+    }
+  }
+
+  const removeAddOn = (index: number) => {
+    setAddOns(addOns.filter((_, i) => i !== index))
+  }
+
   useEffect(() => {
     if (state?.success) {
-      toast.success(state.message || "Operation successful")
-      if (formRef.current) {
-        formRef.current.reset()
-      }
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+      toast.success(state.message || 'Operation successful')
+      formRef.current?.reset()
       setSelectedFile(null)
+      setTags([])
+      setVariants([])
+      setAddOns([])
       onSuccess()
       onClose()
     } else if (state?.message && !state.success) {
       toast.error(state.message)
-      // Restore file to input after error so user doesn't have to re-pick
+
       if (selectedFile && fileInputRef.current) {
-        const dataTransfer = new DataTransfer()
-        dataTransfer.items.add(selectedFile)
-        fileInputRef.current.files = dataTransfer.files
+        const dt = new DataTransfer()
+        dt.items.add(selectedFile)
+        fileInputRef.current.files = dt.files
       }
     }
-  }, [state, onClose, onSuccess, selectedFile])
+  }, [state, selectedFile, onSuccess, onClose])
 
   const handleClose = () => {
-    setSelectedFile(null)
     formRef.current?.reset()
+    setSelectedFile(null)
+    setTags([])
+    setTagInput('')
+    setVariants([])
+    setVariantName('')
+    setVariantPrice('')
+    setAddOns([])
+    setAddOnName('')
+    setAddOnPrice('')
     onClose()
   }
 
-  const categoryOptions = menuCategories.filter((c) => c.slug !== "all").map((c) => ({ label: c.name, value: c.name }))
-
-  // After a failed submission prefer state values so the user's input survives
   const fd = state?.formData
-
-  const currentAllergens = (fd?.allergens as Allergen[] | undefined) ?? menuItem?.allergens ?? []
-
-  const variantsDefault = fd?.variants
-    ? (fd.variants as Array<{ name: string; markup: number }>).map((v) => `${v.name}:${v.markup}`).join(", ")
-    : (menuItem?.variants?.map((v) => `${v.name}:${v.markup}`).join(", ") ?? "")
-
-  const addOnsDefault = fd?.addOns
-    ? (fd.addOns as Array<{ name: string; price: number }>).map((a) => `${a.name}:${a.price}`).join(", ")
-    : (menuItem?.addOns?.map((a) => `${a.name}:${a.price}`).join(", ") ?? "")
-
-  const tagsDefault = fd?.tags ? (fd.tags as string[]).join(", ") : (menuItem?.tags?.join(", ") ?? "")
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-h-[90vh] flex flex-col p-0 sm:max-w-3xl">
-        <DialogHeader className="px-6 pt-6 pb-4">
-          <DialogTitle>{isEdit ? "Edit Menu Item" : "Add New Menu Item"}</DialogTitle>
+      <DialogContent className='max-h-[90vh] flex flex-col p-0 sm:max-w-4xl'>
+        <DialogHeader className='px-6 pt-6 pb-4'>
+          <DialogTitle>
+            {isEdit ? 'Edit Menu Item' : 'Add New Menu Item'}
+          </DialogTitle>
         </DialogHeader>
 
-        <form ref={formRef} action={formAction} className="flex flex-col flex-1 min-h-0">
-          <div className="flex-1 overflow-y-auto px-6 space-y-4 pb-4">
-            {/* ── Core Identity ───────────────────────────────────── */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div className="sm:col-span-2">
+        <form
+          ref={formRef}
+          action={formAction}
+          className='flex flex-col flex-1 min-h-0'
+        >
+          <div className='flex-1 overflow-y-auto px-6 space-y-6 pb-4'>
+            {/* Basic Information */}
+            <div className='space-y-4'>
+              <h3 className='font-semibold text-sm text-foreground'>
+                Basic Information
+              </h3>
+
+              <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                 <Field>
-                  <FieldLabel htmlFor="name">Item Name</FieldLabel>
+                  <FieldLabel htmlFor='name'>Menu Item Name *</FieldLabel>
                   <Input
-                    id="name"
-                    name="name"
-                    placeholder="e.g. Royal Mutton Kacchi Biryani"
-                    defaultValue={fd?.name || menuItem?.name || ""}
+                    id='name'
+                    name='name'
+                    placeholder='e.g. Chicken Biryani'
+                    defaultValue={fd?.name || menuItem?.name || ''}
+                    required
                   />
-                  <InputFieldError field="name" state={state} />
+                  <InputFieldError field='name' state={state} />
+                </Field>
+
+                <Field>
+                  <FieldLabel htmlFor='categoryId'>Category *</FieldLabel>
+                  <select
+                    id='categoryId'
+                    name='categoryId'
+                    defaultValue={
+                      fd?.categoryId || menuItem?.categoryId || ''
+                    }
+                    className={inputClass}
+                    required
+                  >
+                    <option value=''>Select a category</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                  <InputFieldError field='categoryId' state={state} />
                 </Field>
               </div>
 
               <Field>
-                <FieldLabel htmlFor="slug">Slug</FieldLabel>
-                <Input
-                  id="slug"
-                  name="slug"
-                  placeholder="auto-generated if empty"
-                  defaultValue={fd?.slug || menuItem?.slug || ""}
+                <FieldLabel htmlFor='description'>Description</FieldLabel>
+                <textarea
+                  id='description'
+                  name='description'
+                  placeholder='Short description of this menu item'
+                  defaultValue={fd?.description || menuItem?.description || ''}
+                  className={textareaClass}
                 />
-                <p className="text-xs text-muted-foreground mt-1">Leave blank to auto-generate</p>
-                <InputFieldError field="slug" state={state} />
+                <InputFieldError field='description' state={state} />
               </Field>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div className="sm:col-span-2">
+            {/* Pricing & Availability */}
+            <div className='space-y-4'>
+              <h3 className='font-semibold text-sm text-foreground'>
+                Pricing & Availability
+              </h3>
+
+              <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
                 <Field>
-                  <FieldLabel htmlFor="description">Description</FieldLabel>
-                  <textarea
-                    id="description"
-                    name="description"
-                    placeholder="Ingredients, cooking style, flavour profile…"
-                    defaultValue={fd?.description || menuItem?.description || ""}
-                    maxLength={500}
-                    className={textareaClass}
+                  <FieldLabel htmlFor='price'>Price (BDT) *</FieldLabel>
+                  <Input
+                    id='price'
+                    name='price'
+                    type='number'
+                    step='0.01'
+                    min='0'
+                    placeholder='299'
+                    defaultValue={fd?.price || menuItem?.price || ''}
+                    required
                   />
-                  <InputFieldError field="description" state={state} />
+                  <InputFieldError field='price' state={state} />
+                </Field>
+
+                <Field>
+                  <FieldLabel htmlFor='prepTime'>Prep Time</FieldLabel>
+                  <Input
+                    id='prepTime'
+                    name='prepTime'
+                    placeholder='e.g. 30 mins'
+                    defaultValue={fd?.prepTime || menuItem?.prepTime || ''}
+                  />
+                  <InputFieldError field='prepTime' state={state} />
+                </Field>
+
+                <Field>
+                  <FieldLabel htmlFor='rating'>Rating (0-5)</FieldLabel>
+                  <Input
+                    id='rating'
+                    name='rating'
+                    type='number'
+                    step='0.1'
+                    min='0'
+                    max='5'
+                    placeholder='4.5'
+                    defaultValue={fd?.rating || menuItem?.rating || ''}
+                  />
+                  <InputFieldError field='rating' state={state} />
                 </Field>
               </div>
 
-              <Field>
-                <FieldLabel htmlFor="category">Category</FieldLabel>
-                <select
-                  id="category"
-                  name="category"
-                  defaultValue={fd?.category || menuItem?.category || ""}
-                  className={selectClass}
+              <div className='flex gap-6'>
+                <label className='flex items-center gap-2 cursor-pointer'>
+                  <input
+                    type='checkbox'
+                    name='isAvailable'
+                    value='true'
+                    defaultChecked={
+                      menuItem?.isAvailable ?? true
+                    }
+                    className='w-4 h-4 cursor-pointer accent-primary'
+                  />
+                  <span className='text-sm font-medium'>Available</span>
+                </label>
+
+                <label className='flex items-center gap-2 cursor-pointer'>
+                  <input
+                    type='checkbox'
+                    name='isFeatured'
+                    value='true'
+                    defaultChecked={menuItem?.isFeatured || false}
+                    className='w-4 h-4 cursor-pointer accent-primary'
+                  />
+                  <span className='text-sm font-medium'>Featured</span>
+                </label>
+
+                <label className='flex items-center gap-2 cursor-pointer'>
+                  <input
+                    type='checkbox'
+                    name='isSpicy'
+                    value='true'
+                    defaultChecked={menuItem?.isSpicy || false}
+                    className='w-4 h-4 cursor-pointer accent-primary'
+                  />
+                  <span className='text-sm font-medium'>Spicy</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Tags */}
+            <div className='space-y-4'>
+              <h3 className='font-semibold text-sm text-foreground'>Tags</h3>
+
+              <div className='flex gap-2'>
+                <Input
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      addTag()
+                    }
+                  }}
+                  placeholder='Add a tag (e.g. vegetarian)'
+                />
+                <Button
+                  type='button'
+                  variant='outline'
+                  onClick={addTag}
+                  className='rounded-md'
                 >
-                  <option value="" disabled>
-                    Select category…
-                  </option>
-                  {categoryOptions.map((c) => (
-                    <option key={c.value} value={c.value}>
-                      {c.label}
-                    </option>
-                  ))}
-                </select>
-                <InputFieldError field="category" state={state} />
-              </Field>
+                  <Plus className='w-4 h-4' />
+                </Button>
+              </div>
+
+              <div className='flex flex-wrap gap-2'>
+                {tags.map((tag) => (
+                  <div
+                    key={tag}
+                    className='flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm'
+                  >
+                    {tag}
+                    <button
+                      type='button'
+                      onClick={() => removeTag(tag)}
+                      className='hover:text-primary/70'
+                    >
+                      <X className='w-3 h-3' />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <input
+                type='hidden'
+                name='tags'
+                value={JSON.stringify(tags)}
+              />
             </div>
 
-            {/* ── Pricing ─────────────────────────────────────────── */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <Field>
-                <FieldLabel htmlFor="price">Base Price (BDT)</FieldLabel>
-                <div className="relative">
-                  <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-bold text-muted-foreground">
-                    ৳
-                  </span>
-                  <Input
-                    id="price"
-                    name="price"
-                    type="number"
-                    placeholder="0"
-                    min={1}
-                    max={99999}
-                    step={1}
-                    defaultValue={fd?.price || menuItem?.price || ""}
-                    className="pl-7"
-                  />
-                </div>
-                <InputFieldError field="price" state={state} />
-              </Field>
+            {/* Variants */}
+            <div className='space-y-4'>
+              <h3 className='font-semibold text-sm text-foreground'>
+                Variants
+              </h3>
 
-              <Field>
-                <FieldLabel htmlFor="discountPrice">Discount Price (BDT)</FieldLabel>
-                <div className="relative">
-                  <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-bold text-muted-foreground">
-                    ৳
-                  </span>
-                  <Input
-                    id="discountPrice"
-                    name="discountPrice"
-                    type="number"
-                    placeholder="—"
-                    min={0}
-                    max={99999}
-                    step={1}
-                    defaultValue={fd?.discountPrice || menuItem?.discountPrice || ""}
-                    className="pl-7"
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">Leave empty if no discount</p>
-              </Field>
+              <div className='grid grid-cols-1 gap-3 sm:grid-cols-3'>
+                <Input
+                  value={variantName}
+                  onChange={(e) => setVariantName(e.target.value)}
+                  placeholder='Variant name (e.g. Small, Large)'
+                />
+                <Input
+                  value={variantPrice}
+                  onChange={(e) => setVariantPrice(e.target.value)}
+                  type='number'
+                  step='0.01'
+                  min='0'
+                  placeholder='Price'
+                />
+                <Button
+                  type='button'
+                  variant='outline'
+                  onClick={addVariant}
+                  className='rounded-md'
+                >
+                  <Plus className='w-4 h-4' />
+                </Button>
+              </div>
 
-              <Field>
-                <FieldLabel htmlFor="discountPercent">Discount %</FieldLabel>
-                <div className="relative">
-                  <Input
-                    id="discountPercent"
-                    name="discountPercent"
-                    type="number"
-                    placeholder="0"
-                    min={0}
-                    max={100}
-                    step={1}
-                    defaultValue={fd?.discountPercent || menuItem?.discountPercent || ""}
-                    className="pr-7"
-                  />
-                  <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm font-bold text-muted-foreground">
-                    %
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">e.g. 10 for 10% off</p>
-              </Field>
+              <div className='space-y-2'>
+                {variants.map((variant, index) => (
+                  <div
+                    key={index}
+                    className='flex items-center justify-between bg-muted/50 p-3 rounded-md'
+                  >
+                    <div>
+                      <p className='font-medium text-sm'>{variant.name}</p>
+                      <p className='text-xs text-muted-foreground'>
+                        +৳{variant.price.toFixed(2)}
+                      </p>
+                    </div>
+                    <button
+                      type='button'
+                      onClick={() => removeVariant(index)}
+                      className='text-destructive hover:text-destructive/70'
+                    >
+                      <Trash2 className='w-4 h-4' />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <input
+                type='hidden'
+                name='variants'
+                value={JSON.stringify(variants)}
+              />
             </div>
 
-            {/* ── Media & Display ─────────────────────────────────── */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div className="sm:col-span-2">
-                <Field>
-                  <FieldLabel htmlFor="file">
-                    Menu Image
-                    {isEdit && <span className="ml-1 font-normal text-muted-foreground">(upload to replace)</span>}
-                  </FieldLabel>
+            {/* Add-ons */}
+            <div className='space-y-4'>
+              <h3 className='font-semibold text-sm text-foreground'>
+                Add-ons
+              </h3>
 
-                  {/* Preview: new file takes priority, then existing imageUrl */}
-                  {(selectedFile || menuItem?.imageUrl) && (
-                    <div className="mb-2 flex items-center gap-3">
-                      <Image
-                        src={selectedFile ? URL.createObjectURL(selectedFile) : menuItem!.imageUrl!}
-                        alt="Preview"
-                        width={72}
-                        height={72}
-                        className="rounded-lg border border-border object-cover"
-                      />
-                      {selectedFile ? (
-                        <p className="text-xs text-muted-foreground">{selectedFile.name}</p>
-                      ) : (
-                        <p className="text-xs text-muted-foreground">Current image — kept unless replaced</p>
-                      )}
+              <div className='grid grid-cols-1 gap-3 sm:grid-cols-3'>
+                <Input
+                  value={addOnName}
+                  onChange={(e) => setAddOnName(e.target.value)}
+                  placeholder='Add-on name (e.g. Extra sauce)'
+                />
+                <Input
+                  value={addOnPrice}
+                  onChange={(e) => setAddOnPrice(e.target.value)}
+                  type='number'
+                  step='0.01'
+                  min='0'
+                  placeholder='Price'
+                />
+                <Button
+                  type='button'
+                  variant='outline'
+                  onClick={addAddOn}
+                  className='rounded-md'
+                >
+                  <Plus className='w-4 h-4' />
+                </Button>
+              </div>
+
+              <div className='space-y-2'>
+                {addOns.map((addOn, index) => (
+                  <div
+                    key={index}
+                    className='flex items-center justify-between bg-muted/50 p-3 rounded-md'
+                  >
+                    <div>
+                      <p className='font-medium text-sm'>{addOn.name}</p>
+                      <p className='text-xs text-muted-foreground'>
+                        +৳{addOn.price.toFixed(2)}
+                      </p>
+                    </div>
+                    <button
+                      type='button'
+                      onClick={() => removeAddOn(index)}
+                      className='text-destructive hover:text-destructive/70'
+                    >
+                      <Trash2 className='w-4 h-4' />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <input
+                type='hidden'
+                name='addOns'
+                value={JSON.stringify(addOns)}
+              />
+            </div>
+
+            {/* Image Upload */}
+            <div className='space-y-4'>
+              <h3 className='font-semibold text-sm text-foreground'>
+                Menu Item Image
+              </h3>
+
+              <Field>
+                <FieldLabel htmlFor='file'>
+                  Upload Image
+                  {isEdit && (
+                    <span className='ml-1 font-normal text-muted-foreground'>
+                      (upload to replace)
+                    </span>
+                  )}
+                </FieldLabel>
+
+                <div
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`group relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 text-center transition-all cursor-pointer min-h-48 ${
+                    isDragging
+                      ? 'border-primary bg-primary/5 scale-[0.99]'
+                      : 'border-border bg-muted/20 hover:bg-muted/40 hover:border-muted-foreground/50'
+                  }`}
+                >
+                  <input
+                    ref={fileInputRef}
+                    id='file'
+                    name='file'
+                    type='file'
+                    accept='image/*'
+                    onChange={handleFileChange}
+                    className='hidden'
+                  />
+
+                  {selectedFile || menuItem?.imageUrl ? (
+                    <div className='flex flex-col items-center gap-3 w-full pointer-events-none'>
+                      <div className='relative w-28 h-28 rounded-lg overflow-hidden border border-border shadow-sm bg-background'>
+                        <Image
+                          src={
+                            selectedFile
+                              ? URL.createObjectURL(selectedFile)
+                              : menuItem!.imageUrl!
+                          }
+                          alt='Preview'
+                          fill
+                          className='object-cover'
+                        />
+                      </div>
+                      <div className='space-y-1'>
+                        <p className='text-sm font-medium text-foreground max-w-xs truncate'>
+                          {selectedFile ? selectedFile.name : 'Current Image'}
+                        </p>
+                        <p className='text-xs text-muted-foreground'>
+                          Drag and drop or click to replace
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className='flex flex-col items-center justify-center gap-3 pointer-events-none text-muted-foreground group-hover:text-foreground transition-colors'>
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='none'
+                        viewBox='0 0 24 24'
+                        strokeWidth={1.5}
+                        stroke='currentColor'
+                        className='w-10 h-10 stroke-muted-foreground/70 group-hover:stroke-primary transition-colors'
+                      >
+                        <path
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                          d='M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z'
+                        />
+                      </svg>
+                      <div className='space-y-1'>
+                        <p className='text-sm font-medium'>
+                          Drag & drop your image here, or{' '}
+                          <span className='text-primary underline underline-offset-2'>
+                            browse
+                          </span>
+                        </p>
+                        <p className='text-xs text-muted-foreground'>
+                          Supports JPG, PNG or WebP
+                        </p>
+                      </div>
                     </div>
                   )}
+                </div>
 
-                  <Input
-                    ref={fileInputRef}
-                    id="file"
-                    name="file"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Uploaded to Cloudinary. JPG, PNG, or WebP recommended.
-                  </p>
-                  <InputFieldError field="file" state={state} />
-                </Field>
-              </div>
-
-              <Field>
-                <FieldLabel htmlFor="sortOrder">Sort Order</FieldLabel>
-                <Input
-                  id="sortOrder"
-                  name="sortOrder"
-                  type="number"
-                  placeholder="0"
-                  min={0}
-                  step={1}
-                  defaultValue={fd?.sortOrder !== undefined ? (fd.sortOrder as number) : (menuItem?.sortOrder ?? 0)}
-                />
-                <p className="text-xs text-muted-foreground mt-1">Lower = shown first</p>
+                <InputFieldError field='file' state={state} />
               </Field>
-            </div>
-
-            {/* ── Nutrition & Prep ────────────────────────────────── */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-5">
-              <Field>
-                <FieldLabel htmlFor="prepTime">Prep Time</FieldLabel>
-                <Input
-                  id="prepTime"
-                  name="prepTime"
-                  placeholder="25 min"
-                  defaultValue={fd?.prepTime || menuItem?.prepTime || ""}
-                />
-                <p className="text-xs text-muted-foreground mt-1">&quot;35 min&quot; or &quot;Ready&quot;</p>
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="calories">Calories (kcal)</FieldLabel>
-                <Input
-                  id="calories"
-                  name="calories"
-                  type="number"
-                  placeholder="0"
-                  min={0}
-                  defaultValue={fd?.calories || menuItem?.nutrition?.calories || ""}
-                />
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="protein">Protein (g)</FieldLabel>
-                <Input
-                  id="protein"
-                  name="protein"
-                  type="number"
-                  placeholder="0"
-                  min={0}
-                  defaultValue={fd?.protein || menuItem?.nutrition?.protein || ""}
-                />
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="carbs">Carbs (g)</FieldLabel>
-                <Input
-                  id="carbs"
-                  name="carbs"
-                  type="number"
-                  placeholder="0"
-                  min={0}
-                  defaultValue={fd?.carbs || menuItem?.nutrition?.carbs || ""}
-                />
-              </Field>
-
-              {/* fat was missing from the original form — server action already reads it */}
-              <Field>
-                <FieldLabel htmlFor="fat">Fat (g)</FieldLabel>
-                <Input
-                  id="fat"
-                  name="fat"
-                  type="number"
-                  placeholder="0"
-                  min={0}
-                  defaultValue={fd?.fat || menuItem?.nutrition?.fat || ""}
-                />
-              </Field>
-            </div>
-
-            {/* ── Dietary Suitability ─────────────────────────────── */}
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-2">Dietary Suitability</p>
-              <div className="flex flex-wrap gap-x-6 gap-y-2">
-                {DIETARY_FLAGS.map(({ name, label }) => (
-                  <label key={name} className="inline-flex cursor-pointer items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      name={name}
-                      defaultChecked={(fd?.[name] as boolean | undefined) ?? menuItem?.[name] ?? false}
-                      className="size-4 accent-primary"
-                    />
-                    {label}
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* ── Allergens ───────────────────────────────────────── */}
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-2">Contains Allergens</p>
-              <div className="flex flex-wrap gap-x-6 gap-y-2">
-                {ALLERGEN_OPTIONS.map(({ value, label }) => (
-                  <label key={value} className="inline-flex cursor-pointer items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      name="allergens"
-                      value={value}
-                      defaultChecked={currentAllergens.includes(value)}
-                      className="size-4 accent-destructive"
-                    />
-                    {label}
-                  </label>
-                ))}
-              </div>
-              <InputFieldError field="allergens" state={state} />
-            </div>
-
-            {/* ── Customisation ───────────────────────────────────── */}
-            <Field>
-              <FieldLabel htmlFor="variants">Variants</FieldLabel>
-              <Input
-                id="variants"
-                name="variants"
-                placeholder="Regular:0, Large:120, Family Pack:360"
-                defaultValue={variantsDefault}
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Format: Name:price-markup — e.g. Regular:0, Large:120
-              </p>
-              <InputFieldError field="variants" state={state} />
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="addOns">Add-ons</FieldLabel>
-              <Input
-                id="addOns"
-                name="addOns"
-                placeholder="Extra Mutton:140, Borhani:80"
-                defaultValue={addOnsDefault}
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Format: Name:price — e.g. Extra Mutton:140, Borhani:80
-              </p>
-              <InputFieldError field="addOns" state={state} />
-            </Field>
-
-            {/* ── Discovery & Status ──────────────────────────────── */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Field>
-                <FieldLabel htmlFor="tags">Tags</FieldLabel>
-                <Input
-                  id="tags"
-                  name="tags"
-                  placeholder="Signature, Popular, Chef Special"
-                  defaultValue={tagsDefault}
-                />
-                <p className="text-xs text-muted-foreground mt-1">Comma-separated — e.g. Signature, Popular, Halal</p>
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="stockStatus">Stock Status</FieldLabel>
-                <select
-                  id="stockStatus"
-                  name="stockStatus"
-                  defaultValue={fd?.stockStatus || menuItem?.stockStatus || "in_stock"}
-                  className={selectClass}
-                >
-                  {STOCK_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-            </div>
-
-            <div className="flex flex-wrap gap-x-6 gap-y-2">
-              {(
-                [
-                  { name: "isFeatured", label: "Featured on home page" },
-                  { name: "isAvailable", label: "Currently available" },
-                ] as const
-              ).map(({ name, label }) => (
-                <label key={name} className="inline-flex cursor-pointer items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    name={name}
-                    defaultChecked={(fd?.[name] as boolean | undefined) ?? menuItem?.[name] ?? name === "isAvailable"}
-                    className="size-4 accent-primary"
-                  />
-                  {label}
-                </label>
-              ))}
             </div>
           </div>
 
-          {/* ── Form Actions ──────────────────────────────────────── */}
-          <div className="flex justify-end gap-2 px-6 py-4 border-t bg-muted/50">
-            <Button type="button" variant="outline" onClick={handleClose} disabled={isPending}>
+          <div className='flex justify-end gap-2 px-6 py-4 border-t bg-muted/50'>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={handleClose}
+              disabled={isPending}
+            >
               Cancel
             </Button>
-            <Button type="submit" disabled={isPending}>
-              {isPending ? "Saving..." : isEdit ? "Update Item" : "Create Item"}
+
+            <Button type='submit' disabled={isPending}>
+              {isPending
+                ? 'Saving...'
+                : isEdit
+                  ? 'Update Item'
+                  : 'Create Item'}
             </Button>
           </div>
         </form>

@@ -26,10 +26,10 @@ const CategoryManagementHeader = () => {
       )}
 
       <ManagementPageHeader
-        title="মেনু ম্যানেজার (Menu)"
-        description="মেনু আইটেম যোগ, সম্পাদনা ও অপসারণ করুন"
+        title="ক্যাটাগরি ম্যানেজার (Category)"
+        description="ক্যাটাগরি যোগ, সম্পাদনা ও অপসারণ করুন"
         action={{
-          label: "Add Menu",
+          label: "Add Category",
           icon: Plus,
           onClick: () => setIsDialogOpen(true),
         }}
