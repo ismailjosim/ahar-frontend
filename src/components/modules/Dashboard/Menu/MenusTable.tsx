@@ -1,51 +1,72 @@
-"use client"
+'use client'
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import type { MenuItem } from "@/types/menu.interface"
-import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table"
-import { useRouter } from "next/navigation"
-import { useState, useTransition } from "react"
-import { toast } from "sonner"
-import MenuFormDialog from "./MenuFormDialog"
-import MenuViewDetailsDialog from "./MenuViewDetailsDialog"
-import { menusColumns } from "./menusColumn"
-import DeleteConfirmationDialog from "@/components/shared/DeleteConfirmationDialog"
-import { deleteMenuItem } from "@/services/menu/menusManagement"
+import DeleteConfirmationDialog from '@/components/shared/DeleteConfirmationDialog'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table'
+import { deleteMenuItem } from '@/services/menu/menusManagement'
+import type { MenuItem } from '@/types/menu.interface'
+import type { Category } from '@/types/category.interface'
 
-interface MenusTableProps {
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+
+import { useRouter } from 'next/navigation'
+import { useRef, useState } from 'react'
+import { toast } from 'sonner'
+
+import MenuFormDialog from './MenuFormDialog'
+import MenuViewDetailsDialog from './MenuViewDetailsDialog'
+import { menuColumns } from './menusColumn'
+
+
+interface MenuTableProps {
   menuItems: MenuItem[]
+  categories: Category[]
 }
 
-const MenusTable = ({ menuItems }: MenusTableProps) => {
+const MenuTable = ({ menuItems, categories }: MenuTableProps) => {
   const router = useRouter()
-  const [, startTransition] = useTransition()
-
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null)
   const [viewingItem, setViewingItem] = useState<MenuItem | null>(null)
   const [deletingItem, setDeletingItem] = useState<MenuItem | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
 
+  const isRefreshing = useRef(false)
+
   const handleRefresh = () => {
-    startTransition(() => router.refresh())
+    if (isRefreshing.current) return
+    isRefreshing.current = true
+    router.refresh()
+    setTimeout(() => {
+      isRefreshing.current = false
+    }, 1000)
   }
 
   const confirmDelete = async () => {
     if (!deletingItem) return
+
     setIsDeleting(true)
+
     const result = await deleteMenuItem(deletingItem.id)
+
     setIsDeleting(false)
+
     if (result?.success) {
-      toast.success(result.message || "Menu item deleted successfully")
+      toast.success(
+        result.message || 'Menu item deleted successfully'
+      )
+
       setDeletingItem(null)
       handleRefresh()
     } else {
-      toast.error(result?.message || "Failed to delete menu item")
+      toast.error(
+        result?.message || 'Failed to delete menu item'
+      )
     }
   }
 
-  const columns = menusColumns({
+  const columns = menuColumns({
     onEdit: setEditingItem,
     onView: setViewingItem,
+    onDelete: setDeletingItem,
     onRefresh: handleRefresh,
   })
 
@@ -57,14 +78,19 @@ const MenusTable = ({ menuItems }: MenusTableProps) => {
 
   return (
     <>
-      <div className="rounded-md border">
+      <div className='rounded-md border'>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
-                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -76,13 +102,21 @@ const MenusTable = ({ menuItems }: MenusTableProps) => {
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-32 text-center text-muted-foreground">
+                <TableCell
+                  colSpan={columns.length}
+                  className='h-32 text-center text-muted-foreground'
+                >
                   No menu items found.
                 </TableCell>
               </TableRow>
@@ -96,6 +130,7 @@ const MenusTable = ({ menuItems }: MenusTableProps) => {
         open={!!editingItem}
         onClose={() => setEditingItem(null)}
         menuItem={editingItem!}
+        categories={categories}
         onSuccess={() => {
           setEditingItem(null)
           handleRefresh()
@@ -103,7 +138,11 @@ const MenusTable = ({ menuItems }: MenusTableProps) => {
       />
 
       {/* View */}
-      <MenuViewDetailsDialog open={!!viewingItem} onClose={() => setViewingItem(null)} menuItem={viewingItem} />
+      <MenuViewDetailsDialog
+        open={!!viewingItem}
+        onClose={() => setViewingItem(null)}
+        menuItem={viewingItem}
+      />
 
       {/* Hard Delete confirmation */}
       <DeleteConfirmationDialog
@@ -111,11 +150,11 @@ const MenusTable = ({ menuItems }: MenusTableProps) => {
         onCancel={() => setDeletingItem(null)}
         onConfirm={confirmDelete}
         itemName={deletingItem?.name}
-        description="This action cannot be undone. The item will be permanently removed."
+        description='This action cannot be undone. The menu item will be permanently removed.'
         isDeleting={isDeleting}
       />
     </>
   )
 }
 
-export default MenusTable
+export default MenuTable
