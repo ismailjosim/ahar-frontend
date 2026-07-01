@@ -12,9 +12,15 @@ import { createCategoryZodSchema, updateCategoryZodSchema } from '@/schema/categ
 
 const ALLOWED_IMAGE_TYPES = [
     'image/jpeg',
+    'image/jpg',
     'image/png',
     'image/webp',
     'image/gif',
+    'image/svg+xml',
+    'image/avif',
+    'image/bmp',
+    'image/tiff',
+    'image/ico',
 ]
 
 function validateFile(
