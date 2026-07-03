@@ -1,46 +1,57 @@
 "use client"
 
-/**
- * SearchFilter.tsx
- *
- * Text-based search input with a clear button.
- *
- * Usage:
- *   <SearchFilter value={search} onChange={setSearch} placeholder="Search items…" />
- */
-
-import { Search, X } from "lucide-react"
+import { Search } from "lucide-react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useEffect, useState, useTransition } from "react"
+import { Input } from "../ui/input"
+import { useDebounce } from "../hooks/useDebounce"
 
 interface SearchFilterProps {
-  value: string
-  onChange: (value: string) => void
   placeholder?: string
-  className?: string
+  paramName?: string
 }
 
-export default function SearchFilter({ value, onChange, placeholder = "Search…", className = "" }: SearchFilterProps) {
+const SearchFilter = ({ placeholder = "Search...", paramName = "searchTerm" }: SearchFilterProps) => {
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+  const searchParams = useSearchParams()
+  const [value, setValue] = useState(searchParams.get(paramName) || "")
+  const debouncedValue = useDebounce(value, 500)
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString())
+
+    const initialValue = searchParams.get(paramName) || ""
+
+    if (debouncedValue === initialValue) {
+      return
+    }
+
+    if (debouncedValue) {
+      params.set(paramName, debouncedValue) // ?searchTerm=debouncedValue
+      params.set("page", "1") // reset to first page on search
+    } else {
+      params.delete(paramName) // remove searchTerm param
+      params.delete("page") // reset to first page on search clear
+    }
+
+    startTransition(() => {
+      router.push(`?${params.toString()}`)
+    })
+  }, [debouncedValue, paramName, router, searchParams])
+
   return (
-    <div className={`relative ${className}`}>
-      <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+    <div className="relative">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <Input
         placeholder={placeholder}
-        className="h-10 w-full rounded-xl border border-input bg-muted/50 py-2 pl-10 pr-9 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+        className="pl-10"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        disabled={isPending}
       />
-
-      {value && (
-        <button
-          type="button"
-          onClick={() => onChange("")}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
-          aria-label="Clear search"
-        >
-          <X className="size-4" />
-        </button>
-      )}
     </div>
   )
 }
+
+export default SearchFilter
