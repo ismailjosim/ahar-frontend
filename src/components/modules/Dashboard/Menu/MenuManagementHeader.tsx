@@ -1,19 +1,17 @@
-'use client'
+"use client"
 
-import { Plus } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { useState, useTransition } from 'react'
-import ManagementPageHeader from '@/components/shared/ManagementPageHeader'
-import MenuFormDialog from './MenuFormDialog'
-import type { Category } from '@/types/category.interface'
+import { Plus } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState, useTransition } from "react"
+import ManagementPageHeader from "@/components/shared/ManagementPageHeader"
+import MenuFormDialog from "./MenuFormDialog"
+import type { Category } from "@/types/category.interface"
 
 interface MenuManagementHeaderProps {
   categories: Category[]
 }
 
-const MenuManagementHeader = ({
-  categories,
-}: MenuManagementHeaderProps) => {
+const MenuManagementHeader = ({ categories }: MenuManagementHeaderProps) => {
   const router = useRouter()
   const [, startTransition] = useTransition()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -37,10 +35,10 @@ const MenuManagementHeader = ({
       )}
 
       <ManagementPageHeader
-        title='খাবার তালিকা (Menu Items)'
-        description='মেনু আইটেম যোগ, সম্পাদনা ও অপসারণ করুন'
+        title="খাবার তালিকা (Menu Items)"
+        description="মেনু আইটেম যোগ, সম্পাদনা ও অপসারণ করুন"
         action={{
-          label: 'Add Menu Item',
+          label: "Add Menu Item",
           icon: Plus,
           onClick: () => setIsDialogOpen(true),
         }}

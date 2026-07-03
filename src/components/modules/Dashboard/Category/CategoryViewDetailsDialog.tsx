@@ -1,12 +1,6 @@
 "use client"
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 import { Badge } from "@/components/ui/badge"
 import type { Category } from "@/types/category.interface"
@@ -18,11 +12,7 @@ interface CategoryViewDetailsDialogProps {
   category: Category | null
 }
 
-const CategoryViewDetailsDialog = ({
-  open,
-  onClose,
-  category,
-}: CategoryViewDetailsDialogProps) => {
+const CategoryViewDetailsDialog = ({ open, onClose, category }: CategoryViewDetailsDialogProps) => {
   if (!category) return null
 
   const statusMap = {
@@ -40,25 +30,18 @@ const CategoryViewDetailsDialog = ({
     },
   }
 
-  const status =
-    statusMap[category.status as keyof typeof statusMap] ??
-    {
-      label: category.status,
-      variant: "secondary" as const,
-    }
+  const status = statusMap[category.status as keyof typeof statusMap] ?? {
+    label: category.status,
+    variant: "secondary" as const,
+  }
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>
-            Category Details
-          </DialogTitle>
+          <DialogTitle>Category Details</DialogTitle>
 
-          <DialogDescription>
-            View complete information about this
-            category.
-          </DialogDescription>
+          <DialogDescription>View complete information about this category.</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -82,76 +65,43 @@ const CategoryViewDetailsDialog = ({
           {/* Information */}
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">
-                Name
-              </p>
-              <p className="font-medium">
-                {category.name}
-              </p>
+              <p className="text-sm text-muted-foreground">Name</p>
+              <p className="font-medium">{category.name}</p>
             </div>
 
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">
-                Slug
-              </p>
-              <p className="font-medium">
-                {category.slug}
-              </p>
+              <p className="text-sm text-muted-foreground">Slug</p>
+              <p className="font-medium">{category.slug}</p>
             </div>
 
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">
-                Status
-              </p>
+              <p className="text-sm text-muted-foreground">Status</p>
 
-              <Badge variant={status.variant}>
-                {status.label}
-              </Badge>
+              <Badge variant={status.variant}>{status.label}</Badge>
             </div>
 
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">
-                Icon
-              </p>
+              <p className="text-sm text-muted-foreground">Icon</p>
 
-              <p className="font-medium">
-                {category.icon || "N/A"}
-              </p>
+              <p className="font-medium">{category.icon || "N/A"}</p>
             </div>
 
             <div className="md:col-span-2 space-y-1">
-              <p className="text-sm text-muted-foreground">
-                Description
-              </p>
+              <p className="text-sm text-muted-foreground">Description</p>
 
-              <p className="whitespace-pre-wrap">
-                {category.description ||
-                  "No description provided."}
-              </p>
+              <p className="whitespace-pre-wrap">{category.description || "No description provided."}</p>
             </div>
 
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">
-                Created At
-              </p>
+              <p className="text-sm text-muted-foreground">Created At</p>
 
-              <p className="font-medium">
-                {new Date(
-                  category.createdAt
-                ).toLocaleString()}
-              </p>
+              <p className="font-medium">{new Date(category.createdAt).toLocaleString()}</p>
             </div>
 
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">
-                Updated At
-              </p>
+              <p className="text-sm text-muted-foreground">Updated At</p>
 
-              <p className="font-medium">
-                {new Date(
-                  category.updatedAt
-                ).toLocaleString()}
-              </p>
+              <p className="font-medium">{new Date(category.updatedAt).toLocaleString()}</p>
             </div>
           </div>
         </div>
