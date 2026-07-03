@@ -9,6 +9,8 @@ import { queryStringFormatter } from "@/lib/formatters.ts"
 import RefreshButton from "@/components/shared/RefreshButton"
 
 import CategoryManagementHeader from "@/components/modules/Dashboard/Category/CategoryManagementHeader"
+import TableSkeleton from "@/components/shared/TableSkeleton"
+import TablePagination from "@/components/shared/TablePagination"
 
 const CategoryManagementPage = async ({
   searchParams,
@@ -19,34 +21,22 @@ const CategoryManagementPage = async ({
 }) => {
   const searchParamsObj = await searchParams
 
-  const queryString =
-    queryStringFormatter(searchParamsObj)
+  const queryString = queryStringFormatter(searchParamsObj)
 
-  const categoriesResult =
-    await getCategories(queryString)
+  const categoriesResult = await getCategories(queryString)
 
-  const categories =
-    categoriesResult?.data ?? []
+  const categories = categoriesResult?.data ?? []
+  const totalPages = Math.ceil(categoriesResult?.meta?.total / categoriesResult?.meta?.limit)
 
   return (
     <div className="space-y-6">
       <CategoryManagementHeader />
+      <CategoriesFilter categories={categories?.data || []} />
+      <Suspense fallback={<TableSkeleton cols={2} rows={10} />}>
+        <CategoriesTable categories={categories} />
 
-      <div className="flex items-center justify-between gap-3">
-        <Suspense
-          fallback={
-            <div className="h-9 w-80 animate-pulse rounded-md bg-muted" />
-          }
-        >
-          <CategoriesFilter />
-          <RefreshButton />
-        </Suspense>
-
-      </div>
-
-      <CategoriesTable
-        categories={categories}
-      />
+        <TablePagination currentPage={categories?.meta?.page} totalPages={totalPages} />
+      </Suspense>
     </div>
   )
 }

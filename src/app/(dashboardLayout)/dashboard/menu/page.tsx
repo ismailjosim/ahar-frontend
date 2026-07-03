@@ -1,11 +1,12 @@
 import { Suspense } from "react"
 import MenuManagementHeader from "@/components/modules/Dashboard/Menu/MenuManagementHeader"
 import MenusFilter from "@/components/modules/Dashboard/Menu/MenusFilter"
-import MenusTable from "@/components/modules/Dashboard/Menu/MenusTable"
+// import MenusTable from "@/components/modules/Dashboard/Menu/MenusTable"
 
 import { getMenuItems } from "@/services/menu/menusManagement"
 import { queryStringFormatter } from "@/lib/formatters.ts"
 import RefreshButton from "@/components/shared/RefreshButton"
+import { getCategories } from "@/services/category/categoriesManagement"
 
 const MenuManagementPage = async ({
   searchParams,
@@ -17,9 +18,11 @@ const MenuManagementPage = async ({
   const menuResult = await getMenuItems(queryString)
   const menuItems = menuResult?.data ?? []
 
+  const categories = await getCategories()
+
   return (
     <div className="space-y-6">
-      <MenuManagementHeader />
+      <MenuManagementHeader categories={categories?.data || []} />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Suspense fallback={<div className="h-9 w-80 animate-pulse rounded-md bg-muted" />}>
@@ -28,7 +31,7 @@ const MenuManagementPage = async ({
         <RefreshButton />
       </div>
 
-      <MenusTable menuItems={menuItems} />
+      {/* <MenusTable menuItems={menuItems} /> */}
     </div>
   )
 }
