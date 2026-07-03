@@ -6,7 +6,6 @@ import { useState, useTransition } from "react"
 import ManagementPageHeader from "@/components/shared/ManagementPageHeader"
 import CategoryFormDialog from "./CategoryFormDialog"
 
-
 const CategoryManagementHeader = () => {
   const router = useRouter()
   const [, startTransition] = useTransition()
