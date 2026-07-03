@@ -28,8 +28,9 @@ export default function AdminSidebar({ isOpen = true, onClose }: AdminSidebarPro
       {isOpen && <div className="fixed inset-0 z-40 bg-black/50 md:hidden" onClick={onClose} />}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-canvas text-foreground shadow-xl backdrop-blur-sm transition-transform duration-300 ease-in-out md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-          }`}
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-canvas text-foreground shadow-xl backdrop-blur-sm transition-transform duration-300 ease-in-out md:translate-x-0 ${
+          isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        }`}
       >
         {/* ── Sidebar header ──────────────────────────────────────────────── */}
         <div className="flex h-20 items-center justify-between border-b border-border bg-card px-6">
