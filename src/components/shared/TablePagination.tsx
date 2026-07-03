@@ -1,74 +1,115 @@
 "use client"
 
-/**
- * TablePagination.tsx
- *
- * Prev / Next pagination control for management tables.
- *
- * Usage:
- *   <TablePagination
- *     page={page}
- *     pageSize={20}
- *     total={total}
- *     onPageChange={setPage}
- *   />
- */
-
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useTransition } from "react"
+import { Button } from "../ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 
 interface TablePaginationProps {
-  page: number
-  pageSize: number
-  total: number
-  onPageChange: (page: number) => void
+  currentPage: number
+  totalPages: number
 }
 
-export default function TablePagination({ page, pageSize, total, onPageChange }: TablePaginationProps) {
-  const totalPages = Math.max(1, Math.ceil(total / pageSize))
-  const start = Math.min((page - 1) * pageSize + 1, total)
-  const end = Math.min(page * pageSize, total)
+const TablePagination = ({ currentPage, totalPages }: TablePaginationProps) => {
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+  const searchParams = useSearchParams()
+
+  const navigateToPage = (newPage: number) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("page", newPage.toString())
+
+    startTransition(() => {
+      router.push(`?${params.toString()}`)
+    })
+  }
+
+  const changeLimit = (newLimit: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("limit", newLimit)
+    params.set("page", "1")
+
+    startTransition(() => {
+      router.push(`?${params.toString()}`)
+    })
+  }
+
+  const currentLimit = searchParams.get("limit") || "10"
 
   return (
-    <div className="flex items-center justify-between gap-4">
-      <p className="text-sm text-muted-foreground">
-        {total > 0 ? (
-          <>
-            Showing{" "}
-            <span className="font-semibold text-foreground">
-              {start}–{end}
-            </span>{" "}
-            of <span className="font-semibold text-foreground">{total}</span>
-          </>
-        ) : (
-          "No records"
-        )}
-      </p>
+    <div className="flex items-center justify-center gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => navigateToPage(currentPage - 1)}
+        disabled={currentPage <= 1 || isPending}
+      >
+        <ChevronLeft className="h-4 w-4 mr-1" />
+        Previous
+      </Button>
 
       <div className="flex items-center gap-1">
-        <button
-          type="button"
-          disabled={page <= 1}
-          onClick={() => onPageChange(Math.max(1, page - 1))}
-          className="inline-flex size-9 items-center justify-center rounded-lg border border-border bg-background text-sm text-muted-foreground transition hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
-          aria-label="Previous page"
-        >
-          <ChevronLeft className="size-4" />
-        </button>
+        {Array.from({ length: Math.min(5, totalPages) }, (_, index) => {
+          let pageNumber
 
-        <span className="min-w-[4rem] text-center text-sm text-muted-foreground">
-          {page} / {totalPages}
-        </span>
+          if (totalPages <= 5) {
+            pageNumber = index + 1
+          } else if (currentPage <= 3) {
+            pageNumber = index + 1
+          } else if (currentPage >= totalPages - 2) {
+            pageNumber = totalPages - 4 + index
+          } else {
+            pageNumber = currentPage - 2 + index
+          }
+          return (
+            <Button
+              key={pageNumber}
+              variant={pageNumber === currentPage ? "default" : "outline"}
+              size="sm"
+              onClick={() => navigateToPage(pageNumber)}
+              disabled={isPending}
+              className="w-10"
+            >
+              {pageNumber}
+            </Button>
+          )
+        })}
+      </div>
 
-        <button
-          type="button"
-          disabled={page >= totalPages}
-          onClick={() => onPageChange(page + 1)}
-          className="inline-flex size-9 items-center justify-center rounded-lg border border-border bg-background text-sm text-muted-foreground transition hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
-          aria-label="Next page"
-        >
-          <ChevronRight className="size-4" />
-        </button>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => navigateToPage(currentPage + 1)}
+        disabled={currentPage === totalPages || isPending}
+      >
+        Next
+        <ChevronRight className="h-4 w-4 ml-1" />
+      </Button>
+
+      <span className="text-sm text-muted-foreground ml-2">
+        Page {currentPage} of {totalPages}
+      </span>
+
+      {/* Items per page selector */}
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-muted-foreground">Items per page:</span>
+        <Select value={currentLimit} onValueChange={changeLimit} disabled={isPending}>
+          <SelectTrigger className="w-17.5 h-8">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="1">1</SelectItem>
+            <SelectItem value="5">5</SelectItem>
+            <SelectItem value="10">10</SelectItem>
+            <SelectItem value="20">20</SelectItem>
+            <SelectItem value="50">50</SelectItem>
+            <SelectItem value="100">100</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
   )
 }
+
+export default TablePagination
