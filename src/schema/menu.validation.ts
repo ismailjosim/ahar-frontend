@@ -54,7 +54,8 @@ const menuItemSchema = z.object({
     })
     .min(0, "Rating cannot be less than 0")
     .max(5, "Rating cannot exceed 5")
-    .default(0),
+    .default(0)
+    .optional(),
 
   prepTime: z
     .string()

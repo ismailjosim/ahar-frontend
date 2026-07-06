@@ -328,7 +328,7 @@ export default function MenuFormDialog({ open, onClose, onSuccess, menuItem, cat
               <div>
                 <h3 className="font-semibold">Pricing & Details</h3>
 
-                <p className="text-sm text-muted-foreground">Configure pricing, rating and preparation time.</p>
+                <p className="text-sm text-muted-foreground">Configure pricing and preparation time.</p>
               </div>
 
               <div className="grid gap-5 md:grid-cols-3">
@@ -349,7 +349,7 @@ export default function MenuFormDialog({ open, onClose, onSuccess, menuItem, cat
                   <InputFieldError field="price" state={state} />
                 </Field>
 
-                <Field>
+                {/* <Field>
                   <FieldLabel htmlFor="rating">Rating *</FieldLabel>
 
                   <Input
@@ -365,7 +365,7 @@ export default function MenuFormDialog({ open, onClose, onSuccess, menuItem, cat
                   />
 
                   <InputFieldError field="rating" state={state} />
-                </Field>
+                </Field> */}
 
                 <Field>
                   <FieldLabel htmlFor="prepTime">Preparation Time *</FieldLabel>
