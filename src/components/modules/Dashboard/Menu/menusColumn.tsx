@@ -22,7 +22,7 @@ export const menuColumns = ({ onEdit, onView, onDelete }: Props): ColumnDef<Menu
         alt={row.original.name}
         width={56}
         height={56}
-        className="rounded-md object-cover"
+        className="rounded-md object-cover w-14 h-14"
       />
     ),
   },

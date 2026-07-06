@@ -1,61 +1,78 @@
 import { z } from "zod"
 
-// Variant schema for menu item variants
 const variantSchema = z.object({
   id: z.string().optional(),
-  name: z.string().min(1, "Variant name is required"),
-  price: z.number().positive("Variant price must be positive"),
+  name: z.string().trim().min(1, "Variant name is required").max(50, "Variant name cannot exceed 50 characters"),
+
+  price: z
+    .number({
+      error: "Variant price must be a number",
+    })
+    .positive("Variant price must be greater than 0"),
 })
 
-// Add-on schema for menu item add-ons
 const addOnSchema = z.object({
   id: z.string().optional(),
-  name: z.string().min(1, "Add-on name is required"),
-  price: z.number().nonnegative("Add-on price cannot be negative"),
+
+  name: z.string().trim().min(1, "Add-on name is required").max(50, "Add-on name cannot exceed 50 characters"),
+
+  price: z
+    .number({
+      error: "Add-on price must be a number",
+    })
+    .nonnegative("Add-on price cannot be negative"),
 })
 
 const menuItemSchema = z.object({
   name: z
     .string({
-      error: (issue) => (issue.input === undefined ? "Menu item name is required" : "Menu item name must be a string"),
+      error: "Menu item name is required",
     })
     .trim()
-    .min(2, {
-      error: "Menu item name must be at least 2 characters",
-    })
-    .max(100, {
-      error: "Menu item name cannot exceed 100 characters",
-    }),
+    .min(2, "Menu item name must be at least 2 characters")
+    .max(100, "Menu item name cannot exceed 100 characters"),
+
   description: z
     .string()
     .trim()
-    .max(1000, {
-      error: "Description cannot exceed 1000 characters",
-    })
+    .min(10, "Description must be at least 10 characters")
+    .max(1000, "Description cannot exceed 1000 characters")
     .optional(),
-  categoryId: z.string().uuid({
-    error: "Valid category is required",
-  }),
+
+  // Prisma CUID instead of UUID
+  categoryId: z.string().trim().min(1, "Category is required"),
+
   price: z
     .number({
       error: "Price must be a number",
     })
-    .positive({
-      error: "Price must be greater than 0",
-    }),
-  rating: z.number().min(0, "Rating must be at least 0").max(5, "Rating cannot exceed 5").optional().nullable(),
+    .positive("Price must be greater than 0"),
+
+  rating: z
+    .number({
+      error: "Rating must be a number",
+    })
+    .min(0, "Rating cannot be less than 0")
+    .max(5, "Rating cannot exceed 5")
+    .default(0),
+
   prepTime: z
     .string()
     .trim()
-    .max(50, {
-      error: "Prep time cannot exceed 50 characters",
-    })
+    .min(2, "Preparation time is required")
+    .max(50, "Preparation time cannot exceed 50 characters")
     .optional(),
-  tags: z.array(z.string().trim().min(1)).default([]).optional(),
-  variants: z.array(variantSchema).default([]).optional(),
-  addOns: z.array(addOnSchema).default([]).optional(),
+
+  tags: z.array(z.string().trim().min(1).max(30)).default([]),
+
+  variants: z.array(variantSchema).default([]),
+
+  addOns: z.array(addOnSchema).default([]),
+
   isFeatured: z.boolean().default(false),
+
   isSpicy: z.boolean().default(false),
+
   isAvailable: z.boolean().default(true),
 })
 
