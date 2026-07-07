@@ -374,6 +374,7 @@
   }
 
   @keyframes floating {
+
     0%,
     100% {
       transform: translateY(0);
@@ -391,6 +392,7 @@
   }
 
   @keyframes shimmer-pan {
+
     0%,
     100% {
       background-position: 0% 50%;
@@ -402,6 +404,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
@@ -415,5 +418,25 @@
     .motion-scale-hover:hover {
       transform: none;
     }
+  }
+}
+
+.animate-marquee {
+  animation: marquee-scroll 32s linear infinite;
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
   }
 }

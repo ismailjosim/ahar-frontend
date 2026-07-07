@@ -8,6 +8,7 @@ import OrderJourneySection from "@/components/modules/Home/OrderJourneySection"
 import ReservationCTASection from "@/components/modules/Home/ReservationCTASection"
 import ReviewsSection from "@/components/modules/Home/ReviewsSection"
 import SpecialComboSection from "@/components/modules/Home/SpecialComboSection"
+import CategoriesSection from "@/components/modules/Home/CategoriesSection"
 
 export default function HomePage() {
   return (
@@ -18,6 +19,7 @@ export default function HomePage() {
       <ExperienceAharSection />
       <MenuPreviewSection />
       <OrderJourneySection />
+      <CategoriesSection />
       <ReviewsSection />
       <GallerySection />
       <ReservationCTASection />
