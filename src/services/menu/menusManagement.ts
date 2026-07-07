@@ -83,10 +83,6 @@ function buildPayload(formData: FormData) {
     addOns = []
   }
 
-  // Parse rating
-  // const ratingString = (formData.get("rating") as string) || ""
-  // const rating = ratingString ? parseFloat(ratingString) : undefined
-
   return {
     name: (formData.get("name") as string).trim(),
     description: ((formData.get("description") as string) || "").trim(),
@@ -99,7 +95,6 @@ function buildPayload(formData: FormData) {
     isFeatured: formData.get("isFeatured") === "true",
     isSpicy: formData.get("isSpicy") === "true",
     isAvailable: formData.get("isAvailable") === "true",
-    // rating,
   }
 }
 
