@@ -1,12 +1,13 @@
 import { Suspense } from "react"
 import MenuManagementHeader from "@/components/modules/Dashboard/Menu/MenuManagementHeader"
 import MenusFilter from "@/components/modules/Dashboard/Menu/MenusFilter"
-// import MenusTable from "@/components/modules/Dashboard/Menu/MenusTable"
+import MenusTable from "@/components/modules/Dashboard/Menu/MenusTable"
 
 import { getMenuItems } from "@/services/menu/menusManagement"
 import { queryStringFormatter } from "@/lib/formatters.ts"
 import RefreshButton from "@/components/shared/RefreshButton"
 import { getCategories } from "@/services/category/categoriesManagement"
+import MenuTable from "../../../../components/modules/Dashboard/Menu/MenusTable"
 
 const MenuManagementPage = async ({
   searchParams,
@@ -31,7 +32,7 @@ const MenuManagementPage = async ({
         <RefreshButton />
       </div>
 
-      {/* <MenusTable menuItems={menuItems} /> */}
+      <MenuTable menuItems={menuItems} categories={categories?.data || []} />
     </div>
   )
 }
