@@ -2,7 +2,7 @@
 
 import { Search } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState, useTransition } from "react"
+import { useEffect, useRef, useState, useTransition } from "react"
 import { Input } from "../ui/input"
 import { useDebounce } from "../hooks/useDebounce"
 
@@ -17,10 +17,26 @@ const SearchFilter = ({ placeholder = "Search...", paramName = "searchTerm" }: S
   const searchParams = useSearchParams()
   const [value, setValue] = useState(searchParams.get(paramName) || "")
   const debouncedValue = useDebounce(value, 500)
+  const isExternalUpdate = useRef(false)
+
+  // URL theke param external-vabe (Clear button) remove hole local state sync koro
+  useEffect(() => {
+    const paramValue = searchParams.get(paramName) || ""
+    if (paramValue === "" && value !== "") {
+      isExternalUpdate.current = true
+      setValue("")
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, paramName])
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString())
+    // Ei change ta jodi external clear theke ashe, tahole URL push skip koro
+    if (isExternalUpdate.current) {
+      isExternalUpdate.current = false
+      return
+    }
 
+    const params = new URLSearchParams(searchParams.toString())
     const initialValue = searchParams.get(paramName) || ""
 
     if (debouncedValue === initialValue) {
@@ -28,17 +44,18 @@ const SearchFilter = ({ placeholder = "Search...", paramName = "searchTerm" }: S
     }
 
     if (debouncedValue) {
-      params.set(paramName, debouncedValue) // ?searchTerm=debouncedValue
-      params.set("page", "1") // reset to first page on search
+      params.set(paramName, debouncedValue)
+      params.set("page", "1")
     } else {
-      params.delete(paramName) // remove searchTerm param
-      params.delete("page") // reset to first page on search clear
+      params.delete(paramName)
+      params.delete("page")
     }
 
     startTransition(() => {
       router.push(`?${params.toString()}`)
     })
-  }, [debouncedValue, paramName, router, searchParams])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedValue])
 
   return (
     <div className="relative">

@@ -5,9 +5,6 @@ import CategoriesTable from "@/components/modules/Dashboard/Category/CategoriesT
 
 import { getCategories } from "@/services/category/categoriesManagement"
 import { queryStringFormatter } from "@/lib/formatters.ts"
-
-import RefreshButton from "@/components/shared/RefreshButton"
-
 import CategoryManagementHeader from "@/components/modules/Dashboard/Category/CategoryManagementHeader"
 import TableSkeleton from "@/components/shared/TableSkeleton"
 import TablePagination from "@/components/shared/TablePagination"
@@ -20,22 +17,18 @@ const CategoryManagementPage = async ({
   }>
 }) => {
   const searchParamsObj = await searchParams
-
   const queryString = queryStringFormatter(searchParamsObj)
-
   const categoriesResult = await getCategories(queryString)
-
   const categories = categoriesResult?.data ?? []
   const totalPages = Math.ceil(categoriesResult?.meta?.total / categoriesResult?.meta?.limit)
 
   return (
     <div className="space-y-6">
       <CategoryManagementHeader />
-      <CategoriesFilter categories={categories?.data || []} />
-      <Suspense fallback={<TableSkeleton cols={2} rows={10} />}>
+      <CategoriesFilter />
+      <Suspense fallback={<TableSkeleton cols={10} rows={10} />}>
         <CategoriesTable categories={categories} />
-
-        <TablePagination currentPage={categories?.meta?.page} totalPages={totalPages} />
+        <TablePagination currentPage={categories?.meta?.page||1} totalPages={totalPages||1} />
       </Suspense>
     </div>
   )
