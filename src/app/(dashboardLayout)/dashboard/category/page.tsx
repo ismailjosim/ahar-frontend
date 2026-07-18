@@ -28,7 +28,7 @@ const CategoryManagementPage = async ({
       <CategoriesFilter />
       <Suspense fallback={<TableSkeleton cols={10} rows={10} />}>
         <CategoriesTable categories={categories} />
-        <TablePagination currentPage={categories?.meta?.page||1} totalPages={totalPages||1} />
+        <TablePagination currentPage={categories?.meta?.page || 1} totalPages={totalPages || 1} />
       </Suspense>
     </div>
   )

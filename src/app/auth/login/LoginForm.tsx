@@ -120,7 +120,13 @@ export default function LoginForm() {
           <FieldLabel>Email address</FieldLabel>
           <div className="relative flex items-center">
             <Mail className="absolute left-3 size-4 text-muted-foreground" aria-hidden="true" />
-            <Input {...form.register("email")} type="email" defaultValue={"ismailjosim99@gmail.com"} placeholder="you@example.com" className="pl-9" />
+            <Input
+              {...form.register("email")}
+              type="email"
+              defaultValue={"ismailjosim99@gmail.com"}
+              placeholder="you@example.com"
+              className="pl-9"
+            />
           </div>
           <FieldError errors={[form.formState.errors.email]} />
         </Field>
