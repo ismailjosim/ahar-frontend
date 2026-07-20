@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge"
 
 interface MenuCardProps {
   menuItem: MenuItem
-  addToCart: (item: MenuItem) => void
+  // Fixed: Updated signature to accept both the item and the quantity
+  addToCart: (item: MenuItem, qty: number) => void
 }
 
 const MenuCard = ({ menuItem, addToCart }: MenuCardProps) => {
@@ -28,7 +29,6 @@ const MenuCard = ({ menuItem, addToCart }: MenuCardProps) => {
               priority={isFeatured}
             />
           ) : (
-            // Elegant placeholder icon matching Tailwind v4 scheme when no image exists
             <span className="text-4xl text-muted-foreground/40 select-none">🍔</span>
           )}
 
@@ -68,7 +68,7 @@ const MenuCard = ({ menuItem, addToCart }: MenuCardProps) => {
           </span>
         </div>
 
-        {/* Dynamic Tag Row (Renders up to 2 popular metadata tags) */}
+        {/* Dynamic Tag Row */}
         {tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-2">
             {tags.slice(0, 2).map((tag, idx) => (
@@ -82,7 +82,7 @@ const MenuCard = ({ menuItem, addToCart }: MenuCardProps) => {
         {/* Meta Info Indicators */}
         <div className="flex items-center gap-3 text-[11px] text-muted-foreground font-medium mb-2">
           <span className="text-amber-500 font-bold flex items-center gap-1">
-            <Star className="w-3.5 h-3.5 fill-amber-500 stroke-amber-500" /> {rating.toFixed(1)}
+            <Star className="w-3.5 h-3.5 fill-amber-500 stroke-amber-500" /> {rating?.toFixed(1)}
           </span>
           <span>•</span>
           <span className="flex items-center gap-1">
@@ -90,7 +90,6 @@ const MenuCard = ({ menuItem, addToCart }: MenuCardProps) => {
           </span>
         </div>
 
-        {/* Description Cut-off Handling */}
         <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">{description}</p>
       </div>
 
@@ -102,7 +101,8 @@ const MenuCard = ({ menuItem, addToCart }: MenuCardProps) => {
         <Button
           size="sm"
           disabled={!isAvailable}
-          onClick={() => addToCart(menuItem)}
+          // Fixed: Explicitly passed the required quantity parameter (1) to match parent's expectations
+          onClick={() => addToCart(menuItem, 1)}
           className="text-xs h-8 px-3 gap-1.5 shadow-sm font-semibold cursor-pointer"
         >
           <ShoppingBag className="w-3.5 h-3.5" /> Add To Tray
