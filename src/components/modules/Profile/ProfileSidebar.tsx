@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 
 import ProfileAvatar from "./ProfileAvatar"
 import RoleBadge from "./RoleBadge"
-import { ProfileTab } from "./ProfileShell"
+import { ProfileTab } from "./ProfileTabs"
 
 type Session = (typeof authClient.$Infer)["Session"]
 type ProfileUser = Session["user"]

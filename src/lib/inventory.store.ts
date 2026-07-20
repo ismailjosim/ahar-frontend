@@ -3,7 +3,7 @@ import { menuItems } from "@/lib/menu.constant"
 export interface InventoryItem {
   id: string
   name: string
-  category: string
+  category: string // Retained as string to match your design constraints
   sku: string
   stock: number
   unit: string
@@ -18,7 +18,8 @@ export interface InventoryItem {
 let inventory: InventoryItem[] = menuItems.map((m, idx) => ({
   id: m.id,
   name: m.name,
-  category: m.category,
+  // FIXED: Extracted the string name property from the MenuCategory object
+  category: m.category?.name || "Uncategorized",
   sku: `SKU-${String(idx + 1).padStart(3, "0")}`,
   stock: 50 - idx * 2, // variable starter stock
   unit: "pcs",
