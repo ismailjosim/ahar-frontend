@@ -1,5 +1,3 @@
-import { menuItems } from "@/lib/menu.constant"
-
 export interface InventoryItem {
   id: string
   name: string

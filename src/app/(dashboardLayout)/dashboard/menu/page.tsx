@@ -27,7 +27,7 @@ const MenuManagementPage = async ({
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Suspense fallback={<div className="h-9 w-80 animate-pulse rounded-md bg-muted" />}>
-          <MenusFilter />
+          <MenusFilter categories={categories?.data || []} />
         </Suspense>
         <RefreshButton />
       </div>

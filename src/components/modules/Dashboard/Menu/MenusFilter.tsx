@@ -1,11 +1,11 @@
 "use client"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { menuCategories } from "@/lib/menu.constant"
 import { Search, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useDebounce } from "@/components/hooks/useDebounce"
+import { Category } from "@/types/category.interface"
 
 const selectClass =
   "rounded-md border border-border bg-muted/50 px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 h-9"
@@ -22,8 +22,11 @@ const AVAILABILITY_OPTIONS = [
   { value: "true", label: "Available" },
   { value: "false", label: "Unavailable" },
 ]
+interface MenusFilterProps {
+  categories: Category[]
+}
 
-const MenusFilter = () => {
+const MenusFilter = ({ categories }: MenusFilterProps) => {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -35,7 +38,6 @@ const MenusFilter = () => {
 
   const debouncedSearch = useDebounce(search, 400)
 
-  const categoryOptions = menuCategories.filter((c) => c.slug !== "all")
   const hasActiveFilters = !!(debouncedSearch || category || stockStatus || isAvailable)
 
   useEffect(() => {
@@ -72,7 +74,7 @@ const MenusFilter = () => {
       {/* Category */}
       <select value={category} onChange={(e) => setCategory(e.target.value)} className={selectClass}>
         <option value="">All Categories</option>
-        {categoryOptions.map((c) => (
+        {categories.map((c) => (
           <option key={c.slug} value={c.name}>
             {c.name}
           </option>
