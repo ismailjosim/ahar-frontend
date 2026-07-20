@@ -234,7 +234,7 @@ export default function MenuCatalog() {
   const grandTotal = subtotal + vatCharge + serviceCharge
 
   return (
-    <div className="container mx-auto py-6 flex flex-col lg:flex-row gap-6 w-full items-start">
+    <div className="container py-6 flex flex-col lg:flex-row gap-6 w-full items-start">
       {/* LEFT SIDEBAR: FILTERS */}
       <MenuFilterOptions />
       {/* RIGHT CONTENT CONTAINER */}
