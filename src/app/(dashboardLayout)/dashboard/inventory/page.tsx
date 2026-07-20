@@ -1,6 +1,6 @@
 "use client"
 
-import InventoryManagerContent from "@/components/modules/Dashboard/InventoryManagerContent"
+// import InventoryManagerContent from "@/components/modules/Dashboard/InventoryManagerContent"
 
 export default function InventoryPage() {
   return (
@@ -10,7 +10,7 @@ export default function InventoryPage() {
         <p className="font-bengali mt-2 text-muted-foreground">স্টক পরিচালনা করুন এবং লো-স্টক সতর্কতা দেখুন</p>
       </div>
 
-      <InventoryManagerContent />
+      {/* <InventoryManagerContent /> */}
     </div>
   )
 }
