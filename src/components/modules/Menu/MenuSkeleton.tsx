@@ -7,7 +7,7 @@ const MenuSkeleton = () => {
       {Array.from({ length: 9 }).map((_, idx) => (
         <Card
           key={idx}
-          className="bg-card border border-border rounded-xl p-4 flex flex-col justify-between shadow-sm relative h-[390px] overflow-hidden"
+          className="bg-card border border-border rounded-xl p-4 flex flex-col justify-between shadow-sm relative h-97.5 overflow-hidden"
         >
           <div>
             {/* 1. Media Wrapper Placeholder */}

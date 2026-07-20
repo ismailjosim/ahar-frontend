@@ -5,3 +5,5 @@ build
 dist
 coverage
 pnpm-lock.yaml
+chef.json
+chef-making-pizza.json
