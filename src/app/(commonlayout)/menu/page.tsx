@@ -1,8 +1,10 @@
-import MenuCatalog from "@/components/modules/Dashboard/Menu/MenuCatalog"
+import MenuCatalog from "@/components/modules/Menu/MenuCatalog"
+import MenuHeader from "@/components/modules/Menu/MenuHeader"
 
 export default function MenuPage() {
   return (
-    <main className="page-shell min-h-screen bg-background text-foreground">
+    <main className="page-shell bg-background text-foreground py-8">
+      <MenuHeader />
       <MenuCatalog />
     </main>
   )

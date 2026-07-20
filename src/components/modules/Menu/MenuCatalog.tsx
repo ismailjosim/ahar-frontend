@@ -9,12 +9,12 @@ import { defaultMenuPriceLimit, menuCategories } from "@/lib/menu.constant"
 import { formatCurrency } from "@/lib/cart.utils"
 import { cn } from "@/lib/utils"
 import { useCartStore } from "@/store/cart.store"
-import { MenuItem, MenuSortOption } from "@/types/menu.interface"
+import { MenuItem } from "@/types/menu.interface"
 
 const MenuCatalog = () => {
   const [activeCategory, setActiveCategory] = useState("all")
   const [searchTerm, setSearchTerm] = useState("")
-  const [sortBy, setSortBy] = useState<MenuSortOption>("default")
+  // const [sortBy, setSortBy] = useState<MenuSortOption>("default")
   const [featuredOnly, setFeaturedOnly] = useState(false)
   const [spicyOnly, setSpicyOnly] = useState(false)
   const [availableOnly, setAvailableOnly] = useState(false)
@@ -45,55 +45,55 @@ const MenuCatalog = () => {
     loadMenu()
   }, [])
 
-  const filteredItems = useMemo(() => {
-    const normalizedSearch = searchTerm.trim().toLowerCase()
+  // const filteredItems = useMemo(() => {
+  //   const normalizedSearch = searchTerm.trim().toLowerCase()
 
-    const nextItems = allItems.filter((item) => {
-      const matchesCategory = activeCategory === "all" || item.category === activeCategory
-      const matchesSearch =
-        normalizedSearch.length === 0 ||
-        // Fix 1: description is optional — fall back to "" so .toLowerCase() never throws
-        [item.name, item.description ?? "", item.category, ...item.tags].some((value) =>
-          value.toLowerCase().includes(normalizedSearch),
-        )
-      const matchesFeatured = !featuredOnly || item.isFeatured
-      const matchesSpicy = !spicyOnly || item.isSpicy
-      const matchesAvailable = !availableOnly || item.isAvailable
-      const matchesPrice = item.price <= priceLimit
+  //   const nextItems = allItems.filter((item) => {
+  //     const matchesCategory = activeCategory === "all" || item.category === activeCategory
+  //     const matchesSearch =
+  //       normalizedSearch.length === 0 ||
+  //       // Fix 1: description is optional — fall back to "" so .toLowerCase() never throws
+  //       [item.name, item.description ?? "", item.category, ...item.tags].some((value) =>
+  //         value.toLowerCase().includes(normalizedSearch),
+  //       )
+  //     const matchesFeatured = !featuredOnly || item.isFeatured
+  //     const matchesSpicy = !spicyOnly || item.isSpicy
+  //     const matchesAvailable = !availableOnly || item.isAvailable
+  //     const matchesPrice = item.price <= priceLimit
 
-      return matchesCategory && matchesSearch && matchesFeatured && matchesSpicy && matchesAvailable && matchesPrice
-    })
+  //     return matchesCategory && matchesSearch && matchesFeatured && matchesSpicy && matchesAvailable && matchesPrice
+  //   })
 
-    return [...nextItems].sort((a, b) => {
-      if (sortBy === "price-low") return a.price - b.price
-      if (sortBy === "price-high") return b.price - a.price
-      // Fix 2: rating is optional — fall back to 0 so subtraction is always number - number
-      if (sortBy === "rating") return (b.rating ?? 0) - (a.rating ?? 0)
-      return Number(b.isFeatured) - Number(a.isFeatured) || (b.rating ?? 0) - (a.rating ?? 0)
-    })
-  }, [activeCategory, allItems, availableOnly, featuredOnly, priceLimit, searchTerm, sortBy, spicyOnly])
+  //   return [...nextItems].sort((a, b) => {
+  //     if (sortBy === "price-low") return a.price - b.price
+  //     if (sortBy === "price-high") return b.price - a.price
+  //     // Fix 2: rating is optional — fall back to 0 so subtraction is always number - number
+  //     if (sortBy === "rating") return (b.rating ?? 0) - (a.rating ?? 0)
+  //     return Number(b.isFeatured) - Number(a.isFeatured) || (b.rating ?? 0) - (a.rating ?? 0)
+  //   })
+  // }, [activeCategory, allItems, availableOnly, featuredOnly, priceLimit, searchTerm, sortBy, spicyOnly])
 
   const cartTotals = getTotals()
   const cartCount = getItemCount()
 
-  const addToCart = (item: MenuItem) => {
-    if (!item.isAvailable) return
-    addItem({
-      id: item.id,
-      name: item.name,
-      category: item.category,
-      emoji: item.emoji,
-      imageUrl: item.imageUrl,
-      unitPrice: item.price,
-      quantity: 1,
-      addOns: [],
-    })
-  }
+  // const addToCart = (item: MenuItem) => {
+  //   if (!item.isAvailable) return
+  //   addItem({
+  //     id: item.id,
+  //     name: item.name,
+  //     category: item.category,
+  //     emoji: item.emoji,
+  //     imageUrl: item.imageUrl,
+  //     unitPrice: item.price,
+  //     quantity: 1,
+  //     addOns: [],
+  //   })
+  // }
 
   const resetFilters = () => {
     setActiveCategory("all")
     setSearchTerm("")
-    setSortBy("default")
+    // setSortBy("default")
     setFeaturedOnly(false)
     setSpicyOnly(false)
     setAvailableOnly(false)
@@ -102,24 +102,6 @@ const MenuCatalog = () => {
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <section className="motion-reveal motion-shimmer relative mb-10 overflow-hidden rounded-3xl border border-accent/40 bg-linear-to-r from-primary via-primary-hover to-primary p-6 text-white shadow-xl sm:p-10">
-        <div className="absolute bottom-0 right-0 translate-x-10 translate-y-10 text-[180px] opacity-10 sm:text-[220px]">
-          🍲
-        </div>
-        <div className="relative z-10 max-w-xl space-y-4">
-          <span className="inline-flex rounded-full border border-white/20 bg-accent px-3 py-1 text-xs font-black uppercase tracking-widest text-foreground">
-            শাহী স্বাদ ও ঐতিহ্য
-          </span>
-          <h1 className="font-bengali text-3xl font-extrabold leading-tight sm:text-4xl">
-            আহার মেনু তালিকা (Traditional Menu List)
-          </h1>
-          <p className="text-sm leading-relaxed text-white/80">
-            Explore authentic slow-cooked Kacchi Biryanis, sizzling Kebabs, royal desserts, and cooling traditional
-            drinks. Freshly prepared to deliver royalty directly to your table.
-          </p>
-        </div>
-      </section>
-
       <section className="motion-reveal motion-reveal-delay-1 mb-8 space-y-6 rounded-3xl border border-border bg-card p-6 shadow-sm">
         <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-12">
           <label className="relative md:col-span-5">
@@ -132,7 +114,7 @@ const MenuCatalog = () => {
             />
           </label>
 
-          <div className="md:col-span-3">
+          {/* <div className="md:col-span-3">
             <select
               value={sortBy}
               onChange={(event) => setSortBy(event.target.value as MenuSortOption)}
@@ -143,7 +125,7 @@ const MenuCatalog = () => {
               <option value="price-high">Price: High to Low</option>
               <option value="rating">Rating: Top Rated</option>
             </select>
-          </div>
+          </div> */}
 
           <div className="flex flex-wrap items-center gap-4 text-xs font-bold md:col-span-4 md:justify-end">
             {[
@@ -182,7 +164,7 @@ const MenuCatalog = () => {
               className="h-2 w-full cursor-pointer accent-primary"
             />
           </label>
-          <div className="flex items-center gap-3 text-xs font-bold text-muted-foreground">
+          {/* <div className="flex items-center gap-3 text-xs font-bold text-muted-foreground">
             <SlidersHorizontal className="size-4 text-accent" />
             {isLoading ? (
               <span>Loading menu...</span>
@@ -192,7 +174,7 @@ const MenuCatalog = () => {
                 <span className="font-black">{allItems.length}</span> traditional delicacies
               </>
             )}
-          </div>
+          </div> */}
         </div>
       </section>
 
@@ -217,7 +199,7 @@ const MenuCatalog = () => {
 
       <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
         <section className="space-y-6 lg:col-span-8">
-          {filteredItems.length > 0 ? (
+          {/* {filteredItems.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {filteredItems.map((item) => (
                 <article
@@ -229,7 +211,6 @@ const MenuCatalog = () => {
                 >
                   <div className="relative flex h-44 items-center justify-center overflow-hidden bg-linear-to-br from-accent/15 to-primary/10">
                     {item.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={item.imageUrl}
                         alt={item.name}
@@ -262,7 +243,7 @@ const MenuCatalog = () => {
                       <span className="text-[10px] font-bold uppercase tracking-wider text-accent">
                         {item.category}
                       </span>
-                      {/* Fix 3: prepTime is optional */}
+
                       {item.prepTime && (
                         <span className="flex items-center gap-1 text-[11px] font-extrabold text-muted-foreground">
                           <Clock3 className="size-3" />
@@ -271,11 +252,11 @@ const MenuCatalog = () => {
                       )}
                     </div>
                     <h2 className="font-bengali text-base font-extrabold leading-snug text-foreground">{item.name}</h2>
-                    {/* Fix 4: description is optional */}
+
                     {item.description && (
                       <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.description}</p>
                     )}
-                    {/* Fix 5: rating is optional — only render the star row when present */}
+
                     {item.rating !== undefined && (
                       <div className="mt-3 flex items-center gap-1 text-accent">
                         <Star className="size-4 fill-current" />
@@ -312,7 +293,7 @@ const MenuCatalog = () => {
                 Clear Filters & Search
               </Button>
             </div>
-          )}
+          )} */}
         </section>
 
         <aside className="sticky top-24 hidden max-h-[calc(100vh-120px)] space-y-6 overflow-y-auto rounded-3xl border border-border bg-card p-6 shadow-md lg:col-span-4 lg:block">
