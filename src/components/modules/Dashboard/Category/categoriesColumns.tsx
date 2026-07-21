@@ -5,25 +5,30 @@ import { Column } from "@/components/shared/ManagementTable"
 import { DateCell } from "@/components/shared/Cell/DateCell"
 import type { Category, CategoryStatus } from "@/types/category.interface"
 import Image from "next/image"
+import { cn } from "@/lib/utils"
+
+// primary === apply when status is inactive
+// success === apply when status is active
+// accent === apply when status is archived
 
 const STATUS_BADGE_MAP: Record<
   CategoryStatus,
   {
     label: string
-    variant: "default" | "secondary" | "destructive"
+    variant: "Active" | "Inactive" | "Archived"
   }
 > = {
   ACTIVE: {
     label: "Active",
-    variant: "default",
+    variant: "Active",
   },
   INACTIVE: {
     label: "Inactive",
-    variant: "secondary",
+    variant: "Inactive",
   },
   ARCHIVED: {
     label: "Archived",
-    variant: "destructive",
+    variant: "Archived",
   },
 }
 
@@ -63,7 +68,18 @@ export const categoriesColumns: Column<Category>[] = [
     header: "Status",
     accessor: (category) => {
       const { label, variant } = STATUS_BADGE_MAP[category.status]
-      return <Badge variant={variant}>{label}</Badge>
+      return (
+        <Badge
+          variant={"default"}
+          className={cn(
+            variant === "Active" && "bg-success hover:bg-success/80",
+            variant === "Archived" && "bg-accent hover:bg-accent/80",
+            variant === "Inactive" && "bg-primary hover:bg-primary/80",
+          )}
+        >
+          {label}
+        </Badge>
+      )
     },
     sortKey: "status",
   },
