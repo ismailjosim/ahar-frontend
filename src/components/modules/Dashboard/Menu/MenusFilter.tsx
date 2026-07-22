@@ -1,27 +1,25 @@
 "use client"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Search, X } from "lucide-react"
-import { useEffect, useState } from "react"
+import ClearFiltersButton from "@/components/shared/ClearFiltersButton"
+import RefreshButton from "@/components/shared/RefreshButton"
+import SearchFilter from "@/components/shared/SearchFilter"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useDebounce } from "@/components/hooks/useDebounce"
+import { useTransition } from "react"
 import { Category } from "@/types/category.interface"
 
-const selectClass =
-  "rounded-md border border-border bg-muted/50 px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 h-9"
-
 const STOCK_OPTIONS = [
-  { value: "", label: "All Stock" },
+  { value: "all", label: "All Stock" },
   { value: "in_stock", label: "In Stock" },
   { value: "limited", label: "Limited" },
   { value: "out_of_stock", label: "Out of Stock" },
 ]
 
 const AVAILABILITY_OPTIONS = [
-  { value: "", label: "All Items" },
+  { value: "all", label: "All Items" },
   { value: "true", label: "Available" },
   { value: "false", label: "Unavailable" },
 ]
+
 interface MenusFilterProps {
   categories: Category[]
 }
@@ -29,83 +27,81 @@ interface MenusFilterProps {
 const MenusFilter = ({ categories }: MenusFilterProps) => {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [isPending, startTransition] = useTransition()
 
-  // Initialize state from URL so filters persist on refresh / back-nav
-  const [search, setSearch] = useState(searchParams.get("search") ?? "")
-  const [category, setCategory] = useState(searchParams.get("category") ?? "")
-  const [stockStatus, setStockStatus] = useState(searchParams.get("stockStatus") ?? "")
-  const [isAvailable, setIsAvailable] = useState(searchParams.get("isAvailable") ?? "")
-
-  const debouncedSearch = useDebounce(search, 400)
-
-  const hasActiveFilters = !!(debouncedSearch || category || stockStatus || isAvailable)
-
-  useEffect(() => {
-    const params = new URLSearchParams()
-    if (debouncedSearch) params.set("search", debouncedSearch)
-    if (category) params.set("category", category)
-    if (stockStatus) params.set("stockStatus", stockStatus)
-    if (isAvailable) params.set("isAvailable", isAvailable)
-
-    // Replace so the back button doesn't cycle through every keystroke
-    router.replace(`?${params.toString()}`, { scroll: false })
-  }, [debouncedSearch, category, stockStatus, isAvailable, router])
-
-  const handleReset = () => {
-    setSearch("")
-    setCategory("")
-    setStockStatus("")
-    setIsAvailable("")
+  const handleFilterChange = (param: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (value === "all") {
+      params.delete(param)
+    } else {
+      params.set(param, value)
+    }
+    params.set("page", "1")
+    startTransition(() => {
+      router.push(`?${params.toString()}`)
+    })
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      {/* Search */}
-      <div className="relative">
-        <Search className="pointer-events-none absolute inset-y-0 left-3 my-auto size-4 text-muted-foreground" />
-        <Input
-          placeholder="Search items…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-9 h-9 w-52"
-        />
+    <div className="space-y-3">
+      {/* Row 1: Search and Refresh */}
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <SearchFilter paramName="search" placeholder="Search items..." />
+          
+          <Select 
+            value={searchParams.get("category") || "all"} 
+            onValueChange={(value) => handleFilterChange("category", value)}
+          >
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {categories.map((c) => (
+                <SelectItem key={c.slug} value={c.name}>
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select 
+            value={searchParams.get("stockStatus") || "all"} 
+            onValueChange={(value) => handleFilterChange("stockStatus", value)}
+          >
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Stock Status" />
+            </SelectTrigger>
+            <SelectContent>
+              {STOCK_OPTIONS.map((o) => (
+                <SelectItem key={o.value} value={o.value}>
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select 
+            value={searchParams.get("isAvailable") || "all"} 
+            onValueChange={(value) => handleFilterChange("isAvailable", value)}
+          >
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Availability" />
+            </SelectTrigger>
+            <SelectContent>
+              {AVAILABILITY_OPTIONS.map((o) => (
+                <SelectItem key={o.value} value={o.value}>
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <ClearFiltersButton />
+        </div>
+        <RefreshButton />
       </div>
-
-      {/* Category */}
-      <select value={category} onChange={(e) => setCategory(e.target.value)} className={selectClass}>
-        <option value="">All Categories</option>
-        {categories.map((c) => (
-          <option key={c.slug} value={c.name}>
-            {c.name}
-          </option>
-        ))}
-      </select>
-
-      {/* Stock Status */}
-      <select value={stockStatus} onChange={(e) => setStockStatus(e.target.value)} className={selectClass}>
-        {STOCK_OPTIONS.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
-
-      {/* Availability */}
-      <select value={isAvailable} onChange={(e) => setIsAvailable(e.target.value)} className={selectClass}>
-        {AVAILABILITY_OPTIONS.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
-
-      {/* Reset */}
-      {hasActiveFilters && (
-        <Button variant="ghost" size="sm" onClick={handleReset} className="h-9 gap-1.5">
-          <X className="size-4" />
-          Reset
-        </Button>
-      )}
     </div>
   )
 }

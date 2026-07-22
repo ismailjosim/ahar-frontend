@@ -56,9 +56,10 @@ export const menuColumns = ({ onEdit, onView, onDelete }: Props): ColumnDef<Menu
       row.original.isAvailable ? <Badge>Available</Badge> : <Badge variant="destructive">Unavailable</Badge>,
   },
   {
-    header: "Actions",
+    id: "actions",
+    header: () => <div className="text-right">Actions</div>,
     cell: ({ row }) => (
-      <div className="flex gap-2">
+      <div className="flex justify-end gap-2">
         <Button size="icon" variant="ghost" onClick={() => onView(row.original)}>
           <Eye className="h-4 w-4" />
         </Button>
