@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 
 export interface Column<T> {
   header: string
-  accessor: keyof T | ((row: T) => React.ReactNode)
+  accessor: keyof T | ((row: T, index: number) => React.ReactNode)
   className?: string
   sortKey?: string
 }
@@ -121,11 +121,11 @@ function ManagementTable<T>({
                 </TableCell>
               </TableRow>
             ) : (
-              data?.map((item) => (
+              data?.map((item, rowIndex) => (
                 <TableRow key={getRowKey(item)}>
                   {columns.map((col, idx) => (
                     <TableCell key={idx} className={col.className}>
-                      {typeof col.accessor === "function" ? col.accessor(item) : String(item[col.accessor])}
+                      {typeof col.accessor === "function" ? col.accessor(item, rowIndex) : String(item[col.accessor])}
                     </TableCell>
                   ))}
                   {hasActions && (

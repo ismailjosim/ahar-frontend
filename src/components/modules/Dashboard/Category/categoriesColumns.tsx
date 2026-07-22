@@ -29,6 +29,10 @@ const STATUS_BADGE_MAP: Record<
 
 export const categoriesColumns: Column<Category>[] = [
   {
+    header: "#",
+    accessor: (_category, index) => <span className="text-muted-foreground">{index + 1}</span>,
+  },
+  {
     header: "Image",
     accessor: (category) =>
       category.image ? (
@@ -64,8 +68,13 @@ export const categoriesColumns: Column<Category>[] = [
     sortKey: "status",
   },
   {
-    header: "Created",
+    header: "Created At",
     accessor: (category) => <DateCell date={category.createdAt} />,
     sortKey: "createdAt",
+  },
+  {
+    header: "Updated At",
+    accessor: (category) => <DateCell date={category.updatedAt} />,
+    sortKey: "updatedAt",
   },
 ]

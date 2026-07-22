@@ -121,7 +121,8 @@ export default function MenuFormDialog({ open, onClose, onSuccess, menuItem, cat
     if (!state.success && state.message) {
       toast.error(state.message)
     }
-  }, [state, onClose, onSuccess])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state])
 
   const preview = useMemo(() => {
     if (selectedFile) {
@@ -474,7 +475,7 @@ export default function MenuFormDialog({ open, onClose, onSuccess, menuItem, cat
                 </div>
               )}
 
-              <input hidden name="tags" value={JSON.stringify(tags)} />
+              <input hidden readOnly name="tags" value={JSON.stringify(tags)} />
             </section>
 
             {/* ============================= */}
@@ -520,7 +521,7 @@ export default function MenuFormDialog({ open, onClose, onSuccess, menuItem, cat
                 ))}
               </div>
 
-              <input hidden name="variants" value={JSON.stringify(variants)} />
+              <input hidden readOnly name="variants" value={JSON.stringify(variants)} />
             </section>
 
             {/* ============================= */}
@@ -566,7 +567,7 @@ export default function MenuFormDialog({ open, onClose, onSuccess, menuItem, cat
                 ))}
               </div>
 
-              <input hidden name="addOns" value={JSON.stringify(addOns)} />
+              <input hidden readOnly name="addOns" value={JSON.stringify(addOns)} />
             </section>
             {/* ============================= */}
             {/* Image */}
@@ -655,14 +656,6 @@ export default function MenuFormDialog({ open, onClose, onSuccess, menuItem, cat
               </Field>
             </section>
           </div>
-
-          {/* Hidden fields */}
-
-          <input hidden name="tags" value={JSON.stringify(tags)} />
-
-          <input hidden name="variants" value={JSON.stringify(variants)} />
-
-          <input hidden name="addOns" value={JSON.stringify(addOns)} />
 
           {/* Footer */}
 

@@ -70,6 +70,7 @@ const CategoryFormDialog = ({ open, onClose, onSuccess, category }: ICategoryFor
     if (state?.success) {
       toast.success(state.message || "Operation successful")
       formRef.current?.reset()
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedFile(null)
       onSuccess()
       onClose()
@@ -82,7 +83,8 @@ const CategoryFormDialog = ({ open, onClose, onSuccess, category }: ICategoryFor
         fileInputRef.current.files = dt.files
       }
     }
-  }, [state, selectedFile, onSuccess, onClose])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state])
 
   const handleClose = () => {
     formRef.current?.reset()
@@ -122,6 +124,21 @@ const CategoryFormDialog = ({ open, onClose, onSuccess, category }: ICategoryFor
                   defaultValue={fd?.icon || category?.icon || ""}
                 />
                 <InputFieldError field="icon" state={state} />
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="status">Status</FieldLabel>
+                <select
+                  id="status"
+                  name="status"
+                  defaultValue={fd?.status || category?.status || "ACTIVE"}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="ACTIVE">Active</option>
+                  <option value="INACTIVE">Inactive</option>
+                  <option value="ARCHIVED">Archived</option>
+                </select>
+                <InputFieldError field="status" state={state} />
               </Field>
             </div>
 
