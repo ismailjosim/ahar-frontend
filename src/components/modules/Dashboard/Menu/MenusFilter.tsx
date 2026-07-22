@@ -27,6 +27,7 @@ interface MenusFilterProps {
 const MenusFilter = ({ categories }: MenusFilterProps) => {
   const router = useRouter()
   const searchParams = useSearchParams()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isPending, startTransition] = useTransition()
 
   const handleFilterChange = (param: string, value: string) => {
@@ -48,12 +49,12 @@ const MenusFilter = ({ categories }: MenusFilterProps) => {
       <div className="flex items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
           <SearchFilter paramName="search" placeholder="Search items..." />
-          
-          <Select 
-            value={searchParams.get("category") || "all"} 
+
+          <Select
+            value={searchParams.get("category") || "all"}
             onValueChange={(value) => handleFilterChange("category", value)}
           >
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-40">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
@@ -66,11 +67,11 @@ const MenusFilter = ({ categories }: MenusFilterProps) => {
             </SelectContent>
           </Select>
 
-          <Select 
-            value={searchParams.get("stockStatus") || "all"} 
+          <Select
+            value={searchParams.get("stockStatus") || "all"}
             onValueChange={(value) => handleFilterChange("stockStatus", value)}
           >
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-40">
               <SelectValue placeholder="Stock Status" />
             </SelectTrigger>
             <SelectContent>
@@ -82,11 +83,11 @@ const MenusFilter = ({ categories }: MenusFilterProps) => {
             </SelectContent>
           </Select>
 
-          <Select 
-            value={searchParams.get("isAvailable") || "all"} 
+          <Select
+            value={searchParams.get("isAvailable") || "all"}
             onValueChange={(value) => handleFilterChange("isAvailable", value)}
           >
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-40">
               <SelectValue placeholder="Availability" />
             </SelectTrigger>
             <SelectContent>

@@ -79,4 +79,4 @@ const menuItemSchema = z.object({
 
 export const createMenuItemZodSchema = menuItemSchema
 
-export const updateMenuItemZodSchema = menuItemSchema
+export const updateMenuItemZodSchema = menuItemSchema.omit({ rating: true })

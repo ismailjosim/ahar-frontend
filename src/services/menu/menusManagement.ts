@@ -58,12 +58,14 @@ function validateFile(file: File | null, required: boolean) {
 // ── Shared payload builder ────────────────────────────
 
 function buildPayload(formData: FormData) {
-  // Parse tags from comma-separated string
-  const tagsString = (formData.get("tags") as string) || ""
-  const tags = tagsString
-    .split(",")
-    .map((tag) => tag.trim())
-    .filter(Boolean)
+  // Parse tags from JSON
+  const tagsString = (formData.get("tags") as string) || "[]"
+  let tags = []
+  try {
+    tags = JSON.parse(tagsString)
+  } catch {
+    tags = []
+  }
 
   // Parse variants from JSON
   const variantsString = (formData.get("variants") as string) || "[]"
@@ -83,9 +85,11 @@ function buildPayload(formData: FormData) {
     addOns = []
   }
 
+  const description = ((formData.get("description") as string) || "").trim()
+
   return {
     name: (formData.get("name") as string).trim(),
-    description: ((formData.get("description") as string) || "").trim(),
+    description: description || undefined,
     categoryId: formData.get("categoryId") as string,
     price: parseFloat(formData.get("price") as string),
     prepTime: ((formData.get("prepTime") as string) || "").trim() || undefined,
