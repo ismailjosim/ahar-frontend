@@ -91,14 +91,15 @@ const CategoriesTable = ({ categories }: CategoriesTableProps) => {
       />
 
       {/* Delete Confirmation Dialog */}
-      {/* <DeleteConfirmationDialog
-        open={!!deletingCategory}
-        onOpenChange={(open) => !open && setDeletingCategory(null)}
+      <DeleteConfirmationDialog
+        isOpen={!!deletingCategory}
+        onCancel={() => setDeletingCategory(null)}
         onConfirm={confirmDelete}
-        title="Delete Category"
-        description={`Are you sure you want to delete ${deletingCategory?.name}? This action cannot be undone.`}
         isDeleting={isDeleting}
-      /> */}
+        itemName={deletingCategory?.name}
+        description={`Are you sure you want to delete ${deletingCategory?.name}? This action cannot be undone.`}
+        confirmLabel="Delete"
+      />
     </>
   )
 }
