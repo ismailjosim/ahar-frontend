@@ -3,6 +3,7 @@
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const AUTH_REFRESH_EXCLUDED_ENDPOINTS = [
   "/auth/login",
   "/auth/register",
