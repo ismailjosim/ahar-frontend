@@ -24,6 +24,7 @@ const SearchFilter = ({ placeholder = "Search...", paramName = "searchTerm" }: S
     const paramValue = searchParams.get(paramName) || ""
     if (paramValue === "" && value !== "") {
       isExternalUpdate.current = true
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setValue("")
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
