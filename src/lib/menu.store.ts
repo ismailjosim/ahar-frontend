@@ -1,7 +1,6 @@
 import type { MenuItem } from "@/types/menu.interface"
-import { menuItems as initialMenuItems } from "@/lib/menu.constant"
 
-let items: MenuItem[] = [...initialMenuItems]
+let items: MenuItem[] = []
 
 function generateId(name: string) {
   return (
@@ -26,7 +25,8 @@ export function listMenu({
   search?: string
 }) {
   let filtered = items.slice()
-  if (category && category !== "all") filtered = filtered.filter((m) => m.category === category)
+  if (category && category !== "all")
+    filtered = filtered.filter((m) => m.category.slug === category || m.categoryId === category)
   if (search) {
     const q = search.toLowerCase()
     filtered = filtered.filter((m) => m.name.toLowerCase().includes(q) || m.description.toLowerCase().includes(q))
@@ -47,9 +47,20 @@ export function createMenuItem(payload: Partial<MenuItem>) {
     id,
     name: payload.name || "New Item",
     description: payload.description || "",
-    category: payload.category || "All Dishes",
+    categoryId: payload.categoryId || "",
+    category: payload.category || {
+      id: "",
+      name: "All Dishes",
+      slug: "",
+      description: "",
+      image: "",
+      icon: "",
+      status: "",
+      createdAt: "",
+      updatedAt: "",
+    },
     price: payload.price || 0,
-    emoji: payload.emoji || "🍽",
+    imageUrl: payload.imageUrl || "",
     rating: payload.rating || 0,
     prepTime: payload.prepTime || "-",
     isFeatured: !!payload.isFeatured,
@@ -58,6 +69,8 @@ export function createMenuItem(payload: Partial<MenuItem>) {
     tags: payload.tags || [],
     variants: payload.variants || [],
     addOns: payload.addOns || [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   }
   items = [newItem, ...items]
   return newItem
