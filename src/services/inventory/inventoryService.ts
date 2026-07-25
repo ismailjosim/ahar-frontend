@@ -2,7 +2,7 @@ import { z } from "zod"
 import { serverFetch } from "@/lib/server-fetch"
 import { zodValidator } from "@/lib/zodValidator"
 import { normalizeServerError, type IActionState } from "@/lib/normalizeServerError"
-import type { InventoryItem } from "@/lib/inventory.store"
+import type { InventoryItem } from "@/types/inventory.interface"
 
 // ======================================================
 //* VALIDATION SCHEMA
