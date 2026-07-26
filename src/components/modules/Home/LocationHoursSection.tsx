@@ -1,6 +1,6 @@
 "use client"
 
-import { MapPin, Phone, Mail, Clock, Compass, ExternalLink } from "lucide-react"
+import { MapPin, Phone, Clock, Compass, ExternalLink } from "lucide-react"
 import { usePublicSettings } from "@/lib/use-public-settings"
 
 export default function LocationHoursSection() {
