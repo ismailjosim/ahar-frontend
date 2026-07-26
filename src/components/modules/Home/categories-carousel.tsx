@@ -52,6 +52,7 @@ export function CategoriesCarousel({ categories }: { categories: Category[] }) {
     )
 
     return () => controls.current?.stop()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories.length])
 
   return (
