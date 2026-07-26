@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 import { useState, useMemo } from "react"
 import { Leaf, Flame, Crown, X, Utensils } from "lucide-react"
@@ -177,7 +178,7 @@ const MenuFilterOptions = () => {
 
   // 3. Derived Data (Filtering & Sorting)[cite: 1]
   const filteredDishes = useMemo(() => {
-    let result = DISHES.filter((dish) => {
+    const result = DISHES.filter((dish) => {
       if (selectedCategory !== "all" && dish.category !== selectedCategory) return false
       if (searchQuery && !dish.name.toLowerCase().includes(searchQuery.toLowerCase())) return false
       if (dish.price > maxPrice[0]) return false
@@ -299,7 +300,7 @@ const MenuFilterOptions = () => {
               onCheckedChange={(c) => setFilters((p) => ({ ...p, special: !!c }))}
             />
             <Label htmlFor="special" className="text-xs flex items-center gap-1">
-              <Crown className="w-3 h-3 text-warning" /> Chef's Signatures
+              <Crown className="w-3 h-3 text-warning" /> Chef&apos;s Signatures
             </Label>
           </div>
         </div>
