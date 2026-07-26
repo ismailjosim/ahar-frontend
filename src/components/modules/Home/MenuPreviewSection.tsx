@@ -1,4 +1,4 @@
-import { ArrowRight, Utensils } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 
 export default function MenuPreviewSection() {
   const categories = [
