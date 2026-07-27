@@ -10,7 +10,9 @@ export default function CheckoutPage() {
   const router = useRouter()
   const itemCount = useCartStore((s) => s.getItemCount())
   const clearOrderPlaced = useCartStore((s) => s.clearOrderPlaced)
-  const [hydrated, setHydrated] = useState(() => useCartStore.persist.hasHydrated())
+  const [hydrated, setHydrated] = useState(() =>
+    typeof window !== "undefined" ? useCartStore.persist.hasHydrated() : false,
+  )
 
   useEffect(() => {
     // The initial useState already captured an early hydration; this only
