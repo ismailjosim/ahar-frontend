@@ -9,7 +9,7 @@ import { useTransition } from "react"
 const CategoriesFilter = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [isPending, startTransition] = useTransition()
+  const [, startTransition] = useTransition()
   const handleFilterChange = (param: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set(param, value)
@@ -18,6 +18,7 @@ const CategoriesFilter = () => {
       router.push(`?${params.toString()}`)
     })
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSortChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set("sortBy", value)
