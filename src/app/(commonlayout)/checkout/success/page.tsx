@@ -12,18 +12,22 @@ import { cn } from "@/lib/utils"
 function SuccessPageContent() {
   const searchParams = useSearchParams()
   const orderId = searchParams.get("orderId")
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [order, setOrder] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
 
   useEffect(() => {
     if (!orderId) {
+      /* eslint-disable react-hooks/set-state-in-effect */
       setError("No order ID was found in the URL.")
       setLoading(false)
+      /* eslint-enable react-hooks/set-state-in-effect */
       return
     }
 
-    let intervalId: any
+    // eslint-disable-next-line prefer-const
+    let intervalId: ReturnType<typeof setInterval>
     const fetchOrder = async () => {
       try {
         const res = await fetch(`/api/orders/${orderId}`)
