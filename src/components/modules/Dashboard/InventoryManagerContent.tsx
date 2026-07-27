@@ -89,6 +89,7 @@ export default function InventoryManagerContent() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchList()
   }, [])
 
@@ -110,7 +111,7 @@ export default function InventoryManagerContent() {
       } else {
         toast.error(result.message || "Failed to update stock")
       }
-    } catch (error) {
+    } catch {
       setUpdatingStock(null)
     }
   }
