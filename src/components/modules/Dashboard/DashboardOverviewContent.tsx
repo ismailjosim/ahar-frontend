@@ -1,15 +1,6 @@
 "use client"
 
-import {
-  AlertTriangle,
-  Bell,
-  CalendarCheck,
-  ClipboardList,
-  ShoppingBag,
-  TrendingUp,
-  UtensilsCrossed,
-  WalletCards,
-} from "lucide-react"
+import { AlertTriangle, Bell, CalendarCheck, ClipboardList, ShoppingBag, TrendingUp, WalletCards } from "lucide-react"
 import { useEffect, useState } from "react"
 import { orderStatusLabels } from "@/lib/order.constant"
 import type { DashboardStatCard, AdminOrderRow, AdminReservationRow, LowStockItem } from "@/types/dashboard.interface"
@@ -78,6 +69,7 @@ function StatCard({ stat }: { stat: DashboardStatCard }) {
 
 export default function DashboardOverviewContent({ data }: DashboardOverviewContentProps) {
   const [lowStockItems, setLowStockItems] = useState<LowStockItem[]>([])
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loadingLowStock, setLoadingLowStock] = useState(false)
 
   useEffect(() => {
