@@ -1,7 +1,6 @@
+import { Suspense } from "react"
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 
 import LoginForm from "./LoginForm"
 import LottiePanel from "./LottiePanel"
@@ -29,7 +28,9 @@ export default function LoginPage() {
             </CardHeader>
 
             <CardContent>
-              <LoginForm />
+              <Suspense>
+                <LoginForm />
+              </Suspense>
             </CardContent>
 
             <CardFooter>
