@@ -62,8 +62,8 @@ export default function ResetPasswordForm() {
   if (done) {
     return (
       <div className="flex flex-col items-center gap-4 py-4 text-center">
-        <div className="flex size-14 items-center justify-center rounded-full bg-green-100">
-          <CircleCheck className="size-7 text-green-600" />
+        <div className="flex size-14 items-center justify-center rounded-full bg-success/20">
+          <CircleCheck className="size-7 text-success" />
         </div>
         <div>
           <p className="font-semibold">Password updated</p>

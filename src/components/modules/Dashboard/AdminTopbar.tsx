@@ -89,10 +89,10 @@ export default function AdminTopbar({ onMenuClick, notifications = [] }: AdminTo
                         <div
                           className={`mt-0.5 flex size-8 items-center justify-center rounded-lg font-bold ${
                             notif.type === "success"
-                              ? "bg-green-50 text-green-600 dark:bg-green-950 dark:text-green-400"
+                              ? "bg-success/10 text-success dark:bg-success/20 dark:text-success/90"
                               : notif.type === "warning"
-                                ? "bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400"
-                                : "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400"
+                                ? "bg-warning/10 text-warning dark:bg-warning/20 dark:text-warning/90"
+                                : "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary/90"
                           }`}
                         >
                           {notif.type === "success" && "✓"}

@@ -83,7 +83,7 @@ const MenuViewDetailsDialog = ({ open, onClose, menuItem }: MenuViewDetailsDialo
                   Live Rating
                 </span>
                 <p className="font-semibold text-sm text-card-foreground flex items-center gap-1">
-                  <Star className="w-3.5 h-3.5 fill-amber-500 stroke-amber-500 shrink-0" />
+                  <Star className="w-3.5 h-3.5 fill-warning stroke-warning shrink-0" />
                   {menuItem.rating ? `${menuItem.rating.toFixed(1)} / 5.0` : "No rating yet"}
                 </p>
               </div>
@@ -120,7 +120,7 @@ const MenuViewDetailsDialog = ({ open, onClose, menuItem }: MenuViewDetailsDialo
                 {menuItem.isFeatured && (
                   <Badge
                     variant="default"
-                    className="bg-amber-500 text-black font-bold gap-1 text-[10px] hover:bg-amber-500"
+                    className="bg-warning text-black font-bold gap-1 text-[10px] hover:bg-warning"
                   >
                     <Sparkles className="w-3 h-3 fill-black" /> Featured Profile
                   </Badge>
@@ -202,7 +202,7 @@ const MenuViewDetailsDialog = ({ open, onClose, menuItem }: MenuViewDetailsDialo
                       className="flex items-center justify-between rounded-lg border border-border bg-background p-3 shadow-xs hover:border-primary/30 transition-colors"
                     >
                       <span className="font-semibold text-xs text-card-foreground">{addOn.name}</span>
-                      <span className="text-xs font-bold text-emerald-600">+{formatCurrency(addOn.price)}</span>
+                      <span className="text-xs font-bold text-success">+{formatCurrency(addOn.price)}</span>
                     </div>
                   ))}
                 </div>

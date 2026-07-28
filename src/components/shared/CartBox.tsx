@@ -30,7 +30,7 @@ const CartBox = () => {
       <SheetContent className="w-full sm:max-w-md flex flex-col h-full bg-card p-6 border-l shadow-2xl">
         <SheetHeader className="border-b border-border/60 pb-4 mb-2">
           <SheetTitle className="flex items-center gap-2 text-primary uppercase text-sm font-bold tracking-wider">
-            <Receipt className="w-5 h-5 text-amber-500" /> Your Tray ({totalQty})
+            <Receipt className="w-5 h-5 text-warning" /> Your Tray ({totalQty})
           </SheetTitle>
         </SheetHeader>
 
@@ -86,7 +86,7 @@ const CartBox = () => {
             <span className="text-foreground">৳{totals.subtotal.toLocaleString("en-IN")}</span>
           </div>
           {totals.discount > 0 && (
-            <div className="flex justify-between text-emerald-500 font-medium">
+            <div className="flex justify-between text-success font-medium">
               <span>Discount:</span>
               <span>-৳{totals.discount.toLocaleString("en-IN")}</span>
             </div>

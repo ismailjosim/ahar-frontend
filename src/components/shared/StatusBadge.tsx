@@ -14,26 +14,26 @@
 
 const STATUS_MAP: Record<string, string> = {
   // Order statuses
-  Placed: "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
+  Placed: "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary/70",
   Accepted: "bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300",
-  Preparing: "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
+  Preparing: "bg-warning/10 text-warning dark:bg-warning/20 dark:text-warning/70",
   Ready: "bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300",
   "Out for Delivery": "bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300",
-  Delivered: "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300",
-  Cancelled: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300",
+  Delivered: "bg-success/10 text-success dark:bg-success/20 dark:text-success/70",
+  Cancelled: "bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive/70",
 
   // Reservation statuses
-  Pending: "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
-  Approved: "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300",
+  Pending: "bg-warning/10 text-warning dark:bg-warning/20 dark:text-warning/70",
+  Approved: "bg-success/10 text-success dark:bg-success/20 dark:text-success/70",
 
   // Payment statuses
-  Paid: "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300",
-  Unpaid: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300",
+  Paid: "bg-success/10 text-success dark:bg-success/20 dark:text-success/70",
+  Unpaid: "bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive/70",
   Refunded: "bg-gray-50 text-gray-700 dark:bg-gray-900 dark:text-gray-300",
 
   // Availability
-  Active: "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300",
-  Inactive: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300",
+  Active: "bg-success/10 text-success dark:bg-success/20 dark:text-success/70",
+  Inactive: "bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive/70",
 }
 
 const DEFAULT_CLASS = "bg-muted text-muted-foreground"

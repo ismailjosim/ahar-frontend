@@ -251,7 +251,7 @@ export default function InventoryManagerContent() {
                                   <Badge
                                     variant={it.stock === 0 ? "destructive" : "default"}
                                     className={`text-[9px] px-1.5 py-0 font-bold tracking-wide ${
-                                      it.stock > 0 && "bg-amber-500 hover:bg-amber-500 text-black"
+                                      it.stock > 0 && "bg-warning hover:bg-warning text-black"
                                     }`}
                                   >
                                     {it.stock === 0 ? "Out" : "Low"}
@@ -323,7 +323,7 @@ export default function InventoryManagerContent() {
           {/* Low Stock Panel Wrapper */}
           <div className="rounded-3xl border border-border bg-card p-5 text-card-foreground shadow-xs">
             <h4 className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 mb-3">
-              <AlertCircle className="w-4 h-4 text-amber-500" /> Low Stock Alerts
+              <AlertCircle className="w-4 h-4 text-warning" /> Low Stock Alerts
             </h4>
             <div className="space-y-2">
               {low.length === 0 ? (
@@ -336,8 +336,8 @@ export default function InventoryManagerContent() {
                     key={`${l.item}-${index}`}
                     className={`rounded-xl p-3 border ${
                       l.severity === "critical"
-                        ? "bg-destructive/15 border-destructive/20 text-destructive dark:text-red-400"
-                        : "bg-amber-500/15 border-amber-500/20 text-amber-700 dark:text-amber-400"
+                        ? "bg-destructive/15 border-destructive/20 text-destructive dark:text-destructive/90"
+                        : "bg-warning/15 border-warning/20 text-warning dark:text-warning/90"
                     }`}
                   >
                     <div className="font-bold text-xs">{l.item}</div>

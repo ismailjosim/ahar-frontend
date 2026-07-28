@@ -279,7 +279,7 @@ const MenuFilterOptions = () => {
           <div className="flex items-center space-x-2">
             <Checkbox id="veg" checked={filters.veg} onCheckedChange={(c) => setFilters((p) => ({ ...p, veg: !!c }))} />
             <Label htmlFor="veg" className="text-xs flex items-center gap-1">
-              <Leaf className="w-3 h-3 text-emerald-600" /> Vegetarian
+              <Leaf className="w-3 h-3 text-success" /> Vegetarian
             </Label>
           </div>
           <div className="flex items-center space-x-2">
@@ -289,7 +289,7 @@ const MenuFilterOptions = () => {
               onCheckedChange={(c) => setFilters((p) => ({ ...p, spicy: !!c }))}
             />
             <Label htmlFor="spicy" className="text-xs flex items-center gap-1">
-              <Flame className="w-3 h-3 text-red-600" /> Spicy Delicacies
+              <Flame className="w-3 h-3 text-destructive" /> Spicy Delicacies
             </Label>
           </div>
           <div className="flex items-center space-x-2">
@@ -299,7 +299,7 @@ const MenuFilterOptions = () => {
               onCheckedChange={(c) => setFilters((p) => ({ ...p, special: !!c }))}
             />
             <Label htmlFor="special" className="text-xs flex items-center gap-1">
-              <Crown className="w-3 h-3 text-amber-500" /> Chef's Signatures
+              <Crown className="w-3 h-3 text-warning" /> Chef's Signatures
             </Label>
           </div>
         </div>

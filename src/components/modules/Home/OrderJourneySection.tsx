@@ -6,7 +6,7 @@ type StepTone = "gold" | "red" | "green"
 const toneClassName: Record<StepTone, string> = {
   gold: "border-accent/40 bg-accent/15 text-accent",
   red: "border-primary/40 bg-primary/15 text-primary",
-  green: "border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+  green: "border-success/40 bg-success/15 text-success dark:text-success/90",
 }
 
 const OrderJourneySection = () => {

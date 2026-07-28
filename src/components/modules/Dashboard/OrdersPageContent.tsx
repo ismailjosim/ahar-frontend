@@ -153,17 +153,17 @@ export default function OrdersPageContent({ orders: initial }: OrdersPageContent
                     <span
                       className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
                         order.status === "Placed"
-                          ? "bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-400"
+                          ? "bg-warning/10 text-warning dark:bg-warning/20 dark:text-warning/90"
                           : order.status === "Accepted"
-                            ? "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400"
+                            ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary/90"
                             : order.status === "Preparing"
                               ? "bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-400"
                               : order.status === "Ready"
-                                ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400"
+                                ? "bg-success/10 text-success dark:bg-success/20 dark:text-success/90"
                                 : order.status === "Out for Delivery"
-                                  ? "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400"
+                                  ? "bg-warning/10 text-warning dark:bg-warning/20 dark:text-warning/90"
                                   : order.status === "Cancelled"
-                                    ? "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400"
+                                    ? "bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive/90"
                                     : "bg-gray-50 text-gray-700 dark:bg-gray-900 dark:text-gray-400"
                       }`}
                     >

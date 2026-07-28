@@ -55,13 +55,13 @@ function StatCard({ stat }: { stat: DashboardStatCard }) {
         </div>
 
         {stat.tone === "accent" && (
-          <span className="rounded-full bg-red-50 px-2 py-0.5 text-xs font-bold text-red-600 dark:bg-red-950 dark:text-red-400">
+          <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-bold text-destructive dark:bg-destructive/20 dark:text-destructive/90">
             লাইভ
           </span>
         )}
 
         {stat.tone === "warning" && (
-          <span className="rounded-full bg-amber-50 px-2 py-0.5 font-bengali text-xs font-bold text-amber-600 dark:bg-amber-950 dark:text-amber-400">
+          <span className="rounded-full bg-warning/10 px-2 py-0.5 font-bengali text-xs font-bold text-warning dark:bg-warning/20 dark:text-warning/90">
             আজকে
           </span>
         )}
@@ -292,19 +292,19 @@ export default function DashboardOverviewContent({ data }: DashboardOverviewCont
                     <span
                       className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
                         order.status === "Placed"
-                          ? "bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-400"
+                          ? "bg-warning/10 text-warning dark:bg-warning/20 dark:text-warning/90"
                           : order.status === "Accepted"
-                            ? "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400"
+                            ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary/90"
                             : order.status === "Preparing"
                               ? "bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-400"
                               : order.status === "Ready"
-                                ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400"
+                                ? "bg-success/10 text-success dark:bg-success/20 dark:text-success/90"
                                 : order.status === "Out for Delivery"
-                                  ? "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400"
+                                  ? "bg-warning/10 text-warning dark:bg-warning/20 dark:text-warning/90"
                                   : order.status === "Delivered"
-                                    ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400"
+                                    ? "bg-success/10 text-success dark:bg-success/20 dark:text-success/90"
                                     : order.status === "Cancelled"
-                                      ? "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400"
+                                      ? "bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive/90"
                                       : "bg-muted text-muted-foreground"
                       }`}
                     >
@@ -349,8 +349,8 @@ export default function DashboardOverviewContent({ data }: DashboardOverviewCont
                       <span
                         className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
                           res.status === "Pending"
-                            ? "bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-400"
-                            : "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400"
+                            ? "bg-warning/10 text-warning dark:bg-warning/20 dark:text-warning/90"
+                            : "bg-success/10 text-success dark:bg-success/20 dark:text-success/90"
                         }`}
                       >
                         {res.status === "Pending" ? "অপেক্ষারত" : "অনুমোদিত"}
@@ -380,25 +380,25 @@ export default function DashboardOverviewContent({ data }: DashboardOverviewCont
                   key={idx}
                   className={`rounded-lg border-l-4 p-4 ${
                     item.severity === "critical"
-                      ? "border-l-red-500 bg-red-50 dark:bg-red-950"
-                      : "border-l-amber-500 bg-amber-50 dark:bg-amber-950"
+                      ? "border-l-destructive bg-destructive/10 dark:bg-destructive/20"
+                      : "border-l-warning bg-warning/10 dark:bg-warning/20"
                   }`}
                 >
                   <div className="flex items-start justify-between">
                     <div>
                       <p
-                        className={`font-bengali font-semibold ${item.severity === "critical" ? "text-red-700 dark:text-red-200" : "text-amber-700 dark:text-amber-200"}`}
+                        className={`font-bengali font-semibold ${item.severity === "critical" ? "text-destructive dark:text-destructive/60" : "text-warning dark:text-amber-200"}`}
                       >
                         {item.item}
                       </p>
                       <p
-                        className={`font-bengali text-xs ${item.severity === "critical" ? "text-red-600 dark:text-red-300" : "text-amber-600 dark:text-amber-300"}`}
+                        className={`font-bengali text-xs ${item.severity === "critical" ? "text-destructive dark:text-destructive/70" : "text-warning dark:text-warning/70"}`}
                       >
                         {item.category}
                       </p>
                     </div>
                     <span
-                      className={`font-bengali text-xs font-bold ${item.severity === "critical" ? "text-red-700 dark:text-red-200" : "text-amber-700 dark:text-amber-200"}`}
+                      className={`font-bengali text-xs font-bold ${item.severity === "critical" ? "text-destructive dark:text-destructive/60" : "text-warning dark:text-amber-200"}`}
                     >
                       {item.stock}
                     </span>

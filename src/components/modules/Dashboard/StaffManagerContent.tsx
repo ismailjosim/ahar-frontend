@@ -19,14 +19,16 @@ const inputClass =
   "w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
 
 const roleBadgeStyles: Record<string, string> = {
-  super_admin: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300 border border-red-200 dark:border-red-800",
+  super_admin:
+    "bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive/70 border border-destructive/20 dark:border-destructive/80",
   owner:
     "bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border border-purple-200 dark:border-purple-800",
-  manager: "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800",
+  manager:
+    "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary/70 border border-primary/20 dark:border-primary/80",
   kitchen:
-    "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border border-amber-200 dark:border-amber-800",
+    "bg-warning/10 text-warning dark:bg-warning/20 dark:text-warning/70 border border-warning/20 dark:border-warning/80",
   cashier:
-    "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300 border border-green-200 dark:border-green-800",
+    "bg-success/10 text-success dark:bg-success/20 dark:text-success/70 border border-success/20 dark:border-success/80",
 }
 
 const roleNames: Record<string, string> = {

@@ -8,7 +8,7 @@ interface InputFieldErrorProps {
 
 const InputFieldError = ({ field, state }: InputFieldErrorProps) => {
   if (getInputFieldError(field, state)) {
-    return <FieldDescription className="text-red-600">{getInputFieldError(field, state)}</FieldDescription>
+    return <FieldDescription className="text-destructive">{getInputFieldError(field, state)}</FieldDescription>
   }
 
   return null

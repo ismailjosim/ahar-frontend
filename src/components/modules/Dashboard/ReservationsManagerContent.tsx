@@ -272,9 +272,9 @@ export default function ReservationsManagerContent() {
 
 function StatusBadge({ status }: { status: string }) {
   const classes: Record<string, string> = {
-    Pending: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-    Approved: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-    Rejected: "bg-red-100 text-destructive dark:bg-red-900/30 dark:text-red-400",
+    Pending: "bg-warning/20 text-warning dark:bg-warning/30 dark:text-warning/90",
+    Approved: "bg-success/20 text-success dark:bg-success/30 dark:text-success/90",
+    Rejected: "bg-destructive/20 text-destructive dark:bg-destructive/30 dark:text-destructive/90",
     Cancelled: "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400",
   }
   return (

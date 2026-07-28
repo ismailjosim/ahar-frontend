@@ -69,7 +69,7 @@ export const menuColumns = ({ onEdit, onView, onDelete }: Props): ColumnDef<Menu
         </Button>
 
         <Button size="icon" variant="ghost" onClick={() => onDelete(row.original)}>
-          <Trash2 className="h-4 w-4 text-red-500" />
+          <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       </div>
     ),

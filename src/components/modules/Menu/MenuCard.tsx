@@ -37,7 +37,7 @@ const MenuCard = ({ menuItem, addToCart }: MenuCardProps) => {
             {isFeatured && (
               <Badge
                 variant="default"
-                className="text-[10px] bg-amber-500 hover:bg-amber-600 text-black font-bold gap-1 px-2 py-0.5"
+                className="text-[10px] bg-warning hover:bg-warning text-black font-bold gap-1 px-2 py-0.5"
               >
                 <Sparkles className="w-3 h-3 fill-black" /> Featured
               </Badge>
@@ -81,8 +81,8 @@ const MenuCard = ({ menuItem, addToCart }: MenuCardProps) => {
 
         {/* Meta Info Indicators */}
         <div className="flex items-center gap-3 text-[11px] text-muted-foreground font-medium mb-2">
-          <span className="text-amber-500 font-bold flex items-center gap-1">
-            <Star className="w-3.5 h-3.5 fill-amber-500 stroke-amber-500" /> {rating?.toFixed(1)}
+          <span className="text-warning font-bold flex items-center gap-1">
+            <Star className="w-3.5 h-3.5 fill-warning stroke-warning" /> {rating?.toFixed(1)}
           </span>
           <span>•</span>
           <span className="flex items-center gap-1">
