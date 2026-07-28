@@ -1,6 +1,8 @@
 "use client"
 
 import { MenuItem } from "@/types/menu.interface"
+import { useCartStore } from "@/store/cart.store"
+import { toast } from "sonner"
 import MenuCard from "./MenuCard"
 
 interface MenuItemsProps {
@@ -8,9 +10,19 @@ interface MenuItemsProps {
 }
 
 const MenuItems = ({ menus }: MenuItemsProps) => {
+  const addItem = useCartStore((state) => state.addItem)
+
   const addToCart = (dish: MenuItem, qty: number) => {
-    console.log(dish, qty)
-    return
+    addItem({
+      id: dish.id,
+      name: dish.name,
+      category: dish.category?.name || "Uncategorized",
+      imageUrl: dish.imageUrl,
+      unitPrice: dish.price,
+      quantity: qty,
+      addOns: [],
+    })
+    toast.success(`${dish.name} added to tray!`)
   }
 
   return (

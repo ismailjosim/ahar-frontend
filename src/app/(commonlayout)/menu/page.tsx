@@ -7,6 +7,7 @@ import MenuFilterWrapper from "@/components/modules/Menu/MenuFilterWrapper"
 import MenusWrapper from "@/components/modules/Menu/MenusWrapper"
 
 // Shared Components & Loaders
+import CartBox from "@/components/shared/CartBox"
 
 // Core Business Logic & Data Formatters
 import { queryStringFormatter } from "@/lib/formatters.ts"
@@ -83,6 +84,7 @@ const MenuPage = async ({ searchParams }: MenuPageProps) => {
           </div>
         </div>
       </div>
+      <CartBox />
     </main>
   )
 }
